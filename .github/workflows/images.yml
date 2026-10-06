@@ -1,0 +1,51 @@
+name: images
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  images:
+    name: 镜像构建 → GHCR → trivy 扫描（仅 main）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检查 docker-bake 清单
+        id: bake
+        run: |
+          if [ -f docker-bake.hcl ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "docker-bake.hcl 未落地：镜像流水线占位跳过（随首个服务 Dockerfile 于 S3 落地，tag=git sha，02 §15.3）"
+          fi
+
+      - name: 登录 GHCR
+        if: steps.bake.outputs.enabled == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 构建并推送镜像（docker buildx bake）
+        if: steps.bake.outputs.enabled == 'true'
+        uses: docker/bake-action@v5
+        with:
+          push: true
+
+      - name: trivy 扫描（CRITICAL/HIGH 且有修复版才阻断）
+        if: steps.bake.outputs.enabled == 'true'
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true

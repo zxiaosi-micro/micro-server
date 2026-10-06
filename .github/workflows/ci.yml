@@ -1,0 +1,154 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build（workspace）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: go build micro-server/...
+        run: go build micro-server/...
+
+  test:
+    name: test（mysql:8 + redis:7 service 容器）
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: micro_test
+        ports:
+          - 23306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmicro_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 26379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      # testinfra 三级解析第一级（S1-11 落地后消费）：CI 直连 service 容器
+      MICRO_TEST_MYSQL_DSN: root:micro_test@tcp(127.0.0.1:23306)/micro_test?parseTime=true&loc=Local
+      MICRO_TEST_REDIS_ADDR: 127.0.0.1:26379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: go test
+        run: go test micro-server/...
+
+  lint:
+    name: golangci-lint（v2）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: golangci-lint run（逐模块，workspace 根无 go.mod）
+        run: |
+          set -euo pipefail
+          if [ -z "$(git ls-files '*.go')" ]; then
+            echo "尚无 Go 源码：占位通过"
+            exit 0
+          fi
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh \
+            | sh -s -- -b "$(go env GOPATH)/bin" v2.14.0
+          for d in $(git ls-files '*/go.mod' | xargs -n1 dirname | sort -u); do
+            echo "== lint $d"
+            (cd "$d" && golangci-lint run ./...)
+          done
+
+  swagger-diff:
+    name: swagger-diff（契约文档漂移阻断，ADR-20）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: 安装 goctl（≥1.8.4 内置 swagger）
+        run: go install github.com/zeromicro/go-zero/tools/goctl@v1.10.2
+      - name: 契约校验 + swagger 重生成 + diff 阻断
+        run: |
+          set -euo pipefail
+          apis=$(git ls-files 'services/*/*.api' 'services/*/api/*.api' || true)
+          if [ -z "$apis" ]; then
+            echo "尚无 .api 契约：swagger-diff 占位通过（首个契约 PR 合并后本门槛自动生效，S0-05）"
+            exit 0
+          fi
+          for f in $apis; do
+            echo "== goctl api validate $f"
+            goctl api validate -api "$f"
+          done
+          entries=$(git ls-files 'services/*/api/entry.api' || true)
+          if [ -z "$entries" ]; then
+            echo "尚未登记入口契约（services/*/api/entry.api）：跳过 swagger 重生成"
+            exit 0
+          fi
+          rm -rf docs/swagger
+          mkdir -p docs/swagger
+          for f in $entries; do
+            svc=$(echo "$f" | cut -d/ -f2)
+            echo "== goctl api swagger $svc"
+            goctl api swagger --api "$f" --dir docs/swagger --filename "$svc"
+          done
+          if [ -n "$(git status --porcelain docs/swagger)" ]; then
+            echo "::error::docs/swagger 与契约不一致：本地执行 make swagger 重生成，随契约 PR 一并提交（S0-05 契约先行）"
+            git status --porcelain docs/swagger
+            exit 1
+          fi
+          echo "swagger 文档与契约一致"
+
+  tenantaudit:
+    name: tenantaudit（租户 SQL 静态对账）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: 占位检查（tools/tenantaudit 落地后自动启用）
+        run: |
+          if [ -d tools/tenantaudit ]; then
+            go run ./tools/tenantaudit
+          else
+            echo "tools/tenantaudit 未落地（S1-10）：占位通过。"
+            echo "纪律提醒：租户表 model SQL 必须显式携带 tenant_id 条件/列，INSERT 必含 tenant_id（02 §6.2）"
+          fi
+
+  dodcheck:
+    name: dodcheck（上线 DoD 静态把关）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+      - name: 占位检查（tools/dodcheck 落地后自动启用）
+        run: |
+          if [ -d tools/dodcheck ]; then
+            go run ./tools/dodcheck
+          else
+            echo "tools/dodcheck 未落地（S3）：占位通过。"
+            echo "纪律提醒：上线 DoD = 指标注册 + Telemetry 接入 + 健康检查 + runbook 五节，0 FAIL 才可合并（02 §11）"
+          fi

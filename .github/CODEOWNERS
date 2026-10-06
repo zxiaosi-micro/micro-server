@@ -1,0 +1,9 @@
+# micro-server 关键目录评审人（S0-03）
+# 契约先行（S0-05）：契约目录变更必须评审——swagger/apitypes 以契约为唯一源
+go.work @zxiaosi
+services/*/api/ @zxiaosi
+services/*/pb/ @zxiaosi
+# identity：认证与会话中心，全平台安全基座（首个 runbook 随 S3-05 落地）
+services/identity/ @zxiaosi
+# 工具箱：tenantaudit/dodcheck/migrate 等质量设施
+tools/ @zxiaosi

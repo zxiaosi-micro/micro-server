@@ -1,0 +1,128 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Hello",
+    "version": "v1"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/greeting": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "greeting",
+        "operationId": "greeting",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/GreetingResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ping": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ping",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/PingResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GreetingResp": {
+      "type": "object",
+      "required": [
+        "message",
+        "poll_interval_ms",
+        "cron_last_run"
+      ],
+      "properties": {
+        "cron_last_run": {
+          "description": "cron 注册表 lastRun 回显（UnixMilli）",
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "poll_interval_ms": {
+          "description": "configcenter 热更新值回显",
+          "type": "integer"
+        }
+      }
+    },
+    "PingResp": {
+      "type": "object",
+      "required": [
+        "pong"
+      ],
+      "properties": {
+        "pong": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "x-date": "2026-10-08 01:50:47",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.10.2"
+}

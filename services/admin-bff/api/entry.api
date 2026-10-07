@@ -1,0 +1,497 @@
+syntax = "v1"
+
+info (
+	title:                       "AdminBff"
+	desc:                        "管理后台 BFF REST 契约（S3-03）。统一信封 {code,msg,data}（wrapCodeMsg）；认证码 10401~10406 → HTTP 401（10401 静默刷新 / 10402 互斥弹窗 / 10406 提级弹窗）；权限 10408 → 403。所有 ID 字段字符串传输与渲染（E8）。"
+	author:                      "micro"
+	version:                     "v1"
+	wrapCodeMsg:                 true
+	useDefinitions:              true
+	securityDefinitionsFromJson: `{"bearerAuth":{"type":"apiKey","in":"header","name":"Authorization","description":"Bearer <access_token>"}}`
+)
+
+// ============================================================
+// 类型（ID 一律 string；时间 UnixMilli int64 字符串化由前端渲染）
+// ============================================================
+type LoginReq {
+	Mobile   string `json:"mobile"`
+	Password string `json:"password"`
+}
+
+type TokenPair {
+	AccessToken      string `json:"access_token"`
+	RefreshToken     string `json:"refresh_token"`
+	AccessExpiresIn  int64  `json:"access_expires_in"`
+	RefreshExpiresIn int64  `json:"refresh_expires_in"`
+}
+
+type LoginResp {
+	Tokens   TokenPair `json:"tokens"`
+	UID      string    `json:"uid"`
+	Nickname string    `json:"nickname"`
+}
+
+type RefreshReq {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshResp {
+	Tokens TokenPair `json:"tokens"`
+}
+
+type StepUpReq {
+	Password string `json:"password"`
+}
+
+type StepUpResp {
+	Level           int    `json:"level"`
+	AccessToken     string `json:"access_token"`
+	AccessExpiresIn int64  `json:"access_expires_in"`
+}
+
+type MeResp {
+	UID       string   `json:"uid"`
+	Nickname  string   `json:"nickname"`
+	Mobile    string   `json:"mobile"` // 脱敏
+	TenantID  string   `json:"tenant_id"`
+	Roles     []string `json:"roles"`
+	Perms     []string `json:"perms"`
+	DataScope string   `json:"data_scope"`
+}
+
+type MenuItem {
+	MenuID   string `json:"menu_id"`
+	ParentID string `json:"parent_id"`
+	Name     string `json:"name"`
+	Type     int    `json:"type"` // 1 目录 / 2 菜单 / 3 按钮 / 4 接口
+	PermCode string `json:"perm_code"`
+	Path     string `json:"path"`
+	Icon     string `json:"icon"`
+	Sort     int    `json:"sort"`
+	Status   int    `json:"status"`
+}
+
+type MenusResp {
+	Menus []MenuItem `json:"menus"` // 平铺，前端组树
+	Perms []string   `json:"perms"` // 按钮级权限码
+}
+
+// ---- 用户 ----
+type UserItem {
+	UID          string   `json:"uid"`
+	OrgID        string   `json:"org_id"`
+	PartyID      string   `json:"party_id"`
+	Nickname     string   `json:"nickname"`
+	MobileMasked string   `json:"mobile_masked"`
+	EmailMasked  string   `json:"email_masked"`
+	Types        []string `json:"types"` // 可登录端
+	Status       int      `json:"status"`
+	LockedUntil  string   `json:"locked_until"` // UnixMilli 字符串，空=未锁
+	RoleCodes    []string `json:"role_codes"`
+	CreatedAt    string   `json:"created_at"`
+}
+
+type UserListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"` // 分页上限 100（S3-04 usePaged 同源）
+	Keyword string `form:"keyword,optional"`
+	Status  int    `form:"status,optional"` // 0 全部
+}
+
+type UserListResp {
+	List  []UserItem `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type UserCreateReq {
+	Nickname string   `json:"nickname"`
+	Mobile   string   `json:"mobile"`
+	Email    string   `json:"email,optional"`
+	Password string   `json:"password"`
+	Types    []string `json:"types"`
+	OrgID    string   `json:"org_id,optional"`
+	RoleIDs  []string `json:"role_ids,optional"`
+}
+
+type UserUpdateReq {
+	UID      string   `path:"id"`
+	Nickname string   `json:"nickname,optional"`
+	Mobile   string   `json:"mobile,optional"`
+	Email    string   `json:"email,optional"`
+	Types    []string `json:"types,optional"`
+	OrgID    string   `json:"org_id,optional"`
+	RoleIDs  []string `json:"role_ids,optional"`
+}
+
+type UserStatusReq {
+	UID    string `path:"id"`
+	Status int    `json:"status"` // 1 恢复 / 2 禁用
+}
+
+type UserPasswordReq {
+	UID         string `path:"id"`
+	NewPassword string `json:"new_password"`
+}
+
+type IDPath {
+	ID string `path:"id"`
+}
+
+type SimpleResp {
+	UID string `json:"uid,optional"`
+}
+
+// ---- 角色 ----
+type RoleItem {
+	RoleID    string `json:"role_id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	DataScope string `json:"data_scope"` // JSON {"type":"ALL"|"SELF"|"ORG","org_ids":[...]}
+	Remark    string `json:"remark"`
+	CreatedAt string `json:"created_at"`
+}
+
+type RoleListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type RoleListResp {
+	List  []RoleItem `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type RoleCreateReq {
+	Code      string   `json:"code"`
+	Name      string   `json:"name"`
+	DataScope string   `json:"data_scope,optional"`
+	Remark    string   `json:"remark,optional"`
+	MenuIDs   []string `json:"menu_ids,optional"`
+}
+
+type RoleUpdateReq {
+	RoleID    string   `path:"id"`
+	Name      string   `json:"name,optional"`
+	DataScope string   `json:"data_scope,optional"`
+	Remark    string   `json:"remark,optional"`
+	MenuIDs   []string `json:"menu_ids,optional"` // 传空数组=清空；不传=不变更
+}
+
+type RoleDetailResp {
+	Role    RoleItem `json:"role"`
+	MenuIDs []string `json:"menu_ids"`
+}
+
+// ---- 组织 ----
+type OrgItem {
+	OrgID    string `json:"org_id"`
+	ParentID string `json:"parent_id"`
+	Name     string `json:"name"`
+	Sort     int    `json:"sort"`
+}
+
+type OrgListResp {
+	List []OrgItem `json:"list"` // 平铺，前端组树
+}
+
+type OrgCreateReq {
+	ParentID string `json:"parent_id,optional"`
+	Name     string `json:"name"`
+	Sort     int    `json:"sort,optional"`
+}
+
+type OrgUpdateReq {
+	OrgID    string `path:"id"`
+	ParentID string `json:"parent_id,optional"`
+	Name     string `json:"name,optional"`
+	Sort     int    `json:"sort,optional"`
+}
+
+// ---- 菜单 ----
+type MenuListResp {
+	List []MenuItem `json:"list"`
+}
+
+type MenuCreateReq {
+	ParentID string `json:"parent_id,optional"`
+	Name     string `json:"name"`
+	Type     int    `json:"type"`
+	PermCode string `json:"perm_code,optional"`
+	Path     string `json:"path,optional"`
+	Icon     string `json:"icon,optional"`
+	Sort     int    `json:"sort,optional"`
+}
+
+type MenuUpdateReq {
+	MenuID   string `path:"id"`
+	ParentID string `json:"parent_id,optional"`
+	Name     string `json:"name,optional"`
+	Type     int    `json:"type,optional"`
+	PermCode string `json:"perm_code,optional"`
+	Path     string `json:"path,optional"`
+	Icon     string `json:"icon,optional"`
+	Sort     int    `json:"sort,optional"`
+	Status   int    `json:"status,optional"`
+}
+
+// ---- 租户 ----
+type TenantItem {
+	TenantID   string `json:"tenant_id"`
+	TenantCode string `json:"tenant_code"`
+	Name       string `json:"name"`
+	Plan       string `json:"plan"`
+	Quota      string `json:"quota"` // JSON
+	Status     int    `json:"status"`
+}
+
+type TenantListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type TenantListResp {
+	List  []TenantItem `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type TenantCreateReq {
+	TenantCode string `json:"tenant_code"`
+	Name       string `json:"name"`
+	Plan       string `json:"plan,optional"`
+	Quota      string `json:"quota,optional"`
+}
+
+type TenantUpdateReq {
+	TenantID string `path:"id"`
+	Name     string `json:"name,optional"`
+	Plan     string `json:"plan,optional"`
+	Status   int    `json:"status,optional"`
+}
+
+type TenantQuotaReq {
+	TenantID string `path:"id"`
+	Quota    string `json:"quota"`
+}
+
+// ---- 会话 ----
+type SessionItem {
+	SID       string `json:"sid"`
+	Client    string `json:"client"`
+	CreatedAt string `json:"created_at"`
+}
+
+type SessionListReq {
+	UID    string `form:"uid,optional"` // 空=自己
+	Client string `form:"client,optional"`
+}
+
+type SessionListResp {
+	List []SessionItem `json:"list"`
+}
+
+type SessionKickReq {
+	UID    string `json:"uid,optional"`
+	Client string `json:"client,optional"`
+	SID    string `json:"sid,optional"`
+}
+
+type SessionKickResp {
+	Kicked int64 `json:"kicked"`
+}
+
+// ============================================================
+// 免鉴权组（authz SkipPaths=/auth/* /sso/*；logout/step-up 在 handler
+// 内自行解析 Bearer 取 sid——登出与提级不需要完整鉴权链）
+// ============================================================
+@server (
+	prefix: /api/v1
+	group:  auth
+)
+service AdminBffApi {
+	@doc "密码登录（10400 凭证错误 / 10407 锁定倒计时）"
+	@handler login
+	post /auth/login (LoginReq) returns (LoginResp)
+
+	@doc "刷新（前端 request.ts 单飞调用；后端轮换式）"
+	@handler refresh
+	post /auth/refresh (RefreshReq) returns (RefreshResp)
+
+	@doc "登出"
+	@handler logout
+	post /auth/logout returns (SimpleResp)
+
+	@doc "二次认证提级（5min 窗口 level=2）"
+	@handler stepUp
+	post /auth/step-up (StepUpReq) returns (StepUpResp)
+}
+
+// ============================================================
+// 鉴权组（authz 中间件：验签→会话→client→RBAC 每请求 GET auth_cache）
+// ============================================================
+@server (
+	prefix:     /api/v1
+	group:      auth
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "当前用户信息"
+	@handler me
+	get /auth/me returns (MeResp)
+
+	@doc "用户可见菜单与权限码"
+	@handler menus
+	get /auth/menus returns (MenusResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      user
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "用户列表（perm: system:user:list）"
+	@handler listUsers
+	get /users (UserListReq) returns (UserListResp)
+
+	@doc "新建用户（perm: system:user:create）"
+	@handler createUser
+	post /users (UserCreateReq) returns (SimpleResp)
+
+	@doc "用户详情（perm: system:user:list）"
+	@handler getUser
+	get /users/:id (IDPath) returns (UserItem)
+
+	@doc "编辑用户（perm: system:user:update）"
+	@handler updateUser
+	put /users/:id (UserUpdateReq) returns (SimpleResp)
+
+	@doc "禁用/恢复（perm: system:user:status；禁用即时踢全部会话）"
+	@handler updateUserStatus
+	put /users/:id/status (UserStatusReq) returns (SimpleResp)
+
+	@doc "重置密码（perm: system:user:reset-pwd）"
+	@handler resetUserPassword
+	put /users/:id/password (UserPasswordReq) returns (SimpleResp)
+
+	@doc "删除用户（perm: system:user:delete）"
+	@handler deleteUser
+	delete /users/:id (IDPath) returns (SimpleResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      role
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "角色列表（perm: system:role:list）"
+	@handler listRoles
+	get /roles (RoleListReq) returns (RoleListResp)
+
+	@doc "新建角色（perm: system:role:create）"
+	@handler createRole
+	post /roles (RoleCreateReq) returns (SimpleResp)
+
+	@doc "角色详情+权限树回显（perm: system:role:list）"
+	@handler getRole
+	get /roles/:id (IDPath) returns (RoleDetailResp)
+
+	@doc "编辑角色（perm: system:role:update；联动失效相关用户 auth_cache）"
+	@handler updateRole
+	put /roles/:id (RoleUpdateReq) returns (SimpleResp)
+
+	@doc "删除角色（perm: system:role:delete）"
+	@handler deleteRole
+	delete /roles/:id (IDPath) returns (SimpleResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      org
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "组织树（perm: system:org:list）"
+	@handler listOrgs
+	get /orgs returns (OrgListResp)
+
+	@doc "新建组织（perm: system:org:create）"
+	@handler createOrg
+	post /orgs (OrgCreateReq) returns (SimpleResp)
+
+	@doc "编辑组织（perm: system:org:update）"
+	@handler updateOrg
+	put /orgs/:id (OrgUpdateReq) returns (SimpleResp)
+
+	@doc "删除组织（perm: system:org:delete）"
+	@handler deleteOrg
+	delete /orgs/:id (IDPath) returns (SimpleResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      menu
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "菜单管理列表（perm: system:menu:list）"
+	@handler listMenus
+	get /menus returns (MenuListResp)
+
+	@doc "新建菜单（perm: system:menu:create）"
+	@handler createMenu
+	post /menus (MenuCreateReq) returns (SimpleResp)
+
+	@doc "编辑菜单（perm: system:menu:update）"
+	@handler updateMenu
+	put /menus/:id (MenuUpdateReq) returns (SimpleResp)
+
+	@doc "删除菜单（perm: system:menu:delete）"
+	@handler deleteMenu
+	delete /menus/:id (IDPath) returns (SimpleResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      tenant
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "租户列表（perm: system:tenant:list；平台面）"
+	@handler listTenants
+	get /tenants (TenantListReq) returns (TenantListResp)
+
+	@doc "新建租户（perm: system:tenant:create）"
+	@handler createTenant
+	post /tenants (TenantCreateReq) returns (SimpleResp)
+
+	@doc "编辑租户（perm: system:tenant:update）"
+	@handler updateTenant
+	put /tenants/:id (TenantUpdateReq) returns (SimpleResp)
+
+	@doc "配额设置（perm: system:tenant:quota）"
+	@handler updateTenantQuota
+	put /tenants/:id/quota (TenantQuotaReq) returns (SimpleResp)
+
+	@doc "删除租户（perm: system:tenant:update）"
+	@handler deleteTenant
+	delete /tenants/:id (IDPath) returns (SimpleResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      session
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "在线会话列表（perm: system:session:list；uid 空=自己）"
+	@handler listSessions
+	get /sessions (SessionListReq) returns (SessionListResp)
+
+	@doc "踢下线（perm: system:session:kick；sid 定点 / uid+client 该端 / uid 全端）"
+	@handler kickSessions
+	post /sessions/kick (SessionKickReq) returns (SessionKickResp)
+}
+

@@ -1,0 +1,21 @@
+# S2-05 · 服务端口登记表（与 v4/02 §5.2 表一致，newsvc.sh 的取号校验源，E12）
+# 格式：<name> <rpc|http端口> <metrics端口> [备注]
+# 预留不复用：8088/9108（原 config）、8096/9116（原 subscription）——新服务在 §5.2 表登记后才能追加此文件
+identity 8081 9101
+party 8082 9102
+catalog 8083 9103
+inventory 8084 9104
+device 8085 9105
+file 8086 9106
+audit 8087 9107
+notification 8089 9109
+order 8090 9110
+station 8091 9111
+finance 8092 9112
+contract 8093 9113
+ops 8094 9114
+analytics 8095 9115
+hello 8888 9117 模板服务
+admin-bff 8889 9118 BFF
+mobile-bff 8890 9119 BFF
+iotingest 8182 9120 OCPP,无RPC

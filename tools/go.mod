@@ -2,7 +2,7 @@ module micro-server/tools
 
 go 1.26.0
 
-require github.com/zxiaosi-micro/micro-common v0.1.0
+require github.com/zxiaosi-micro/micro-common v0.1.1
 
 require (
 	golang.org/x/sys v0.48.0 // indirect

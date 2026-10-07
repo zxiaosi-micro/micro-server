@@ -17,6 +17,10 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.26'
+      - name: workspace 诊断
+        run: |
+          go env GOWORK GOFLAGS GOPROXY
+          cat go.work
       - name: go build micro-server/...
         run: go build micro-server/...
 
@@ -111,6 +115,8 @@ jobs:
             svc=$(echo "$f" | cut -d/ -f2)
             echo "== goctl api swagger $svc"
             goctl api swagger --api "$f" --dir docs/swagger --filename "$svc"
+            # x-date 是生成时间戳,每次必变——剥离后 diff(ADR-20 比较的是契约语义)
+            sed -i '/"x-date":/d' docs/swagger/$svc.json
           done
           if [ -n "$(git status --porcelain docs/swagger)" ]; then
             echo "::error::docs/swagger 与契约不一致：本地执行 make swagger 重生成，随契约 PR 一并提交（S0-05 契约先行）"

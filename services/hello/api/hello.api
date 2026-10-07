@@ -1,0 +1,21 @@
+syntax = "v1"
+
+info (
+	title:   "Hello"
+	desc:    "hello REST 契约（契约先行：先改本文件评审，再 goctl 生成实现）"
+	author:  "micro"
+	version: "v1"
+)
+
+type PingResp {
+	Pong string `json:"pong"`
+}
+
+@server (
+	prefix: /api/v1
+)
+service HelloApi {
+	@handler ping
+	get /ping returns (PingResp)
+}
+

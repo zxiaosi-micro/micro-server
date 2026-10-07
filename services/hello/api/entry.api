@@ -1,0 +1,32 @@
+syntax = "v1"
+
+info (
+	title:          "Hello"
+	desc:           "hello 模板服务契约（S3-06）：新服务参考模板——goctl 生成物、custom model 覆写、cron 注册表、configcenter listener 的最小可抄样例。"
+	author:         "micro"
+	version:        "v1"
+	wrapCodeMsg:    true
+	useDefinitions: true
+)
+
+type PingResp {
+	Pong string `json:"pong"`
+}
+
+type GreetingResp {
+	Message      string `json:"message"`
+	PollInterval int    `json:"poll_interval_ms"` // configcenter 热更新值回显
+	CronLastRun  string `json:"cron_last_run"` // cron 注册表 lastRun 回显（UnixMilli）
+}
+
+@server (
+	prefix: /api/v1
+)
+service HelloApi {
+	@handler ping
+	get /ping returns (PingResp)
+
+	@handler greeting
+	get /greeting returns (GreetingResp)
+}
+

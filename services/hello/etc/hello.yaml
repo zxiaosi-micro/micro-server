@@ -1,0 +1,22 @@
+Name: hello-api
+Host: 0.0.0.0
+Port: 8888
+Mysql:
+  DataSource: "${DSN|}"
+Cache:
+  - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+    Pass: "${REDIS_PASS|}"
+    Type: node
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: hello-api
+ConfigKey: ${CONFIG_KEY|/micro/config/hello}   # configcenter（运行时参数，ADR-10）
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9117
+Telemetry:
+  Name: hello
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败

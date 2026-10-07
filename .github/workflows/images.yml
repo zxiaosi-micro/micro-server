@@ -41,7 +41,7 @@ jobs:
 
       - name: trivy 扫描（CRITICAL/HIGH 且有修复版才阻断）
         if: steps.bake.outputs.enabled == 'true'
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
           image-ref: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}

@@ -88,7 +88,7 @@ func (m *customMenuModel) FindByPerm(ctx context.Context, tenantId int64, permCo
 func (m *customMenuModel) Update(ctx context.Context, tenantId, menuId, parentId int64, name string, typ int64,
 	permCode, path, icon string, sort, status, updatedBy int64) error {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("update %s set `parent_id` = ?, `name` = ?, `type` = ?, `sort` = ?, `status` = ?, `updated_by` = ?, `updated_at` = ?", m.table))
+	fmt.Fprintf(&sb, "update %s set `parent_id` = ?, `name` = ?, `type` = ?, `sort` = ?, `status` = ?, `updated_by` = ?, `updated_at` = ?", m.table)
 	args := []any{parentId, name, typ, sort, status,
 		sql.NullInt64{Int64: updatedBy, Valid: updatedBy > 0}, time.Now()}
 	if permCode != "" {

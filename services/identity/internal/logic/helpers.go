@@ -38,8 +38,6 @@ func (l *LoginByPasswordLogic) hashIndex(plain string) string {
 	return hmacHex(l.svcCtx.HashKey, plain)
 }
 
-func (l *LoginByWechatLogic) hashIndex(plain string) string { return hmacHex(l.svcCtx.HashKey, plain) }
-
 func (l *CreateUserLogic) hashIndex(plain string) string { return hmacHex(l.svcCtx.HashKey, plain) }
 
 func (l *UpdateUserLogic) hashIndex(plain string) string { return hmacHex(l.svcCtx.HashKey, plain) }

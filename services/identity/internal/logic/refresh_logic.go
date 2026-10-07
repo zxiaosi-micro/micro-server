@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 
 	"micro-server/services/identity/internal/svc"
 	"micro-server/services/identity/pb"
@@ -34,16 +35,15 @@ func (l *RefreshLogic) Refresh(in *pb.RefreshReq) (*pb.RefreshResp, error) {
 	}
 
 	newRTID, sid, err := l.svcCtx.Sessions.RotateRefresh(l.ctx, in.RefreshToken)
-	switch {
-	case err == nil:
-		// ok
-	case err == sessionx.ErrRefreshInvalid:
+	if errors.Is(err, sessionx.ErrRefreshInvalid) {
 		return nil, errcode.ErrSessionExpired
-	case err == sessionx.ErrRefreshReuse:
+	}
+	if errors.Is(err, sessionx.ErrRefreshReuse) {
 		// 重用告警（RotateRefresh 内已完成全端注销）：审计 + ERROR 留痕
 		l.Errorf("[安全告警] refresh token 重用 rtid=%s…已全端注销", safePrefix(in.RefreshToken, 8))
 		return nil, errcode.ErrSessionRevoked
-	default:
+	}
+	if err != nil {
 		return nil, errcode.Internal.WithCause(err)
 	}
 

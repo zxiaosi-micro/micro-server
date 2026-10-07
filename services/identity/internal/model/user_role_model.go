@@ -10,8 +10,6 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
-const userRoleColumns = "`user_id`,`role_id`,`tenant_id`,`created_at`,`created_by`,`updated_at`,`updated_by`,`deleted_at`"
-
 type (
 	// UserRoleModel 用户-角色绑定模型。
 	UserRoleModel interface {

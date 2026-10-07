@@ -4,7 +4,7 @@ SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 
 .DEFAULT_GOAL := help
-.PHONY: build test vet lint tidy fmt gen validate swagger envcheck keygen seed migrate-up migrate-down restart clean help
+.PHONY: build test vet lint tidy fmt gen validate swagger apitypes envcheck keygen seed migrate-up migrate-down restart clean help
 
 ## build: 编译 workspace 全部模块（CI 同款）
 build:
@@ -56,6 +56,10 @@ swagger:
 		svc=$$(echo "$$f" | cut -d/ -f2); \
 		echo "== swagger $$svc"; goctl api swagger --api "$$f" --dir docs/swagger --filename "$$svc"; \
 	done
+
+## apitypes: .api → TS 类型到 micro-web/packages/shared/types（CI diff 阻断，02 §12.5）
+apitypes:
+	@entries=$$(ls services/*/api/entry.api 2>/dev/null); 	[ -n "$$entries" ] || { echo "尚无 entry.api"; exit 0; }; 	for f in $$entries; do 		svc=$$(echo $$f | cut -d/ -f2); 		echo "== apitypes $$svc"; go run ./tools/apitypes -api $$f -out ../micro-web/packages/shared/types/$$svc.ts; 	done
 
 ## envcheck: dev 中间件连通体检 5/5（MySQL/Redis/etcd/TDengine/Kafka；S2-03）
 envcheck:

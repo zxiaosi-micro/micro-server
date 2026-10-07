@@ -84,9 +84,25 @@ func main() {
 	}
 
 	// ---- 4) 数据密钥（mobile 加密列用；S1-05 crypto）----
-	keyProvider, err := crypto.EnvKeyProviderFromEnv()
+	// devcfg 回读：进程环境变量 > compose/dev/.env（go run 场景免 shell export）。
+	keySpec := devcfg.Get("MICRO_DATA_KEYS", "")
+	if keySpec == "" {
+		fatal(errors.New("MICRO_DATA_KEYS 未设置（keygen 产出后写入环境变量或 compose/dev/.env）"))
+	}
+	keys, err := crypto.ParseKeySpec(keySpec)
 	if err != nil {
-		fatal(fmt.Errorf("MICRO_DATA_KEYS 未就绪（keygen 产出后写入 .env）: %w", err))
+		fatal(fmt.Errorf("MICRO_DATA_KEYS 解析失败: %w", err))
+	}
+	activeKID := devcfg.Get("MICRO_DATA_KEY_KID", "")
+	if activeKID == "" {
+		for kid := range keys {
+			activeKID = kid
+			break
+		}
+	}
+	keyProvider, err := crypto.NewEnvKeyProvider(activeKID, keys)
+	if err != nil {
+		fatal(fmt.Errorf("数据密钥未就绪（keygen 产出后写入 .env）: %w", err))
 	}
 	enc, err := crypto.NewEncryptor(keyProvider)
 	if err != nil {
@@ -109,12 +125,12 @@ func main() {
 
 	types, _ := json.Marshal([]string{"ADMIN_WEB", "OPS_APP"})
 	mustExec(db,
-		`INSERT INTO user (user_id, org_id, mobile, mobile_hash, email, password_hash, types, status,
+		`INSERT INTO user (user_id, org_id, nickname, mobile, mobile_hash, email, password_hash, types, status,
 		                   tenant_id, created_at, updated_at)
-		 VALUES (?,?,?,?,?,?,?,?,?,?,?)
+		 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
 		 ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash), mobile=VALUES(mobile),
-		                         mobile_hash=VALUES(mobile_hash), updated_at=VALUES(updated_at)`,
-		seedAdminUID, sql.NullInt64{}, mobileCipher, mobileHash, "admin@example.local",
+		                         mobile_hash=VALUES(mobile_hash), nickname=VALUES(nickname), updated_at=VALUES(updated_at)`,
+		seedAdminUID, sql.NullInt64{}, "平台管理员", mobileCipher, mobileHash, "admin@example.local",
 		argon2Hash(adminPW), string(types), 1, seedTenantID, now, now)
 	fmt.Printf("user       平台管理员就绪（uid=%d，argon2id，密码=MICRO_ADMIN_PW）\n", seedAdminUID)
 

@@ -1,0 +1,505 @@
+syntax = "proto3";
+
+package identity;
+
+option go_package = "./pb";
+
+// Identity 认证服务契约（S3-02，v4/03 阶段 3 任务正本）。
+//
+// 职责边界（02 §9.5）：identity 是会话与 auth_cache 的唯一写入方；
+// MySQL 只存"账号是什么"，会话/锁定计数/权限快照在 Redis DB4（sessionx）。
+// ID 传输用 int64（内部 RPC），对外（BFF → 前端）一律转 string 渲染（E8）。
+service Identity {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 认证主链 ----
+  // 密码登录：锁定校验 → argon2id → 互斥踢旧 → 写会话 → auth.login 审计（outbox）
+  rpc LoginByPassword(LoginByPasswordReq) returns (LoginResp);
+  // 微信登录：code2session；未绑手机返回 need_bind_phone（不签发 token）
+  rpc LoginByWechat(LoginByWechatReq) returns (LoginByWechatResp);
+  // refresh 轮换：重用检测（命中墓碑 → 全端注销 + 告警日志）
+  rpc Refresh(RefreshReq) returns (RefreshResp);
+  rpc Logout(LogoutReq) returns (LogoutResp);
+  // step-up：校验密码 → RaiseLevel(sid,2)（5min）→ 重签 level=2 access
+  rpc StepUp(StepUpReq) returns (StepUpResp);
+  // 模拟他人（L2）：操作人须 step-up；审计 auth.impersonate
+  rpc Impersonate(ImpersonateReq) returns (ImpersonateResp);
+  // 统一账号-参与方绑定（S4 party 落地后消费）
+  rpc BindParty(BindPartyReq) returns (BindPartyResp);
+
+  // ---- 会话管理 ----
+  rpc ListSessions(ListSessionsReq) returns (ListSessionsResp);
+  rpc KickSessions(KickSessionsReq) returns (KickSessionsResp);
+  rpc ValidateSession(ValidateSessionReq) returns (ValidateSessionResp);
+
+  // ---- auth_cache（写入方与刷新源；BFF 每请求直接 GET Redis，本方法供刷新与排障）----
+  rpc GetAuthCache(GetAuthCacheReq) returns (GetAuthCacheResp);
+
+  // ---- 用户管理 ----
+  rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+  rpc UpdateUser(UpdateUserReq) returns (UpdateUserResp);
+  rpc UpdateUserStatus(UpdateUserStatusReq) returns (UpdateUserStatusResp);
+  rpc ResetPassword(ResetPasswordReq) returns (ResetPasswordResp);
+  rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
+  rpc GetUser(GetUserReq) returns (GetUserResp);
+  rpc ListUsers(ListUsersReq) returns (ListUsersResp);
+
+  // ---- 角色管理 ----
+  rpc CreateRole(CreateRoleReq) returns (CreateRoleResp);
+  rpc UpdateRole(UpdateRoleReq) returns (UpdateRoleResp);
+  rpc DeleteRole(DeleteRoleReq) returns (DeleteRoleResp);
+  rpc GetRole(GetRoleReq) returns (GetRoleResp);
+  rpc ListRoles(ListRolesReq) returns (ListRolesResp);
+
+  // ---- 组织管理 ----
+  rpc CreateOrg(CreateOrgReq) returns (CreateOrgResp);
+  rpc UpdateOrg(UpdateOrgReq) returns (UpdateOrgResp);
+  rpc DeleteOrg(DeleteOrgReq) returns (DeleteOrgResp);
+  rpc ListOrgs(ListOrgsReq) returns (ListOrgsResp);
+
+  // ---- 菜单管理 ----
+  rpc CreateMenu(CreateMenuReq) returns (CreateMenuResp);
+  rpc UpdateMenu(UpdateMenuReq) returns (UpdateMenuResp);
+  rpc DeleteMenu(DeleteMenuReq) returns (DeleteMenuResp);
+  rpc ListMenus(ListMenusReq) returns (ListMenusResp);
+  // 用户可见菜单（/auth/menus 数据源：用户全部角色 → 菜单并集）
+  rpc GetUserMenus(GetUserMenusReq) returns (GetUserMenusResp);
+
+  // ---- 租户管理 ----
+  rpc CreateTenant(CreateTenantReq) returns (CreateTenantResp);
+  rpc UpdateTenant(UpdateTenantReq) returns (UpdateTenantResp);
+  rpc UpdateTenantQuota(UpdateTenantQuotaReq) returns (UpdateTenantQuotaResp);
+  rpc DeleteTenant(DeleteTenantReq) returns (DeleteTenantResp);
+  rpc ListTenants(ListTenantsReq) returns (ListTenantsResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 认证 ----
+
+message TokenPair {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 access_expires_in = 3;  // access 剩余秒数
+  int64 refresh_expires_in = 4; // refresh 剩余秒数
+}
+
+message LoginByPasswordReq {
+  string mobile = 1;
+  string password = 2;
+  string client = 3; // ctxkit.Client* 值域
+}
+
+message LoginResp {
+  TokenPair tokens = 1;
+  int64 uid = 2;
+  string nickname = 3;
+}
+
+message LoginByWechatReq {
+  string code = 1; // wx.login() 临时凭证
+  string client = 2;
+}
+
+message LoginByWechatResp {
+  TokenPair tokens = 1; // need_bind_phone=true 时为空
+  int64 uid = 2;
+  bool need_bind_phone = 3;
+}
+
+message RefreshReq {
+  string refresh_token = 1;
+  string client = 2;
+}
+
+message RefreshResp {
+  TokenPair tokens = 1;
+}
+
+message LogoutReq {
+  string sid = 1;
+}
+
+message LogoutResp {}
+
+message StepUpReq {
+  string sid = 1;
+  string password = 2;
+}
+
+message StepUpResp {
+  int32 level = 1;          // 恒为 2
+  string access_token = 2;  // 重签的 level=2 access token
+  int64 access_expires_in = 3;
+}
+
+message ImpersonateReq {
+  int64 target_uid = 1;
+}
+
+message ImpersonateResp {
+  TokenPair tokens = 1;
+  int64 imp_by = 2; // 操作人 uid（审计留痕）
+}
+
+message BindPartyReq {
+  int64 uid = 1;
+  int64 party_id = 2;
+}
+
+message BindPartyResp {}
+
+// ---- 会话 ----
+
+message SessionItem {
+  string sid = 1;
+  string client = 2;
+  int64 created_at = 3; // UnixMilli
+}
+
+message ListSessionsReq {
+  int64 uid = 1;     // 0 = 操作人自己（ctx）
+  string client = 2; // 可选：按端过滤
+}
+
+message ListSessionsResp {
+  repeated SessionItem sessions = 1;
+}
+
+message KickSessionsReq {
+  int64 uid = 1;  // uid+client：踢该用户该端全部
+  string client = 2;
+  string sid = 3; // 或指定 sid
+}
+
+message KickSessionsResp {
+  int64 kicked = 1; // 注销会话数
+}
+
+message ValidateSessionReq {
+  string sid = 1;
+}
+
+message ValidateSessionResp {
+  bool valid = 1;
+  int64 uid = 2;
+  string client = 3;
+  int32 level = 4; // EffectiveLevel（step-up 窗口内为 2）
+}
+
+// ---- auth_cache ----
+
+message GetAuthCacheReq {
+  int64 uid = 1;
+}
+
+message GetAuthCacheResp {
+  repeated string roles = 1;
+  repeated string perms = 2;
+  string data_scope = 3; // JSON（与 role.data_scope 同构）
+  int64 tenant_id = 4;
+}
+
+// ---- 用户 ----
+
+message UserItem {
+  int64 uid = 1;
+  int64 org_id = 2;   // 0 = 未分配
+  int64 party_id = 3; // 0 = 未绑定
+  string nickname = 4;
+  string mobile_masked = 5; // 后台列表展示脱敏（138****0000）
+  string email_masked = 6;
+  repeated string types = 7;  // 可登录端集合
+  int32 status = 8;           // 1 正常 / 2 禁用 / 3 锁定
+  int64 locked_until = 9;     // UnixMilli，0 = 未锁定
+  repeated string role_codes = 10;
+  int64 created_at = 11;
+}
+
+message CreateUserReq {
+  string nickname = 1;
+  string mobile = 2; // 明文（BFF→RPC 内网通道）
+  string email = 3;
+  string password = 4;
+  repeated string types = 5;
+  int64 org_id = 6; // 0 = 未分配
+  repeated int64 role_ids = 7;
+}
+
+message CreateUserResp {
+  int64 uid = 1;
+}
+
+message UpdateUserReq {
+  int64 uid = 1;
+  string nickname = 2;
+  string mobile = 3; // 空串 = 不变更
+  string email = 4;
+  repeated string types = 5;
+  int64 org_id = 6;
+  int64 party_id = 7;
+  repeated int64 role_ids = 8; // 变更走全删全插
+}
+
+message UpdateUserResp {}
+
+message UpdateUserStatusReq {
+  int64 uid = 1;
+  int32 status = 2; // 仅 1（恢复）/2（禁用）；3 锁定走登录失败自动锁定
+}
+
+message UpdateUserStatusResp {}
+
+message ResetPasswordReq {
+  int64 uid = 1;
+  string new_password = 2;
+}
+
+message ResetPasswordResp {}
+
+message DeleteUserReq {
+  int64 uid = 1;
+}
+
+message DeleteUserResp {}
+
+message GetUserReq {
+  int64 uid = 1;
+}
+
+message GetUserResp {
+  UserItem user = 1;
+}
+
+message ListUsersReq {
+  string keyword = 1; // nickname 模糊
+  int32 status = 2;   // 0 = 全部
+  int64 page = 3;
+  int64 size = 4;     // 上限 100（前端 usePaged 约束同源）
+}
+
+message ListUsersResp {
+  repeated UserItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 角色 ----
+
+message RoleItem {
+  int64 role_id = 1;
+  string code = 2;
+  string name = 3;
+  string data_scope = 4; // JSON {"type":"ALL"|"SELF"|"ORG","org_ids":[...]}
+  string remark = 5;
+  int64 created_at = 6;
+}
+
+message CreateRoleReq {
+  string code = 1;
+  string name = 2;
+  string data_scope = 3;
+  string remark = 4;
+  repeated int64 menu_ids = 5; // 菜单权限树勾选
+}
+
+message CreateRoleResp {
+  int64 role_id = 1;
+}
+
+message UpdateRoleReq {
+  int64 role_id = 1;
+  string name = 2; // 空串 = 不变更
+  string data_scope = 3;
+  string remark = 4;
+  repeated int64 menu_ids = 5; // 全删全插；变更后联动失效相关用户 auth_cache
+}
+
+message UpdateRoleResp {}
+
+message DeleteRoleReq {
+  int64 role_id = 1;
+}
+
+message DeleteRoleResp {}
+
+message GetRoleReq {
+  int64 role_id = 1;
+}
+
+message GetRoleResp {
+  RoleItem role = 1;
+  repeated int64 menu_ids = 2; // 权限树回显
+}
+
+message ListRolesReq {
+  string keyword = 1;
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListRolesResp {
+  repeated RoleItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 组织 ----
+
+message OrgItem {
+  int64 org_id = 1;
+  int64 parent_id = 2; // 0 = 根
+  string name = 3;
+  int32 sort = 4;
+}
+
+message CreateOrgReq {
+  int64 parent_id = 1;
+  string name = 2;
+  int32 sort = 3;
+}
+
+message CreateOrgResp {
+  int64 org_id = 1;
+}
+
+message UpdateOrgReq {
+  int64 org_id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+  int32 sort = 4;
+}
+
+message UpdateOrgResp {}
+
+message DeleteOrgReq {
+  int64 org_id = 1; // 有子组织/挂靠用户时拒绝
+}
+
+message DeleteOrgResp {}
+
+message ListOrgsReq {}
+
+message ListOrgsResp {
+  repeated OrgItem list = 1; // 平铺，前端组树
+}
+
+// ---- 菜单 ----
+
+message MenuItem {
+  int64 menu_id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+  int32 type = 4; // 1 目录 / 2 菜单 / 3 按钮 / 4 接口
+  string perm_code = 5;
+  string path = 6;
+  string icon = 7;
+  int32 sort = 8;
+  int32 status = 9;
+}
+
+message CreateMenuReq {
+  int64 parent_id = 1;
+  string name = 2;
+  int32 type = 3;
+  string perm_code = 4;
+  string path = 5;
+  string icon = 6;
+  int32 sort = 7;
+}
+
+message CreateMenuResp {
+  int64 menu_id = 1;
+}
+
+message UpdateMenuReq {
+  int64 menu_id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+  int32 type = 4;
+  string perm_code = 5;
+  string path = 6;
+  string icon = 7;
+  int32 sort = 8;
+  int32 status = 9;
+}
+
+message UpdateMenuResp {}
+
+message DeleteMenuReq {
+  int64 menu_id = 1; // 有子节点时拒绝
+}
+
+message DeleteMenuResp {}
+
+message ListMenusReq {}
+
+message ListMenusResp {
+  repeated MenuItem list = 1; // 平铺，前端组树
+}
+
+message GetUserMenusReq {
+  int64 uid = 1;
+}
+
+message GetUserMenusResp {
+  repeated MenuItem menus = 1; // 仅 type=1/2 且 status=1（目录与页面；按钮权限走 perms）
+  repeated string perms = 2;   // 按钮级权限码（前端 vperm 指令）
+}
+
+// ---- 租户 ----
+
+message TenantItem {
+  int64 tenant_id = 1;
+  string tenant_code = 2;
+  string name = 3;
+  string plan = 4;
+  string quota = 5; // JSON
+  int32 status = 6;
+}
+
+message CreateTenantReq {
+  string tenant_code = 1;
+  string name = 2;
+  string plan = 3;
+  string quota = 4; // 空 = "{}"
+}
+
+message CreateTenantResp {
+  int64 tenant_id = 1;
+}
+
+message UpdateTenantReq {
+  int64 tenant_id = 1;
+  string name = 2;
+  string plan = 3;
+  int32 status = 4;
+}
+
+message UpdateTenantResp {}
+
+message UpdateTenantQuotaReq {
+  int64 tenant_id = 1;
+  string quota = 2; // quota JSON 全量替换
+}
+
+message UpdateTenantQuotaResp {}
+
+message DeleteTenantReq {
+  int64 tenant_id = 1; // 有关联用户时拒绝
+}
+
+message DeleteTenantResp {}
+
+message ListTenantsReq {
+  string keyword = 1;
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListTenantsResp {
+  repeated TenantItem list = 1;
+  int64 total = 2;
+}

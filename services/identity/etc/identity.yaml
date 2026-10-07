@@ -1,0 +1,34 @@
+Name: identity.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8081}"
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: identity.rpc
+Mysql:
+  DataSource: "${DSN|}"
+Cache:
+  - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+    Pass: "${REDIS_PASS|}"
+    Type: node
+Sessionx:
+  Addr: "${REDIS_HOSTS|127.0.0.1:26379}"
+  Password: "${REDIS_PASS|}"
+  DB: 4                       # 会话中心固定 DB4（02 §6.3）
+Jwt:
+  KeysDir: "${JWT_KEYS_DIR|../micro-deploy/deploy/conf/keys}"
+  AccessTTL: 1800s            # access 30min；刷新走 /auth/refresh 单飞
+Lockout:
+  MaxFails: 5
+  FailWindow: 900s
+  LockDur: 1800s              # 5 次失败锁 30 分钟（02 §9.5）
+Audit:
+  Enabled: true               # auth.login 审计走 outbox（Relay 投递属 S5）
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+Telemetry:
+  Name: identity
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/identity}   # configcenter（S4 起消费，ADR-10）

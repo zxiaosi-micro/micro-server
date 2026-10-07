@@ -14,6 +14,9 @@ logs/
 
 # 密钥与本地环境（E11：密钥出仓，环境变量注入；${ENV} 占位符 yaml 可入库）
 keys/
+# 例外：服务源码包 internal/keys（密钥加载器，S3-02）非真实密钥目录
+!services/*/internal/keys/
+!services/*/internal/keys/**
 *.key
 .env
 .env.*

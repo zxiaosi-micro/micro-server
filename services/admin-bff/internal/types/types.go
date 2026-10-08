@@ -3,8 +3,155 @@
 
 package types
 
+type AuditLogItem struct {
+	LogID      string `json:"log_id"`
+	TraceID    string `json:"trace_id"`
+	UID        string `json:"uid"`
+	Action     string `json:"action"`
+	TargetType string `json:"target_type"`
+	TargetID   string `json:"target_id"`
+	BeforeJson string `json:"before_json"`
+	AfterJson  string `json:"after_json"`
+	Result     string `json:"result"`
+	Client     string `json:"client"`
+	OnBehalfOf string `json:"on_behalf_of"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type AuditLogListReq struct {
+	Page       int    `form:"page,range=[1:10000]"`
+	Size       int    `form:"size,range=[1:100]"`
+	Action     string `form:"action,optional"`
+	UID        string `form:"uid,optional"`
+	TargetType string `form:"target_type,optional"`
+	TargetID   string `form:"target_id,optional"`
+}
+
+type AuditLogListResp struct {
+	List  []AuditLogItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type BomItem struct {
+	SkuID   string `json:"sku_id"`
+	SkuName string `json:"sku_name"`
+	Qty     int    `json:"qty"`
+}
+
+type CmdAuditItem struct {
+	CmdAuditID  string `json:"cmd_audit_id"`
+	CmdID       string `json:"cmd_id"`
+	SN          string `json:"sn"`
+	UID         string `json:"uid"`
+	Action      string `json:"action"`
+	PayloadJson string `json:"payload_json"`
+	Result      string `json:"result"`
+	Error       string `json:"error"`
+	TraceID     string `json:"trace_id"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type CmdAuditListReq struct {
+	Page  int    `form:"page,range=[1:10000]"`
+	Size  int    `form:"size,range=[1:100]"`
+	SN    string `form:"sn,optional"`
+	CmdID string `form:"cmd_id,optional"`
+}
+
+type CmdAuditListResp struct {
+	List  []CmdAuditItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type ContactCreateReq struct {
+	Id         string `path:"id"`
+	Name       string `json:"name"`
+	Mobile     string `json:"mobile"`
+	Position   string `json:"position,optional"`
+	IsDefault  bool   `json:"is_default,optional"`
+	NotifyPref string `json:"notify_pref,optional"`
+}
+
+type ContactItem struct {
+	ContactID  string `json:"contact_id"`
+	PartyID    string `json:"party_id"`
+	Name       string `json:"name"`
+	Mobile     string `json:"mobile"`
+	Position   string `json:"position"`
+	IsDefault  bool   `json:"is_default"`
+	NotifyPref string `json:"notify_pref"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ContactListResp struct {
+	List []ContactItem `json:"list"`
+}
+
+type CrmRecordCreateReq struct {
+	Id           string `path:"id"`
+	Content      string `json:"content"`
+	NextFollowAt int64  `json:"next_follow_at,optional"`
+}
+
+type CrmRecordItem struct {
+	RecordID     string `json:"record_id"`
+	PartyID      string `json:"party_id"`
+	Content      string `json:"content"`
+	NextFollowAt int64  `json:"next_follow_at"`
+	CreatedBy    string `json:"created_by"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
+type CrmRecordListResp struct {
+	List []CrmRecordItem `json:"list"`
+}
+
+type DealerExtItem struct {
+	PartyID          string `json:"party_id"`
+	DealerLevel      string `json:"dealer_level"`
+	AuthorizedRegion string `json:"authorized_region"`
+	RebateRule       string `json:"rebate_rule"`
+	UpdatedAt        int64  `json:"updated_at"`
+}
+
+type DealerExtResp struct {
+	DealerExt DealerExtItem `json:"dealer_ext"`
+}
+
+type DealerExtUpsertReq struct {
+	Id               string `path:"id"`
+	DealerLevel      string `json:"dealer_level,optional"`
+	AuthorizedRegion string `json:"authorized_region,optional"`
+	RebateRule       string `json:"rebate_rule,optional"`
+}
+
 type IDPath struct {
 	ID string `path:"id"`
+}
+
+type InventoryItem struct {
+	InventoryID       string `json:"inventory_id"`
+	WarehouseID       string `json:"warehouse_id"`
+	SkuID             string `json:"sku_id"`
+	Available         int    `json:"available"`
+	Locked            int    `json:"locked"`
+	InTransit         int    `json:"in_transit"`
+	Defective         int    `json:"defective"`
+	LowStockThreshold int    `json:"low_stock_threshold"`
+	UpdatedAt         int64  `json:"updated_at"`
+}
+
+type InventoryListReq struct {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	SkuID       string `form:"sku_id,optional"`
+	LowOnly     bool   `form:"low_only,optional"`
+}
+
+type InventoryListResp struct {
+	List  []InventoryItem `json:"list"`
+	Total int64           `json:"total"`
 }
 
 type LoginReq struct {
@@ -71,6 +218,90 @@ type MenusResp struct {
 	Perms []string   `json:"perms"` // 按钮级权限码
 }
 
+type MessageItem struct {
+	MessageID string `json:"message_id"`
+	UserID    string `json:"user_id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	IsRead    bool   `json:"is_read"`
+	BizType   string `json:"biz_type"`
+	BizID     string `json:"biz_id"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type MessageListReq struct {
+	Page       int    `form:"page,range=[1:10000]"`
+	Size       int    `form:"size,range=[1:100]"`
+	UserID     string `form:"user_id,optional"`
+	OnlyUnread bool   `form:"only_unread,optional"`
+}
+
+type MessageListResp struct {
+	List  []MessageItem `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type NotifySettingItem struct {
+	UserID       string `json:"user_id"`
+	TemplateCode string `json:"template_code"`
+	Enabled      bool   `json:"enabled"`
+	QuietHours   string `json:"quiet_hours"`
+}
+
+type NotifySettingListReq struct {
+	UserID string `form:"user_id"`
+}
+
+type NotifySettingListResp struct {
+	List []NotifySettingItem `json:"list"`
+}
+
+type NotifySettingUpsertReq struct {
+	UserID       string `json:"user_id,optional"`
+	TemplateCode string `json:"template_code"`
+	Enabled      bool   `json:"enabled"`
+	QuietHours   string `json:"quiet_hours,optional"`
+}
+
+type OpportunityCreateReq struct {
+	PartyID       string `json:"party_id"`
+	Title         string `json:"title"`
+	Amount        string `json:"amount,optional"`
+	ExpectedClose int64  `json:"expected_close_date,optional"`
+	Remark        string `json:"remark,optional"`
+}
+
+type OpportunityItem struct {
+	OpportunityID string `json:"opportunity_id"`
+	PartyID       string `json:"party_id"`
+	PartyName     string `json:"party_name"`
+	Title         string `json:"title"`
+	Stage         string `json:"stage"`
+	Amount        string `json:"amount"`
+	ExpectedClose int64  `json:"expected_close_date"`
+	Remark        string `json:"remark"`
+	CreatedAt     int64  `json:"created_at"`
+	UpdatedAt     int64  `json:"updated_at"`
+}
+
+type OpportunityListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	PartyID string `form:"party_id,optional"`
+	Stage   string `form:"stage,optional"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type OpportunityListResp struct {
+	List  []OpportunityItem `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type OpportunityStageReq struct {
+	Id    string `path:"id"`
+	Stage string `json:"stage"`
+}
+
 type OrgCreateReq struct {
 	ParentID string `json:"parent_id,optional"`
 	Name     string `json:"name"`
@@ -93,6 +324,114 @@ type OrgUpdateReq struct {
 	ParentID string `json:"parent_id,optional"`
 	Name     string `json:"name,optional"`
 	Sort     int    `json:"sort,optional"`
+}
+
+type PartyCreateReq struct {
+	Name       string   `json:"name"`
+	Type       []string `json:"type"`
+	CreditCode string   `json:"credit_code,optional"`
+	Region     string   `json:"region,optional"`
+	Address    string   `json:"address,optional"`
+	Remark     string   `json:"remark,optional"`
+}
+
+type PartyDetailResp struct {
+	Party PartyItem `json:"party"`
+}
+
+type PartyItem struct {
+	PartyID    string   `json:"party_id"`
+	Name       string   `json:"name"`
+	Type       []string `json:"type"` // JSON SET 语义:多类型并存
+	Status     int      `json:"status"`
+	CreditCode string   `json:"credit_code"`
+	Region     string   `json:"region"`
+	Address    string   `json:"address"`
+	Remark     string   `json:"remark"`
+	CreatedAt  int64    `json:"created_at"`
+	UpdatedAt  int64    `json:"updated_at"`
+}
+
+type PartyListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+	Type    string `form:"type,optional"`
+	Status  int    `form:"status,optional"`
+}
+
+type PartyListResp struct {
+	List  []PartyItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type PartyUpdateReq struct {
+	Id         string   `path:"id"`
+	Name       string   `json:"name"`
+	Type       []string `json:"type"`
+	Status     int      `json:"status,optional"`
+	CreditCode string   `json:"credit_code,optional"`
+	Region     string   `json:"region,optional"`
+	Address    string   `json:"address,optional"`
+	Remark     string   `json:"remark,optional"`
+}
+
+type PriceItem struct {
+	PriceID   string `json:"price_id"`
+	SkuID     string `json:"sku_id"`
+	PriceType string `json:"price_type"` // RETAIL/DEALER/TIER
+	TierQty   int    `json:"tier_qty"`
+	Amount    string `json:"amount"`
+	Version   int    `json:"version"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type PriceListReq struct {
+	SkuID      string `form:"sku_id"`
+	LatestOnly bool   `form:"latest_only,optional"`
+}
+
+type PriceListResp struct {
+	List  []PriceItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type PriceSetReq struct {
+	Id        string `path:"id"`
+	PriceType string `json:"price_type"`
+	TierQty   int    `json:"tier_qty,optional"`
+	Amount    string `json:"amount"`
+}
+
+type PriceSetResp struct {
+	Version int `json:"version"`
+}
+
+type ProductCreateReq struct {
+	Name     string `json:"name"`
+	Category string `json:"category,optional"`
+	Remark   string `json:"remark,optional"`
+}
+
+type ProductItem struct {
+	ProductID string `json:"product_id"`
+	Name      string `json:"name"`
+	Category  string `json:"category"`
+	Status    int    `json:"status"`
+	Remark    string `json:"remark"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type ProductListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+	Status  int    `form:"status,optional"`
+}
+
+type ProductListResp struct {
+	List  []ProductItem `json:"list"`
+	Total int64         `json:"total"`
 }
 
 type RefreshReq struct {
@@ -173,6 +512,92 @@ type SimpleResp struct {
 	UID string `json:"uid,optional"`
 }
 
+type SkuCreateReq struct {
+	ProductID string `json:"product_id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Type      string `json:"type,optional"`
+	Spec      string `json:"spec,optional"`
+}
+
+type SkuItem struct {
+	SkuID     string `json:"sku_id"`
+	ProductID string `json:"product_id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Type      string `json:"type"` // STANDARD/EXT_WARRANTY
+	Spec      string `json:"spec"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type SkuListReq struct {
+	Page      int    `form:"page,range=[1:10000]"`
+	Size      int    `form:"size,range=[1:100]"`
+	ProductID string `form:"product_id,optional"`
+	Keyword   string `form:"keyword,optional"`
+}
+
+type SkuListResp struct {
+	List  []SkuItem `json:"list"`
+	Total int64     `json:"total"`
+}
+
+type StaffCreateReq struct {
+	PartyID    string   `json:"party_id"`
+	UserID     string   `json:"user_id,optional"`
+	Name       string   `json:"name"`
+	StaffType  string   `json:"staff_type,optional"`
+	SkillTags  []string `json:"skill_tags,optional"`
+	WorkRegion string   `json:"work_region,optional"`
+}
+
+type StaffItem struct {
+	StaffID    string   `json:"staff_id"`
+	PartyID    string   `json:"party_id"`
+	UserID     string   `json:"user_id"`
+	Name       string   `json:"name"`
+	StaffType  string   `json:"staff_type"`
+	SkillTags  []string `json:"skill_tags"`
+	WorkRegion string   `json:"work_region"`
+	Status     int      `json:"status"`
+	CreatedAt  int64    `json:"created_at"`
+}
+
+type StaffListResp struct {
+	List  []StaffItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type StationProductCreateReq struct {
+	Name   string    `json:"name"`
+	Remark string    `json:"remark,optional"`
+	Items  []BomItem `json:"items"`
+}
+
+type StationProductDetailResp struct {
+	StationProduct StationProductItem `json:"station_product"`
+}
+
+type StationProductItem struct {
+	StationProductID string    `json:"station_product_id"`
+	Name             string    `json:"name"`
+	Remark           string    `json:"remark"`
+	Items            []BomItem `json:"items,optional"`
+	CreatedAt        int64     `json:"created_at"`
+}
+
+type StationProductListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type StationProductListResp struct {
+	List  []StationProductItem `json:"list"`
+	Total int64                `json:"total"`
+}
+
 type StepUpReq struct {
 	Password string `json:"password"`
 }
@@ -181,6 +606,130 @@ type StepUpResp struct {
 	Level           int    `json:"level"`
 	AccessToken     string `json:"access_token"`
 	AccessExpiresIn int64  `json:"access_expires_in"`
+}
+
+type StockOpReq struct {
+	WarehouseID string `json:"warehouse_id"`
+	SkuID       string `json:"sku_id"`
+	Qty         int    `json:"qty"`
+	BizType     string `json:"biz_type,optional"`
+	BizNo       string `json:"biz_no,optional"`
+	Remark      string `json:"remark,optional"`
+}
+
+type StockOpResp struct {
+	RecordID string `json:"record_id"`
+}
+
+type StockRecordItem struct {
+	RecordID        string `json:"record_id"`
+	InventoryID     string `json:"inventory_id"`
+	WarehouseID     string `json:"warehouse_id"`
+	SkuID           string `json:"sku_id"`
+	BizType         string `json:"biz_type"`
+	BizNo           string `json:"biz_no"`
+	Qty             int    `json:"qty"`
+	BeforeAvailable int    `json:"before_available"`
+	AfterAvailable  int    `json:"after_available"`
+	BeforeLocked    int    `json:"before_locked"`
+	AfterLocked     int    `json:"after_locked"`
+	Remark          string `json:"remark"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type StockRecordListReq struct {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	SkuID       string `form:"sku_id,optional"`
+	BizType     string `form:"biz_type,optional"`
+}
+
+type StockRecordListResp struct {
+	List  []StockRecordItem `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type StocktakeApproveReq struct {
+	Id      string `path:"id"`
+	Approve bool   `json:"approve"`
+	Remark  string `json:"remark,optional"`
+}
+
+type StocktakeCreateReq struct {
+	WarehouseID string `json:"warehouse_id"`
+	Remark      string `json:"remark,optional"`
+}
+
+type StocktakeDetailResp struct {
+	Stocktake StocktakeRecord `json:"stocktake"`
+}
+
+type StocktakeItem struct {
+	ItemID     string `json:"item_id"`
+	SkuID      string `json:"sku_id"`
+	BookQty    int    `json:"book_qty"`
+	CountedQty int    `json:"counted_qty"` // 未提交 = -1
+	DiffQty    int    `json:"diff_qty"`
+}
+
+type StocktakeListReq struct {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	Status      int    `form:"status,optional"`
+}
+
+type StocktakeListResp struct {
+	List  []StocktakeRecord `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type StocktakeRecord struct {
+	StocktakeID string          `json:"stocktake_id"`
+	WarehouseID string          `json:"warehouse_id"`
+	Status      int             `json:"status"` // 1 草稿/2 已提交/3 已审批/4 已驳回
+	Remark      string          `json:"remark"`
+	Items       []StocktakeItem `json:"items,optional"`
+	CreatedAt   int64           `json:"created_at"`
+}
+
+type StocktakeSubmitItem struct {
+	SkuID      string `json:"sku_id"`
+	CountedQty int    `json:"counted_qty"`
+}
+
+type StocktakeSubmitReq struct {
+	Id    string                `path:"id"`
+	Items []StocktakeSubmitItem `json:"items"`
+}
+
+type TemplateItem struct {
+	TemplateID      string `json:"template_id"`
+	Code            string `json:"code"`
+	TitleTemplate   string `json:"title_template"`
+	ContentTemplate string `json:"content_template"`
+	Channel         string `json:"channel"`
+	Status          int    `json:"status"`
+}
+
+type TemplateListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type TemplateListResp struct {
+	List  []TemplateItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type TemplateUpsertReq struct {
+	Code            string `json:"code"`
+	TitleTemplate   string `json:"title_template"`
+	ContentTemplate string `json:"content_template"`
+	Channel         string `json:"channel,optional"`
+	Status          int    `json:"status,optional"`
 }
 
 type TenantCreateReq struct {
@@ -227,6 +776,10 @@ type TokenPair struct {
 	RefreshToken     string `json:"refresh_token"`
 	AccessExpiresIn  int64  `json:"access_expires_in"`
 	RefreshExpiresIn int64  `json:"refresh_expires_in"`
+}
+
+type UnreadCountResp struct {
+	Count int64 `json:"count"`
 }
 
 type UserCreateReq struct {
@@ -283,4 +836,42 @@ type UserUpdateReq struct {
 	Types    []string `json:"types,optional"`
 	OrgID    string   `json:"org_id,optional"`
 	RoleIDs  []string `json:"role_ids,optional"`
+}
+
+type WarehouseCreateReq struct {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Address string `json:"address,optional"`
+}
+
+type WarehouseItem struct {
+	WarehouseID string `json:"warehouse_id"`
+	Code        string `json:"code"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
+	Status      int    `json:"status"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type WarehouseListReq struct {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type WarehouseListResp struct {
+	List  []WarehouseItem `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type WarrantyPolicyItem struct {
+	SkuID        string `json:"sku_id"`
+	PeriodMonths int    `json:"period_months"`
+	StartRule    string `json:"start_rule"` // ACTIVATION/RECEIPT
+}
+
+type WarrantyPolicyUpsertReq struct {
+	Id           string `path:"id"`
+	PeriodMonths int    `json:"period_months"`
+	StartRule    string `json:"start_rule"`
 }

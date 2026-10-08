@@ -1,0 +1,284 @@
+syntax = "proto3";
+
+package party;
+
+option go_package = "./pb";
+
+// Party 参与方服务契约（S4-01，v4/03 阶段 4 任务正本）。
+//
+// 职责边界：party_db 是参与方/联系人/员工/经销商扩展/CRM/商机的唯一写入方；
+// 跨服务只存对方 ID 逻辑引用（staff.user_id → identity.user），禁止跨库 JOIN。
+// ID 传输用 int64（内部 RPC），对外（BFF → 前端）一律转 string 渲染（E8）。
+service Party {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 参与方 ----
+  rpc CreateParty(CreatePartyReq) returns (CreatePartyResp);
+  rpc GetParty(GetPartyReq) returns (GetPartyResp);
+  rpc ListParty(ListPartyReq) returns (ListPartyResp);
+  rpc UpdateParty(UpdatePartyReq) returns (UpdatePartyResp);
+
+  // ---- 联系人 ----
+  rpc AddContact(AddContactReq) returns (AddContactResp);
+  rpc ListContact(ListContactReq) returns (ListContactResp);
+
+  // ---- 服务商员工（S7 派单匹配依据）----
+  rpc CreateStaff(CreateStaffReq) returns (CreateStaffResp);
+  rpc ListStaff(ListStaffReq) returns (ListStaffResp);
+
+  // ---- 经销商扩展（1:1 Upsert）----
+  rpc UpsertDealerExt(UpsertDealerExtReq) returns (UpsertDealerExtResp);
+  rpc GetDealerExt(GetDealerExtReq) returns (GetDealerExtResp);
+
+  // ---- CRM 跟进 ----
+  rpc AddCrmRecord(AddCrmRecordReq) returns (AddCrmRecordResp);
+  rpc ListCrmRecord(ListCrmRecordReq) returns (ListCrmRecordResp);
+
+  // ---- 商机 ----
+  rpc CreateOpportunity(CreateOpportunityReq) returns (CreateOpportunityResp);
+  rpc ListOpportunity(ListOpportunityReq) returns (ListOpportunityResp);
+  rpc UpdateOpportunityStage(UpdateOpportunityStageReq) returns (UpdateOpportunityStageResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 参与方 ----
+
+message PartyItem {
+  int64 party_id = 1;
+  string name = 2;
+  string type = 3;          // JSON 数组 ["CUSTOMER","DEALER",...]（SET 语义可并存）
+  int32 status = 4;         // 1 正常/2 停用
+  string credit_code = 5;
+  string region = 6;
+  string address = 7;
+  string remark = 8;
+  int64 created_at = 9;     // UnixMilli
+  int64 updated_at = 10;    // UnixMilli
+}
+
+message CreatePartyReq {
+  string name = 1;
+  repeated string type = 2; // CUSTOMER/DEALER/SUPPLIER/ENTERPRISE/RECYCLER 至少一个
+  string credit_code = 3;
+  string region = 4;
+  string address = 5;
+  string remark = 6;
+}
+
+message CreatePartyResp {
+  int64 party_id = 1;
+}
+
+message GetPartyReq {
+  int64 party_id = 1;
+}
+
+message GetPartyResp {
+  PartyItem party = 1;
+}
+
+message ListPartyReq {
+  string keyword = 1;  // name/credit_code 模糊
+  string type = 2;     // 单值过滤：party.type JSON 数组包含该值
+  int32 status = 3;    // 0 = 全部
+  int64 page = 4;
+  int64 size = 5;      // 上限 100（前端 usePaged 约束同源）
+}
+
+message ListPartyResp {
+  repeated PartyItem list = 1;
+  int64 total = 2;
+}
+
+message UpdatePartyReq {
+  int64 party_id = 1;
+  string name = 2;
+  repeated string type = 3;
+  int32 status = 4;        // 0 = 不修改
+  string credit_code = 5;
+  string region = 6;
+  string address = 7;
+  string remark = 8;
+}
+
+message UpdatePartyResp {}
+
+// ---- 联系人 ----
+
+message ContactItem {
+  int64 contact_id = 1;
+  int64 party_id = 2;
+  string name = 3;
+  string mobile = 4;    // 解密后明文（鉴权链路内展示）
+  string position = 5;
+  bool is_default = 6;
+  string notify_pref = 7; // JSON
+  int64 created_at = 8;
+}
+
+message AddContactReq {
+  int64 party_id = 1;
+  string name = 2;
+  string mobile = 3;
+  string position = 4;
+  bool is_default = 5;
+  string notify_pref = 6; // JSON
+}
+
+message AddContactResp {
+  int64 contact_id = 1;
+}
+
+message ListContactReq {
+  int64 party_id = 1;
+}
+
+message ListContactResp {
+  repeated ContactItem list = 1;
+}
+
+// ---- 服务商员工 ----
+
+message StaffItem {
+  int64 staff_id = 1;
+  int64 party_id = 2;
+  int64 user_id = 3;    // 逻辑引用 identity.user（0=未开账号）
+  string name = 4;
+  string staff_type = 5;
+  string skill_tags = 6;  // JSON
+  string work_region = 7;
+  int32 status = 8;
+  int64 created_at = 9;
+}
+
+message CreateStaffReq {
+  int64 party_id = 1;
+  int64 user_id = 2;
+  string name = 3;
+  string staff_type = 4;
+  repeated string skill_tags = 5;
+  string work_region = 6;
+}
+
+message CreateStaffResp {
+  int64 staff_id = 1;
+}
+
+message ListStaffReq {
+  int64 party_id = 1;
+  string keyword = 2; // name 模糊
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListStaffResp {
+  repeated StaffItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 经销商扩展 ----
+
+message DealerExtItem {
+  int64 party_id = 1;
+  string dealer_level = 2;
+  string authorized_region = 3;
+  string rebate_rule = 4; // JSON
+  int64 updated_at = 5;
+}
+
+message UpsertDealerExtReq {
+  int64 party_id = 1;
+  string dealer_level = 2;
+  string authorized_region = 3;
+  string rebate_rule = 4; // JSON
+}
+
+message UpsertDealerExtResp {}
+
+message GetDealerExtReq {
+  int64 party_id = 1;
+}
+
+message GetDealerExtResp {
+  DealerExtItem dealer_ext = 1; // 未建档返回空 item（party_id=0）
+}
+
+// ---- CRM 跟进 ----
+
+message CrmRecordItem {
+  int64 record_id = 1;
+  int64 party_id = 2;
+  string content = 3;
+  int64 next_follow_at = 4; // UnixMilli；0=空
+  int64 created_by = 5;
+  int64 created_at = 6;
+}
+
+message AddCrmRecordReq {
+  int64 party_id = 1;
+  string content = 2;
+  int64 next_follow_at = 3; // UnixMilli；0=空
+}
+
+message AddCrmRecordResp {
+  int64 record_id = 1;
+}
+
+message ListCrmRecordReq {
+  int64 party_id = 1;
+}
+
+message ListCrmRecordResp {
+  repeated CrmRecordItem list = 1;
+}
+
+// ---- 商机 ----
+
+message OpportunityItem {
+  int64 opportunity_id = 1;
+  int64 party_id = 2;
+  string title = 3;
+  string stage = 4;   // NEW/CONTACTING/PROPOSAL/NEGOTIATION/WON/LOST
+  string amount = 5;  // DECIMAL 字符串（金额走 string 避免精度问题）
+  int64 expected_close_date = 6; // UnixMilli；0=空
+  string remark = 7;
+  int64 created_at = 8;
+  int64 updated_at = 9;
+}
+
+message CreateOpportunityReq {
+  int64 party_id = 1;
+  string title = 2;
+  string amount = 3;
+  int64 expected_close_date = 4; // UnixMilli；0=空
+  string remark = 5;
+}
+
+message CreateOpportunityResp {
+  int64 opportunity_id = 1;
+}
+
+message ListOpportunityReq {
+  int64 party_id = 1;  // 0 = 全部
+  string stage = 2;    // 空 = 全部
+  string keyword = 3;  // title 模糊
+  int64 page = 4;
+  int64 size = 5;
+}
+
+message ListOpportunityResp {
+  repeated OpportunityItem list = 1;
+  int64 total = 2;
+}
+
+message UpdateOpportunityStageReq {
+  int64 opportunity_id = 1;
+  string stage = 2;
+}
+
+message UpdateOpportunityStageResp {}

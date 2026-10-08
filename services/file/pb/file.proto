@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package file;
+
+option go_package = "./pb";
+
+// File 文件服务契约（S4-04，v4/03 阶段 4）。
+//
+// 职责边界：file_db 存元数据，对象存 MinIO（S3 兼容，双桶 micro-file/micro-contract）；
+// oss_key = /{tenant}/{biz_type}/{yyyy}/{mm}/{uuid}.{ext}（02 §6.5）；
+// 临时下载令牌为 HMAC 签名 URL（file 服务签发/校验，BFF 代理流式回源）。
+service File {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // 上传（BFF multipart → RPC bytes；dev 规模适用，大文件走直传属 S9 演进）
+  rpc PutFile(PutFileReq) returns (PutFileResp);
+  // 元数据
+  rpc GetFileMeta(GetFileMetaReq) returns (GetFileMetaResp);
+  rpc ListFile(ListFileReq) returns (ListFileResp);
+  // 下载：签发临时令牌 / 校验令牌并取对象内容
+  rpc GetDownloadToken(GetDownloadTokenReq) returns (GetDownloadTokenResp);
+  rpc GetFileData(GetFileDataReq) returns (GetFileDataResp);
+  // 软删元数据（对象保留，回收属运维流程）
+  rpc DeleteFile(DeleteFileReq) returns (DeleteFileResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+message FileMetaItem {
+  int64 file_id = 1;
+  string bucket = 2;
+  string oss_key = 3;
+  string name = 4;
+  string content_type = 5;
+  int64 size = 6;
+  string biz_type = 7;
+  string biz_id = 8;
+  int64 created_at = 9;
+}
+
+message PutFileReq {
+  string name = 1;
+  string content_type = 2;
+  string biz_type = 3; // contract → 合同桶；其余 → 普通桶
+  string biz_id = 4;
+  bytes data = 5;
+}
+
+message PutFileResp {
+  int64 file_id = 1;
+  string oss_key = 2;
+  string bucket = 3;
+}
+
+message GetFileMetaReq {
+  int64 file_id = 1;
+}
+
+message GetFileMetaResp {
+  FileMetaItem meta = 1;
+}
+
+message ListFileReq {
+  string biz_type = 1; // 空 = 全部
+  string biz_id = 2;   // 空 = 全部
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListFileResp {
+  repeated FileMetaItem list = 1;
+  int64 total = 2;
+}
+
+message GetDownloadTokenReq {
+  int64 file_id = 1;
+  int64 expire_sec = 2; // 缺省 300s
+}
+
+message GetDownloadTokenResp {
+  string token = 1;    // HMAC 签名令牌(file_id:exp:sig)
+  string file_name = 2; // 原始文件名（下载落盘名）
+  string content_type = 3;
+}
+
+message GetFileDataReq {
+  string token = 1; // GetDownloadToken 签发的令牌（校验后回源）
+}
+
+message GetFileDataResp {
+  bytes data = 1;
+  string file_name = 2;
+  string content_type = 3;
+}
+
+message DeleteFileReq {
+  int64 file_id = 1;
+}
+
+message DeleteFileResp {}

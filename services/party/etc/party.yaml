@@ -1,0 +1,21 @@
+Name: party.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8082}"
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: party.rpc
+Mysql:
+  DataSource: "${DSN|}"
+Cache:
+  - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+    Pass: "${REDIS_PASS|}"
+    Type: node
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9102
+Telemetry:
+  Name: party
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/party/main}   # configcenter（S4 起消费，ADR-10）

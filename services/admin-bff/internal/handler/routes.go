@@ -6,9 +6,14 @@ package handler
 import (
 	"net/http"
 
+	audit "micro-server/services/admin-bff/internal/handler/audit"
 	auth "micro-server/services/admin-bff/internal/handler/auth"
+	catalog "micro-server/services/admin-bff/internal/handler/catalog"
+	inventory "micro-server/services/admin-bff/internal/handler/inventory"
 	menu "micro-server/services/admin-bff/internal/handler/menu"
+	notification "micro-server/services/admin-bff/internal/handler/notification"
 	org "micro-server/services/admin-bff/internal/handler/org"
+	party "micro-server/services/admin-bff/internal/handler/party"
 	role "micro-server/services/admin-bff/internal/handler/role"
 	session "micro-server/services/admin-bff/internal/handler/session"
 	tenant "micro-server/services/admin-bff/internal/handler/tenant"
@@ -19,6 +24,27 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 操作审计(perm: audit:log:list)
+					Method:  http.MethodGet,
+					Path:    "/audit-logs",
+					Handler: audit.ListAuditLogsHandler(serverCtx),
+				},
+				{
+					// 指令审计(perm: audit:cmd:list)
+					Method:  http.MethodGet,
+					Path:    "/cmd-logs",
+					Handler: audit.ListCmdLogsHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -75,6 +101,174 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authz},
 			[]rest.Route{
 				{
+					// SKU 价格列表(版本化:latest_only=价目表/false=全版本历史,perm: catalog:price:list)
+					Method:  http.MethodGet,
+					Path:    "/prices",
+					Handler: catalog.ListPricesHandler(serverCtx),
+				},
+				{
+					// 商品列表(perm: catalog:product:list)
+					Method:  http.MethodGet,
+					Path:    "/products",
+					Handler: catalog.ListProductsHandler(serverCtx),
+				},
+				{
+					// 新建商品(perm: catalog:product:create)
+					Method:  http.MethodPost,
+					Path:    "/products",
+					Handler: catalog.CreateProductHandler(serverCtx),
+				},
+				{
+					// SKU 列表(perm: catalog:sku:list)
+					Method:  http.MethodGet,
+					Path:    "/skus",
+					Handler: catalog.ListSkusHandler(serverCtx),
+				},
+				{
+					// 新建 SKU(perm: catalog:sku:create)
+					Method:  http.MethodPost,
+					Path:    "/skus",
+					Handler: catalog.CreateSkuHandler(serverCtx),
+				},
+				{
+					// 设置价格(新版本落库,perm: catalog:price:set)
+					Method:  http.MethodPost,
+					Path:    "/skus/:id/prices",
+					Handler: catalog.SetPriceHandler(serverCtx),
+				},
+				{
+					// 质保策略 Upsert(perm: catalog:warranty:update)
+					Method:  http.MethodPut,
+					Path:    "/skus/:id/warranty-policy",
+					Handler: catalog.UpsertWarrantyHandler(serverCtx),
+				},
+				{
+					// 场站模板列表(perm: catalog:station:list)
+					Method:  http.MethodGet,
+					Path:    "/station-products",
+					Handler: catalog.ListStationProductsHandler(serverCtx),
+				},
+				{
+					// 新建场站模板(perm: catalog:station:create)
+					Method:  http.MethodPost,
+					Path:    "/station-products",
+					Handler: catalog.CreateStationProductHandler(serverCtx),
+				},
+				{
+					// 场站模板详情(含 BOM,perm: catalog:station:list)
+					Method:  http.MethodGet,
+					Path:    "/station-products/:id",
+					Handler: catalog.GetStationProductHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 库存列表(四态;low_only=低库存预警,perm: inventory:inventory:list)
+					Method:  http.MethodGet,
+					Path:    "/inventory",
+					Handler: inventory.ListInventoryHandler(serverCtx),
+				},
+				{
+					// 出库发货(perm: inventory:stock:deduct)
+					Method:  http.MethodPost,
+					Path:    "/inventory/deduct",
+					Handler: inventory.DeductStockHandler(serverCtx),
+				},
+				{
+					// 库存流水(perm: inventory:record:list)
+					Method:  http.MethodGet,
+					Path:    "/inventory/records",
+					Handler: inventory.ListStockRecordsHandler(serverCtx),
+				},
+				{
+					// 释放(perm: inventory:stock:release)
+					Method:  http.MethodPost,
+					Path:    "/inventory/release",
+					Handler: inventory.ReleaseStockHandler(serverCtx),
+				},
+				{
+					// 预留(perm: inventory:stock:reserve)
+					Method:  http.MethodPost,
+					Path:    "/inventory/reserve",
+					Handler: inventory.ReserveStockHandler(serverCtx),
+				},
+				{
+					// 备件领用(perm: inventory:stock:spare-out)
+					Method:  http.MethodPost,
+					Path:    "/inventory/spare-out",
+					Handler: inventory.SpareOutHandler(serverCtx),
+				},
+				{
+					// 备件退库(perm: inventory:stock:spare-return)
+					Method:  http.MethodPost,
+					Path:    "/inventory/spare-return",
+					Handler: inventory.SpareReturnHandler(serverCtx),
+				},
+				{
+					// 入库(perm: inventory:stock:in)
+					Method:  http.MethodPost,
+					Path:    "/inventory/stock-in",
+					Handler: inventory.StockInHandler(serverCtx),
+				},
+				{
+					// 盘点单列表(perm: inventory:stocktake:list)
+					Method:  http.MethodGet,
+					Path:    "/stocktakes",
+					Handler: inventory.ListStocktakesHandler(serverCtx),
+				},
+				{
+					// 创建盘点单(快照账面,perm: inventory:stocktake:create)
+					Method:  http.MethodPost,
+					Path:    "/stocktakes",
+					Handler: inventory.CreateStocktakeHandler(serverCtx),
+				},
+				{
+					// 盘点单详情(perm: inventory:stocktake:list)
+					Method:  http.MethodGet,
+					Path:    "/stocktakes/:id",
+					Handler: inventory.GetStocktakeHandler(serverCtx),
+				},
+				{
+					// 盘点审批(通过生成账面调整流水,perm: inventory:stocktake:approve)
+					Method:  http.MethodPost,
+					Path:    "/stocktakes/:id/approve",
+					Handler: inventory.ApproveStocktakeHandler(serverCtx),
+				},
+				{
+					// 提交实盘(perm: inventory:stocktake:submit)
+					Method:  http.MethodPost,
+					Path:    "/stocktakes/:id/submit",
+					Handler: inventory.SubmitStocktakeHandler(serverCtx),
+				},
+				{
+					// 仓库列表(perm: inventory:warehouse:list)
+					Method:  http.MethodGet,
+					Path:    "/warehouses",
+					Handler: inventory.ListWarehousesHandler(serverCtx),
+				},
+				{
+					// 新建仓库(perm: inventory:warehouse:create)
+					Method:  http.MethodPost,
+					Path:    "/warehouses",
+					Handler: inventory.CreateWarehouseHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
 					// 菜单管理列表（perm: system:menu:list）
 					Method:  http.MethodGet,
 					Path:    "/menus",
@@ -108,6 +302,57 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authz},
 			[]rest.Route{
 				{
+					// 消息列表(perm: notification:message:list)
+					Method:  http.MethodGet,
+					Path:    "/messages",
+					Handler: notification.ListMessagesHandler(serverCtx),
+				},
+				{
+					// 标记已读(perm: notification:message:read)
+					Method:  http.MethodPost,
+					Path:    "/messages/:id/read",
+					Handler: notification.MarkReadHandler(serverCtx),
+				},
+				{
+					// 未读数(perm: notification:message:list)
+					Method:  http.MethodGet,
+					Path:    "/messages/unread-count",
+					Handler: notification.UnreadCountHandler(serverCtx),
+				},
+				{
+					// 我的通知设置(perm: notification:setting:list)
+					Method:  http.MethodGet,
+					Path:    "/notify-settings",
+					Handler: notification.ListNotifySettingsHandler(serverCtx),
+				},
+				{
+					// 通知设置 Upsert(perm: notification:setting:update)
+					Method:  http.MethodPost,
+					Path:    "/notify-settings",
+					Handler: notification.UpsertNotifySettingHandler(serverCtx),
+				},
+				{
+					// 模板列表(perm: notification:template:list)
+					Method:  http.MethodGet,
+					Path:    "/notify-templates",
+					Handler: notification.ListTemplatesHandler(serverCtx),
+				},
+				{
+					// 模板 Upsert(perm: notification:template:update)
+					Method:  http.MethodPost,
+					Path:    "/notify-templates",
+					Handler: notification.UpsertTemplateHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
 					// 组织树（perm: system:org:list）
 					Method:  http.MethodGet,
 					Path:    "/orgs",
@@ -130,6 +375,114 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodDelete,
 					Path:    "/orgs/:id",
 					Handler: org.DeleteOrgHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 参与方列表(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties",
+					Handler: party.ListPartiesHandler(serverCtx),
+				},
+				{
+					// 新建参与方(perm: party:party:create)
+					Method:  http.MethodPost,
+					Path:    "/parties",
+					Handler: party.CreatePartyHandler(serverCtx),
+				},
+				{
+					// 参与方详情(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties/:id",
+					Handler: party.GetPartyHandler(serverCtx),
+				},
+				{
+					// 编辑参与方(perm: party:party:update)
+					Method:  http.MethodPut,
+					Path:    "/parties/:id",
+					Handler: party.UpdatePartyHandler(serverCtx),
+				},
+				{
+					// 联系人列表(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties/:id/contacts",
+					Handler: party.ListContactsHandler(serverCtx),
+				},
+				{
+					// 新增联系人(perm: party:contact:create)
+					Method:  http.MethodPost,
+					Path:    "/parties/:id/contacts",
+					Handler: party.AddContactHandler(serverCtx),
+				},
+				{
+					// 跟进记录(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties/:id/crm",
+					Handler: party.ListCrmRecordsHandler(serverCtx),
+				},
+				{
+					// 追加跟进(perm: party:crm:create)
+					Method:  http.MethodPost,
+					Path:    "/parties/:id/crm",
+					Handler: party.AddCrmRecordHandler(serverCtx),
+				},
+				{
+					// 经销商扩展(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties/:id/dealer-ext",
+					Handler: party.GetDealerExtHandler(serverCtx),
+				},
+				{
+					// 经销商扩展 Upsert(perm: party:dealer:update)
+					Method:  http.MethodPut,
+					Path:    "/parties/:id/dealer-ext",
+					Handler: party.UpsertDealerExtHandler(serverCtx),
+				},
+				{
+					// 员工列表(perm: party:party:list)
+					Method:  http.MethodGet,
+					Path:    "/parties/:id/staff",
+					Handler: party.ListStaffHandler(serverCtx),
+				},
+				{
+					// 新建员工(perm: party:staff:create)
+					Method:  http.MethodPost,
+					Path:    "/staff",
+					Handler: party.CreateStaffHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 商机列表(perm: party:opportunity:list)
+					Method:  http.MethodGet,
+					Path:    "/opportunities",
+					Handler: party.ListOpportunitiesHandler(serverCtx),
+				},
+				{
+					// 新建商机(perm: party:opportunity:create)
+					Method:  http.MethodPost,
+					Path:    "/opportunities",
+					Handler: party.CreateOpportunityHandler(serverCtx),
+				},
+				{
+					// 商机阶段推进(perm: party:opportunity:update)
+					Method:  http.MethodPut,
+					Path:    "/opportunities/:id/stage",
+					Handler: party.UpdateOpportunityStageHandler(serverCtx),
 				},
 			}...,
 		),

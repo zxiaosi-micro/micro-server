@@ -15,6 +15,83 @@
   },
   "basePath": "/",
   "paths": {
+    "/api/v1/audit-logs": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "操作审计(perm: audit:log:list)",
+        "operationId": "auditListAuditLogs",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "action",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "target_type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "target_id",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AuditLogListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "consumes": [
@@ -264,6 +341,501 @@
         }
       }
     },
+    "/api/v1/cmd-logs": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "指令审计(perm: audit:cmd:list)",
+        "operationId": "auditListCmdLogs",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "sn",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "cmd_id",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CmdAuditListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "库存列表(四态;low_only=低库存预警,perm: inventory:inventory:list)",
+        "operationId": "inventoryListInventory",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "warehouse_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "sku_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "boolean",
+            "name": "low_only",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InventoryListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/deduct": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "出库发货(perm: inventory:stock:deduct)",
+        "operationId": "inventoryDeductStock",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/records": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "库存流水(perm: inventory:record:list)",
+        "operationId": "inventoryListStockRecords",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "warehouse_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "sku_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "biz_type",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockRecordListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/release": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "释放(perm: inventory:stock:release)",
+        "operationId": "inventoryReleaseStock",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/reserve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "预留(perm: inventory:stock:reserve)",
+        "operationId": "inventoryReserveStock",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/spare-out": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "备件领用(perm: inventory:stock:spare-out)",
+        "operationId": "inventorySpareOut",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/spare-return": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "备件退库(perm: inventory:stock:spare-return)",
+        "operationId": "inventorySpareReturn",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/stock-in": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "入库(perm: inventory:stock:in)",
+        "operationId": "inventoryStockIn",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StockOpReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/menus": {
       "get": {
         "produces": [
@@ -443,6 +1015,509 @@
         }
       }
     },
+    "/api/v1/messages": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "消息列表(perm: notification:message:list)",
+        "operationId": "notificationListMessages",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "user_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "boolean",
+            "name": "only_unread",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/MessageListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/messages/unread-count": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "未读数(perm: notification:message:list)",
+        "operationId": "notificationUnreadCount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/UnreadCountResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/messages/{id}/read": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "标记已读(perm: notification:message:read)",
+        "operationId": "notificationMarkRead",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notify-settings": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的通知设置(perm: notification:setting:list)",
+        "operationId": "notificationListNotifySettings",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/NotifySettingListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "通知设置 Upsert(perm: notification:setting:update)",
+        "operationId": "notificationUpsertNotifySetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NotifySettingUpsertReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notify-templates": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "模板列表(perm: notification:template:list)",
+        "operationId": "notificationListTemplates",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TemplateListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "模板 Upsert(perm: notification:template:update)",
+        "operationId": "notificationUpsertTemplate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TemplateUpsertReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "商机列表(perm: party:opportunity:list)",
+        "operationId": "partyListOpportunities",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "party_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "stage",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OpportunityListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建商机(perm: party:opportunity:create)",
+        "operationId": "partyCreateOpportunity",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OpportunityCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/opportunities/{id}/stage": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "商机阶段推进(perm: party:opportunity:update)",
+        "operationId": "partyUpdateOpportunityStage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OpportunityStageReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/orgs": {
       "get": {
         "produces": [
@@ -595,6 +1670,706 @@
             "name": "id",
             "in": "path",
             "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "参与方列表(perm: party:party:list)",
+        "operationId": "partyListParties",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/PartyListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建参与方(perm: party:party:create)",
+        "operationId": "partyCreateParty",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PartyCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "参与方详情(perm: party:party:list)",
+        "operationId": "partyGetParty",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/PartyDetailResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "编辑参与方(perm: party:party:update)",
+        "operationId": "partyUpdateParty",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PartyUpdateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties/{id}/contacts": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "联系人列表(perm: party:party:list)",
+        "operationId": "partyListContacts",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContactListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新增联系人(perm: party:contact:create)",
+        "operationId": "partyAddContact",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContactCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties/{id}/crm": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "跟进记录(perm: party:party:list)",
+        "operationId": "partyListCrmRecords",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CrmRecordListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "追加跟进(perm: party:crm:create)",
+        "operationId": "partyAddCrmRecord",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CrmRecordCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties/{id}/dealer-ext": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "经销商扩展(perm: party:party:list)",
+        "operationId": "partyGetDealerExt",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DealerExtResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "经销商扩展 Upsert(perm: party:dealer:update)",
+        "operationId": "partyUpsertDealerExt",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DealerExtUpsertReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parties/{id}/staff": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "员工列表(perm: party:party:list)",
+        "operationId": "partyListStaff",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StaffListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prices": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SKU 价格列表(版本化:latest_only=价目表/false=全版本历史,perm: catalog:price:list)",
+        "operationId": "catalogListPrices",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "sku_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "boolean",
+            "name": "latest_only",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/PriceListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "商品列表(perm: catalog:product:list)",
+        "operationId": "catalogListProducts",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ProductListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建商品(perm: catalog:product:create)",
+        "operationId": "catalogCreateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductCreateReq"
+            }
           }
         ],
         "responses": {
@@ -952,6 +2727,683 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SessionKickResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skus": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SKU 列表(perm: catalog:sku:list)",
+        "operationId": "catalogListSkus",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "product_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SkuListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建 SKU(perm: catalog:sku:create)",
+        "operationId": "catalogCreateSku",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SkuCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skus/{id}/prices": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设置价格(新版本落库,perm: catalog:price:set)",
+        "operationId": "catalogSetPrice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PriceSetReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/skus/{id}/warranty-policy": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "质保策略 Upsert(perm: catalog:warranty:update)",
+        "operationId": "catalogUpsertWarranty",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WarrantyPolicyUpsertReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建员工(perm: party:staff:create)",
+        "operationId": "partyCreateStaff",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StaffCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/station-products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站模板列表(perm: catalog:station:list)",
+        "operationId": "catalogListStationProducts",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationProductListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建场站模板(perm: catalog:station:create)",
+        "operationId": "catalogCreateStationProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationProductCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/station-products/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站模板详情(含 BOM,perm: catalog:station:list)",
+        "operationId": "catalogGetStationProduct",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationProductDetailResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stocktakes": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "盘点单列表(perm: inventory:stocktake:list)",
+        "operationId": "inventoryListStocktakes",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "warehouse_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StocktakeListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建盘点单(快照账面,perm: inventory:stocktake:create)",
+        "operationId": "inventoryCreateStocktake",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StocktakeCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stocktakes/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "盘点单详情(perm: inventory:stocktake:list)",
+        "operationId": "inventoryGetStocktake",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StocktakeDetailResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stocktakes/{id}/approve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "盘点审批(通过生成账面调整流水,perm: inventory:stocktake:approve)",
+        "operationId": "inventoryApproveStocktake",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StocktakeApproveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stocktakes/{id}/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "提交实盘(perm: inventory:stocktake:submit)",
+        "operationId": "inventorySubmitStocktake",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StocktakeSubmitReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -1580,11 +4032,556 @@
           }
         }
       }
+    },
+    "/api/v1/warehouses": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "仓库列表(perm: inventory:warehouse:list)",
+        "operationId": "inventoryListWarehouses",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WarehouseListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "新建仓库(perm: inventory:warehouse:create)",
+        "operationId": "inventoryCreateWarehouse",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WarehouseCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "AuditLogItem": {
+      "type": "object",
+      "required": [
+        "log_id",
+        "trace_id",
+        "uid",
+        "action",
+        "target_type",
+        "target_id",
+        "before_json",
+        "after_json",
+        "result",
+        "client",
+        "on_behalf_of",
+        "created_at"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "after_json": {
+          "type": "string"
+        },
+        "before_json": {
+          "type": "string"
+        },
+        "client": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "log_id": {
+          "type": "string"
+        },
+        "on_behalf_of": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_type": {
+          "type": "string"
+        },
+        "trace_id": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "AuditLogListReq": {
+      "type": "object"
+    },
+    "AuditLogListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AuditLogItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "BomItem": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "sku_name",
+        "qty"
+      ],
+      "properties": {
+        "qty": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "sku_name": {
+          "type": "string"
+        }
+      }
+    },
+    "CmdAuditItem": {
+      "type": "object",
+      "required": [
+        "cmd_audit_id",
+        "cmd_id",
+        "sn",
+        "uid",
+        "action",
+        "payload_json",
+        "result",
+        "error",
+        "trace_id",
+        "created_at"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "cmd_audit_id": {
+          "type": "string"
+        },
+        "cmd_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        },
+        "payload_json": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "trace_id": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "CmdAuditListReq": {
+      "type": "object"
+    },
+    "CmdAuditListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CmdAuditItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ContactCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "mobile"
+      ],
+      "properties": {
+        "is_default": {
+          "type": "boolean"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "notify_pref": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      }
+    },
+    "ContactItem": {
+      "type": "object",
+      "required": [
+        "contact_id",
+        "party_id",
+        "name",
+        "mobile",
+        "position",
+        "is_default",
+        "notify_pref",
+        "created_at"
+      ],
+      "properties": {
+        "contact_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "is_default": {
+          "type": "boolean"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "notify_pref": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      }
+    },
+    "ContactListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContactItem"
+          }
+        }
+      }
+    },
+    "CrmRecordCreateReq": {
+      "type": "object",
+      "required": [
+        "content"
+      ],
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "next_follow_at": {
+          "type": "integer"
+        }
+      }
+    },
+    "CrmRecordItem": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "party_id",
+        "content",
+        "next_follow_at",
+        "created_by",
+        "created_at"
+      ],
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "next_follow_at": {
+          "type": "integer"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "record_id": {
+          "type": "string"
+        }
+      }
+    },
+    "CrmRecordListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CrmRecordItem"
+          }
+        }
+      }
+    },
+    "DealerExtItem": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "dealer_level",
+        "authorized_region",
+        "rebate_rule",
+        "updated_at"
+      ],
+      "properties": {
+        "authorized_region": {
+          "type": "string"
+        },
+        "dealer_level": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "rebate_rule": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        }
+      }
+    },
+    "DealerExtResp": {
+      "type": "object",
+      "required": [
+        "dealer_ext"
+      ],
+      "properties": {
+        "dealer_ext": {
+          "type": "object",
+          "required": [
+            "party_id",
+            "dealer_level",
+            "authorized_region",
+            "rebate_rule",
+            "updated_at"
+          ],
+          "properties": {
+            "authorized_region": {
+              "type": "string"
+            },
+            "dealer_level": {
+              "type": "string"
+            },
+            "party_id": {
+              "type": "string"
+            },
+            "rebate_rule": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "integer"
+            }
+          },
+          "$ref": "#/definitions/DealerExtItem"
+        }
+      }
+    },
+    "DealerExtUpsertReq": {
+      "type": "object",
+      "properties": {
+        "authorized_region": {
+          "type": "string"
+        },
+        "dealer_level": {
+          "type": "string"
+        },
+        "rebate_rule": {
+          "type": "string"
+        }
+      }
+    },
     "IDPath": {
       "type": "object"
+    },
+    "InventoryItem": {
+      "type": "object",
+      "required": [
+        "inventory_id",
+        "warehouse_id",
+        "sku_id",
+        "available",
+        "locked",
+        "in_transit",
+        "defective",
+        "low_stock_threshold",
+        "updated_at"
+      ],
+      "properties": {
+        "available": {
+          "type": "integer"
+        },
+        "defective": {
+          "type": "integer"
+        },
+        "in_transit": {
+          "type": "integer"
+        },
+        "inventory_id": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "integer"
+        },
+        "low_stock_threshold": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "InventoryListReq": {
+      "type": "object"
+    },
+    "InventoryListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InventoryItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
     },
     "LoginReq": {
       "type": "object",
@@ -1823,6 +4820,230 @@
         }
       }
     },
+    "MessageItem": {
+      "type": "object",
+      "required": [
+        "message_id",
+        "user_id",
+        "title",
+        "content",
+        "is_read",
+        "biz_type",
+        "biz_id",
+        "created_at"
+      ],
+      "properties": {
+        "biz_id": {
+          "type": "string"
+        },
+        "biz_type": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "message_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "MessageListReq": {
+      "type": "object"
+    },
+    "MessageListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MessageItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "NotifySettingItem": {
+      "type": "object",
+      "required": [
+        "user_id",
+        "template_code",
+        "enabled",
+        "quiet_hours"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "quiet_hours": {
+          "type": "string"
+        },
+        "template_code": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "NotifySettingListReq": {
+      "type": "object"
+    },
+    "NotifySettingListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NotifySettingItem"
+          }
+        }
+      }
+    },
+    "NotifySettingUpsertReq": {
+      "type": "object",
+      "required": [
+        "template_code",
+        "enabled"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "quiet_hours": {
+          "type": "string"
+        },
+        "template_code": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OpportunityCreateReq": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "title"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "expected_close_date": {
+          "type": "integer"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "OpportunityItem": {
+      "type": "object",
+      "required": [
+        "opportunity_id",
+        "party_id",
+        "party_name",
+        "title",
+        "stage",
+        "amount",
+        "expected_close_date",
+        "remark",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "expected_close_date": {
+          "type": "integer"
+        },
+        "opportunity_id": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "party_name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        }
+      }
+    },
+    "OpportunityListReq": {
+      "type": "object"
+    },
+    "OpportunityListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpportunityItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "OpportunityStageReq": {
+      "type": "object",
+      "required": [
+        "stage"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string"
+        }
+      }
+    },
     "OrgCreateReq": {
       "type": "object",
       "required": [
@@ -1888,6 +5109,356 @@
           "type": "string"
         },
         "sort": {
+          "type": "integer"
+        }
+      }
+    },
+    "PartyCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "credit_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PartyDetailResp": {
+      "type": "object",
+      "required": [
+        "party"
+      ],
+      "properties": {
+        "party": {
+          "type": "object",
+          "required": [
+            "party_id",
+            "name",
+            "type",
+            "status",
+            "credit_code",
+            "region",
+            "address",
+            "remark",
+            "created_at",
+            "updated_at"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "credit_code": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "party_id": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            },
+            "remark": {
+              "type": "string"
+            },
+            "status": {
+              "type": "integer"
+            },
+            "type": {
+              "description": "JSON SET 语义:多类型并存",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "updated_at": {
+              "type": "integer"
+            }
+          },
+          "$ref": "#/definitions/PartyItem"
+        }
+      }
+    },
+    "PartyItem": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "name",
+        "type",
+        "status",
+        "credit_code",
+        "region",
+        "address",
+        "remark",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "credit_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "type": {
+          "description": "JSON SET 语义:多类型并存",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "integer"
+        }
+      }
+    },
+    "PartyListReq": {
+      "type": "object"
+    },
+    "PartyListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PartyItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "PartyUpdateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "credit_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PriceItem": {
+      "type": "object",
+      "required": [
+        "price_id",
+        "sku_id",
+        "price_type",
+        "tier_qty",
+        "amount",
+        "version",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "price_id": {
+          "type": "string"
+        },
+        "price_type": {
+          "description": "RETAIL/DEALER/TIER",
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "tier_qty": {
+          "type": "integer"
+        },
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "PriceListReq": {
+      "type": "object"
+    },
+    "PriceListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PriceItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "PriceSetReq": {
+      "type": "object",
+      "required": [
+        "price_type",
+        "amount"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "price_type": {
+          "type": "string"
+        },
+        "tier_qty": {
+          "type": "integer"
+        }
+      }
+    },
+    "PriceSetResp": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "ProductCreateReq": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "ProductItem": {
+      "type": "object",
+      "required": [
+        "product_id",
+        "name",
+        "category",
+        "status",
+        "remark",
+        "created_at"
+      ],
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        }
+      }
+    },
+    "ProductListReq": {
+      "type": "object"
+    },
+    "ProductListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProductItem"
+          }
+        },
+        "total": {
           "type": "integer"
         }
       }
@@ -2153,6 +5724,295 @@
         }
       }
     },
+    "SkuCreateReq": {
+      "type": "object",
+      "required": [
+        "product_id",
+        "code",
+        "name"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "SkuItem": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "product_id",
+        "code",
+        "name",
+        "type",
+        "spec",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "type": {
+          "description": "STANDARD/EXT_WARRANTY",
+          "type": "string"
+        }
+      }
+    },
+    "SkuListReq": {
+      "type": "object"
+    },
+    "SkuListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SkuItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "StaffCreateReq": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "skill_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "staff_type": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "work_region": {
+          "type": "string"
+        }
+      }
+    },
+    "StaffItem": {
+      "type": "object",
+      "required": [
+        "staff_id",
+        "party_id",
+        "user_id",
+        "name",
+        "staff_type",
+        "skill_tags",
+        "work_region",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "skill_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "staff_id": {
+          "type": "string"
+        },
+        "staff_type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "work_region": {
+          "type": "string"
+        }
+      }
+    },
+    "StaffListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StaffItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "StationProductCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BomItem"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "StationProductDetailResp": {
+      "type": "object",
+      "required": [
+        "station_product"
+      ],
+      "properties": {
+        "station_product": {
+          "type": "object",
+          "required": [
+            "station_product_id",
+            "name",
+            "remark",
+            "created_at"
+          ],
+          "properties": {
+            "created_at": {
+              "type": "integer"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BomItem"
+              }
+            },
+            "name": {
+              "type": "string"
+            },
+            "remark": {
+              "type": "string"
+            },
+            "station_product_id": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/StationProductItem"
+        }
+      }
+    },
+    "StationProductItem": {
+      "type": "object",
+      "required": [
+        "station_product_id",
+        "name",
+        "remark",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BomItem"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "station_product_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationProductListReq": {
+      "type": "object"
+    },
+    "StationProductListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationProductItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
     "StepUpReq": {
       "type": "object",
       "required": [
@@ -2180,6 +6040,385 @@
         },
         "level": {
           "type": "integer"
+        }
+      }
+    },
+    "StockOpReq": {
+      "type": "object",
+      "required": [
+        "warehouse_id",
+        "sku_id",
+        "qty"
+      ],
+      "properties": {
+        "biz_no": {
+          "type": "string"
+        },
+        "biz_type": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StockOpResp": {
+      "type": "object",
+      "required": [
+        "record_id"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StockRecordItem": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "inventory_id",
+        "warehouse_id",
+        "sku_id",
+        "biz_type",
+        "biz_no",
+        "qty",
+        "before_available",
+        "after_available",
+        "before_locked",
+        "after_locked",
+        "remark",
+        "created_at"
+      ],
+      "properties": {
+        "after_available": {
+          "type": "integer"
+        },
+        "after_locked": {
+          "type": "integer"
+        },
+        "before_available": {
+          "type": "integer"
+        },
+        "before_locked": {
+          "type": "integer"
+        },
+        "biz_no": {
+          "type": "string"
+        },
+        "biz_type": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "inventory_id": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StockRecordListReq": {
+      "type": "object"
+    },
+    "StockRecordListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StockRecordItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "StocktakeApproveReq": {
+      "type": "object",
+      "required": [
+        "approve"
+      ],
+      "properties": {
+        "approve": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "StocktakeCreateReq": {
+      "type": "object",
+      "required": [
+        "warehouse_id"
+      ],
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StocktakeDetailResp": {
+      "type": "object",
+      "required": [
+        "stocktake"
+      ],
+      "properties": {
+        "stocktake": {
+          "type": "object",
+          "required": [
+            "stocktake_id",
+            "warehouse_id",
+            "status",
+            "remark",
+            "created_at"
+          ],
+          "properties": {
+            "created_at": {
+              "type": "integer"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/StocktakeItem"
+              }
+            },
+            "remark": {
+              "type": "string"
+            },
+            "status": {
+              "description": "1 草稿/2 已提交/3 已审批/4 已驳回",
+              "type": "integer"
+            },
+            "stocktake_id": {
+              "type": "string"
+            },
+            "warehouse_id": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/StocktakeRecord"
+        }
+      }
+    },
+    "StocktakeItem": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "sku_id",
+        "book_qty",
+        "counted_qty",
+        "diff_qty"
+      ],
+      "properties": {
+        "book_qty": {
+          "type": "integer"
+        },
+        "counted_qty": {
+          "description": "未提交 = -1",
+          "type": "integer"
+        },
+        "diff_qty": {
+          "type": "integer"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StocktakeListReq": {
+      "type": "object"
+    },
+    "StocktakeListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StocktakeRecord"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "StocktakeRecord": {
+      "type": "object",
+      "required": [
+        "stocktake_id",
+        "warehouse_id",
+        "status",
+        "remark",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StocktakeItem"
+          }
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "description": "1 草稿/2 已提交/3 已审批/4 已驳回",
+          "type": "integer"
+        },
+        "stocktake_id": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StocktakeSubmitItem": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "counted_qty"
+      ],
+      "properties": {
+        "counted_qty": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StocktakeSubmitReq": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StocktakeSubmitItem"
+          }
+        }
+      }
+    },
+    "TemplateItem": {
+      "type": "object",
+      "required": [
+        "template_id",
+        "code",
+        "title_template",
+        "content_template",
+        "channel",
+        "status"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "content_template": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "template_id": {
+          "type": "string"
+        },
+        "title_template": {
+          "type": "string"
+        }
+      }
+    },
+    "TemplateListReq": {
+      "type": "object"
+    },
+    "TemplateListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TemplateItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "TemplateUpsertReq": {
+      "type": "object",
+      "required": [
+        "code",
+        "title_template",
+        "content_template"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "content_template": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "title_template": {
+          "type": "string"
         }
       }
     },
@@ -2302,6 +6541,17 @@
         },
         "refresh_token": {
           "type": "string"
+        }
+      }
+    },
+    "UnreadCountResp": {
+      "type": "object",
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer"
         }
       }
     },
@@ -2474,6 +6724,111 @@
           }
         }
       }
+    },
+    "WarehouseCreateReq": {
+      "type": "object",
+      "required": [
+        "code",
+        "name"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "WarehouseItem": {
+      "type": "object",
+      "required": [
+        "warehouse_id",
+        "code",
+        "name",
+        "address",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "WarehouseListReq": {
+      "type": "object"
+    },
+    "WarehouseListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WarehouseItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "WarrantyPolicyItem": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "period_months",
+        "start_rule"
+      ],
+      "properties": {
+        "period_months": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "start_rule": {
+          "description": "ACTIVATION/RECEIPT",
+          "type": "string"
+        }
+      }
+    },
+    "WarrantyPolicyUpsertReq": {
+      "type": "object",
+      "required": [
+        "period_months",
+        "start_rule"
+      ],
+      "properties": {
+        "period_months": {
+          "type": "integer"
+        },
+        "start_rule": {
+          "type": "string"
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -2484,6 +6839,7 @@
       "in": "header"
     }
   },
+  "x-date": "2026-10-08 12:01:21",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

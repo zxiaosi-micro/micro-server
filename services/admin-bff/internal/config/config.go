@@ -11,6 +11,12 @@ type Config struct {
 	rest.RestConf
 	// IdentityRpc identity 服务客户端（dev 直连 Endpoints；prod 走 etcd Target）。
 	IdentityRpc zrpc.RpcClientConf
+	// S4 业务域 RPC 客户端（S4-05 接入；dev 直连 Endpoints）。
+	PartyRpc        zrpc.RpcClientConf `json:",optional"`
+	CatalogRpc      zrpc.RpcClientConf `json:",optional"`
+	InventoryRpc    zrpc.RpcClientConf `json:",optional"`
+	NotificationRpc zrpc.RpcClientConf `json:",optional"`
+	AuditRpc        zrpc.RpcClientConf `json:",optional"`
 	// Jwt 公钥目录（与 identity 同源 keygen 产出；验签按 kid 选钥）。
 	Jwt struct {
 		KeysDir string `json:",optional"`

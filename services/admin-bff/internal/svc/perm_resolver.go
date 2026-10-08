@@ -64,6 +64,63 @@ var routePerms = map[string]string{
 	// 会话
 	"GET /sessions":       "system:session:list",
 	"POST /sessions/kick": "system:session:kick",
+
+	// —— S4 业务域（S4-05；与 000004_s4_menu_seed perm_code 同源）——
+	// 参与方
+	"GET /parties":                "party:party:list",
+	"GET /parties/:id":            "party:party:list",
+	"POST /parties":               "party:party:create",
+	"PUT /parties/:id":            "party:party:update",
+	"GET /parties/:id/contacts":   "party:party:list",
+	"POST /parties/:id/contacts":  "party:contact:create",
+	"GET /parties/:id/crm":        "party:party:list",
+	"POST /parties/:id/crm":       "party:crm:create",
+	"GET /parties/:id/staff":      "party:party:list",
+	"POST /staff":                 "party:staff:create",
+	"GET /parties/:id/dealer-ext": "party:party:list",
+	"PUT /parties/:id/dealer-ext": "party:dealer:update",
+	// 商机
+	"GET /opportunities":           "party:opportunity:list",
+	"POST /opportunities":          "party:opportunity:create",
+	"PUT /opportunities/:id/stage": "party:opportunity:update",
+	// 商品
+	"GET /products":                 "catalog:product:list",
+	"POST /products":                "catalog:product:create",
+	"GET /skus":                     "catalog:sku:list",
+	"POST /skus":                    "catalog:sku:create",
+	"GET /prices":                   "catalog:price:list",
+	"POST /skus/:id/prices":         "catalog:price:set",
+	"PUT /skus/:id/warranty-policy": "catalog:warranty:update",
+	"GET /station-products":         "catalog:station:list",
+	"GET /station-products/:id":     "catalog:station:list",
+	"POST /station-products":        "catalog:station:create",
+	// 库存
+	"GET /warehouses":              "inventory:warehouse:list",
+	"POST /warehouses":             "inventory:warehouse:create",
+	"GET /inventory":               "inventory:inventory:list",
+	"POST /inventory/stock-in":     "inventory:stock:in",
+	"POST /inventory/reserve":      "inventory:stock:reserve",
+	"POST /inventory/release":      "inventory:stock:release",
+	"POST /inventory/deduct":       "inventory:stock:deduct",
+	"POST /inventory/spare-out":    "inventory:stock:spare-out",
+	"POST /inventory/spare-return": "inventory:stock:spare-return",
+	"GET /inventory/records":       "inventory:record:list",
+	"GET /stocktakes":              "inventory:stocktake:list",
+	"GET /stocktakes/:id":          "inventory:stocktake:list",
+	"POST /stocktakes":             "inventory:stocktake:create",
+	"POST /stocktakes/:id/submit":  "inventory:stocktake:submit",
+	"POST /stocktakes/:id/approve": "inventory:stocktake:approve",
+	// 消息
+	"GET /messages":              "notification:message:list",
+	"GET /messages/unread-count": "notification:message:list",
+	"POST /messages/:id/read":    "notification:message:read",
+	"GET /notify-templates":      "notification:template:list",
+	"POST /notify-templates":     "notification:template:update",
+	"GET /notify-settings":       "notification:setting:list",
+	"POST /notify-settings":      "notification:setting:update",
+	// 审计
+	"GET /audit-logs": "audit:log:list",
+	"GET /cmd-logs":   "audit:cmd:list",
 }
 
 func splitPath(p string) []string {

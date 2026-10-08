@@ -1,0 +1,288 @@
+syntax = "proto3";
+
+package inventory;
+
+option go_package = "./pb";
+
+// Inventory 库存服务契约（S4-03 ★核心，v4/03 阶段 4 任务正本）。
+//
+// 职责边界（01 FR-INV-004）：所有出库统一由 inventory 执行（唯一写入方），
+// order 只发出库指令；扣减与流水只产生于 inventory。
+// 防超卖双保险（02 §9.2）：Redis DECRBY 原子预扣（挡并发）→ DB 事务行锁兜底
+// （余量守卫 UPDATE + tenant_id）→ stock_record + Outbox 同事务；
+// 幂等键 (biz_type,biz_no) 唯一约束，1062 → ErrTxnReplay；
+// Redis 故障降级纯 DB 路径（同样不超卖）。ID 传输 int64，对外 string（E8）。
+service Inventory {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 仓库 ----
+  rpc CreateWarehouse(CreateWarehouseReq) returns (CreateWarehouseResp);
+  rpc ListWarehouse(ListWarehouseReq) returns (ListWarehouseResp);
+
+  // ---- 库存变动 ----
+  rpc StockIn(StockInReq) returns (StockInResp);           // 入库（采购/退货/调拨，FR-INV-003）
+  rpc Reserve(ReserveReq) returns (ReserveResp);           // 预留：available→locked（防超卖主路径）
+  rpc Release(ReleaseReq) returns (ReleaseResp);           // 释放：locked→available（订单取消/支付超时）
+  rpc DeductLocked(DeductLockedReq) returns (DeductLockedResp); // 出库发货：locked 扣减（FR-INV-004）
+  rpc SpareOut(SpareOutReq) returns (SpareOutResp);        // 备件领用（必须关联工单号，FR-INV-008）
+  rpc SpareReturn(SpareReturnReq) returns (SpareReturnResp); // 备件退库
+
+  // ---- 库存查询 ----
+  rpc GetInventory(GetInventoryReq) returns (GetInventoryResp);
+  rpc ListInventory(ListInventoryReq) returns (ListInventoryResp);
+  rpc ListStockRecord(ListStockRecordReq) returns (ListStockRecordResp);
+
+  // ---- 盘点（差异审批 + 账面调整有流水，FR-INV-007）----
+  rpc CreateStocktake(CreateStocktakeReq) returns (CreateStocktakeResp);
+  rpc SubmitStocktakeCount(SubmitStocktakeCountReq) returns (SubmitStocktakeCountResp);
+  rpc ApproveStocktake(ApproveStocktakeReq) returns (ApproveStocktakeResp);
+  rpc ListStocktake(ListStocktakeReq) returns (ListStocktakeResp);
+  rpc GetStocktake(GetStocktakeReq) returns (GetStocktakeResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 仓库 ----
+
+message WarehouseItem {
+  int64 warehouse_id = 1;
+  string code = 2;
+  string name = 3;
+  string address = 4;
+  int32 status = 5; // 1 启用/2 停用
+  int64 created_at = 6;
+}
+
+message CreateWarehouseReq {
+  string code = 1;
+  string name = 2;
+  string address = 3;
+}
+
+message CreateWarehouseResp {
+  int64 warehouse_id = 1;
+}
+
+message ListWarehouseReq {
+  string keyword = 1; // name/code 模糊
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListWarehouseResp {
+  repeated WarehouseItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 库存变动 ----
+
+message StockInReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string biz_type = 4;  // STOCK_IN 采购/RETURN_IN 退货/TRANSFER_IN 调拨
+  string biz_no = 5;    // 业务单号（幂等键）
+  string remark = 6;
+}
+
+message StockInResp {
+  int64 record_id = 1;
+}
+
+message ReserveReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string biz_type = 4; // 调用方域，如 ORDER
+  string biz_no = 5;   // 调用方单号（幂等键）
+}
+
+message ReserveResp {
+  int64 record_id = 1;
+}
+
+message ReleaseReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string biz_type = 4; // 调用方域
+  string biz_no = 5;   // 调用方单号（幂等键，须与 Reserve 不同的 biz_type 或单号）
+}
+
+message ReleaseResp {
+  int64 record_id = 1;
+}
+
+message DeductLockedReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string biz_type = 4; // 调用方域
+  string biz_no = 5;   // 出库单号（幂等键）
+  string remark = 6;
+}
+
+message DeductLockedResp {
+  int64 record_id = 1;
+}
+
+message SpareOutReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string work_order_no = 4; // 领用必须关联工单号（FR-INV-008）
+  string remark = 5;
+}
+
+message SpareOutResp {
+  int64 record_id = 1;
+}
+
+message SpareReturnReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+  int32 qty = 3;
+  string work_order_no = 4;
+  string remark = 5;
+}
+
+message SpareReturnResp {
+  int64 record_id = 1;
+}
+
+// ---- 库存查询 ----
+
+message InventoryItem {
+  int64 inventory_id = 1;
+  int64 warehouse_id = 2;
+  int64 sku_id = 3;
+  int32 available = 4;
+  int32 locked = 5;
+  int32 in_transit = 6;
+  int32 defective = 7;
+  int32 low_stock_threshold = 8;
+  int64 updated_at = 9;
+}
+
+message GetInventoryReq {
+  int64 warehouse_id = 1;
+  int64 sku_id = 2;
+}
+
+message GetInventoryResp {
+  InventoryItem inventory = 1; // 未建档返回空 item（inventory_id=0）
+}
+
+message ListInventoryReq {
+  int64 warehouse_id = 1; // 0 = 全部
+  int64 sku_id = 2;       // 0 = 全部
+  bool low_stock_only = 3; // 仅低库存预警
+  int64 page = 4;
+  int64 size = 5;
+}
+
+message ListInventoryResp {
+  repeated InventoryItem list = 1;
+  int64 total = 2;
+}
+
+message StockRecordItem {
+  int64 record_id = 1;
+  int64 inventory_id = 2;
+  int64 warehouse_id = 3;
+  int64 sku_id = 4;
+  string biz_type = 5;
+  string biz_no = 6;
+  int32 qty = 7;
+  int32 before_available = 8;
+  int32 after_available = 9;
+  int32 before_locked = 10;
+  int32 after_locked = 11;
+  string remark = 12;
+  int64 created_at = 13;
+}
+
+message ListStockRecordReq {
+  int64 warehouse_id = 1; // 0 = 全部
+  int64 sku_id = 2;       // 0 = 全部
+  string biz_type = 3;    // 空 = 全部
+  int64 page = 4;
+  int64 size = 5;
+}
+
+message ListStockRecordResp {
+  repeated StockRecordItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 盘点 ----
+
+message StocktakeItem {
+  int64 item_id = 1;
+  int64 sku_id = 2;
+  int32 book_qty = 3;    // 账面数
+  int32 counted_qty = 4; // 实盘数（未提交为 -1）
+  int32 diff_qty = 5;    // 差异（未审批为 0）
+}
+
+message StocktakeRecord {
+  int64 stocktake_id = 1;
+  int64 warehouse_id = 2;
+  int32 status = 3; // 1 草稿/2 已提交/3 已审批/4 已驳回
+  string remark = 4;
+  repeated StocktakeItem items = 5; // 仅 GetStocktake 填充
+  int64 created_at = 6;
+}
+
+message CreateStocktakeReq {
+  int64 warehouse_id = 1;
+  string remark = 2;
+}
+
+message CreateStocktakeResp {
+  int64 stocktake_id = 1;
+}
+
+message SubmitStocktakeCountItem {
+  int64 sku_id = 1;
+  int32 counted_qty = 2;
+}
+
+message SubmitStocktakeCountReq {
+  int64 stocktake_id = 1;
+  repeated SubmitStocktakeCountItem items = 2;
+}
+
+message SubmitStocktakeCountResp {}
+
+message ApproveStocktakeReq {
+  int64 stocktake_id = 1;
+  bool approve = 2; // true 通过（生成账面调整）；false 驳回
+  string remark = 3;
+}
+
+message ApproveStocktakeResp {}
+
+message ListStocktakeReq {
+  int64 warehouse_id = 1; // 0 = 全部
+  int32 status = 2;       // 0 = 全部
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListStocktakeResp {
+  repeated StocktakeRecord list = 1;
+  int64 total = 2;
+}
+
+message GetStocktakeReq {
+  int64 stocktake_id = 1;
+}
+
+message GetStocktakeResp {
+  StocktakeRecord stocktake = 1;
+}

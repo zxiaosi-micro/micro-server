@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "./pb";
+
+// Notification 消息服务契约（S4-04，v4/03 阶段 4）。
+//
+// 职责边界（FR-NTF-001）：业务服务只发 notification_request 事件，不直连渠道；
+// 本服务是该事件唯一消费方——渲染模板 → 频控/免打扰过滤 → 站内信落库 + 渠道外发（Provider 化）。
+// 消费链路：kq 订阅 notification_request → Deliver（模板渲染）→ message + outbound_log。
+service Notification {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // 消息中心（FR-NTF-004）
+  rpc ListMessages(ListMessagesReq) returns (ListMessagesResp);
+  rpc MarkRead(MarkReadReq) returns (MarkReadResp);
+  rpc UnreadCount(UnreadCountReq) returns (UnreadCountResp);
+
+  // 模板/渠道/设置
+  rpc UpsertTemplate(UpsertTemplateReq) returns (UpsertTemplateResp);
+  rpc ListTemplate(ListTemplateReq) returns (ListTemplateResp);
+  rpc GetUserSetting(GetUserSettingReq) returns (GetUserSettingResp);
+  rpc UpdateUserSetting(UpdateUserSettingReq) returns (UpdateUserSettingResp);
+
+  // 直接投递（管理端手动发通知/测试桩；与事件消费共用 Deliver 内核）
+  rpc Deliver(DeliverReq) returns (DeliverResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+message MessageItem {
+  int64 message_id = 1;
+  int64 user_id = 2;
+  string title = 3;
+  string content = 4;
+  bool is_read = 5;
+  string biz_type = 6;
+  string biz_id = 7;
+  int64 created_at = 8;
+}
+
+message ListMessagesReq {
+  int64 user_id = 1;
+  bool only_unread = 2;
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListMessagesResp {
+  repeated MessageItem list = 1;
+  int64 total = 2;
+}
+
+message MarkReadReq {
+  int64 message_id = 1;
+  int64 user_id = 2; // 越权防护：仅本人可标记
+}
+
+message MarkReadResp {}
+
+message UnreadCountReq {
+  int64 user_id = 1;
+}
+
+message UnreadCountResp {
+  int64 count = 1;
+}
+
+message TemplateItem {
+  int64 template_id = 1;
+  string code = 2;
+  string title_template = 3;
+  string content_template = 4;
+  string channel = 5;
+  int32 status = 6;
+}
+
+message UpsertTemplateReq {
+  string code = 1;
+  string title_template = 2;
+  string content_template = 3;
+  string channel = 4; // INBOX/SMS
+  int32 status = 5;   // 0 = 不修改
+}
+
+message UpsertTemplateResp {}
+
+message ListTemplateReq {
+  string keyword = 1; // code 模糊
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListTemplateResp {
+  repeated TemplateItem list = 1;
+  int64 total = 2;
+}
+
+message UserSettingItem {
+  int64 user_id = 1;
+  string template_code = 2; // '*' = 全局默认
+  bool enabled = 3;
+  string quiet_hours = 4; // JSON {"start":"22:00","end":"08:00"}
+}
+
+message GetUserSettingReq {
+  int64 user_id = 1;
+  string template_code = 2; // 空 = 全部设置
+}
+
+message GetUserSettingResp {
+  repeated UserSettingItem list = 1;
+}
+
+message UpdateUserSettingReq {
+  int64 user_id = 1;
+  string template_code = 2;
+  bool enabled = 3;
+  string quiet_hours = 4;
+}
+
+message UpdateUserSettingResp {}
+
+// DeliverReq 与 notification_request 事件 payload 同构（管理端手动投递/测试桩复用内核）。
+message DeliverReq {
+  int64 user_id = 1;
+  string template_code = 2;
+  string params_json = 3;  // 模板渲染参数 {"order_no":"..."}
+  string biz_type = 4;
+  string biz_id = 5;
+}
+
+message DeliverResp {
+  bool delivered = 1;   // false = 被频控/免打扰/模板缺失过滤
+  string reason = 2;    // 过滤原因（观测用）
+  int64 message_id = 3; // 站内信 ID（INBOX 渠道）
+}

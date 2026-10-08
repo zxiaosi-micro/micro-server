@@ -495,3 +495,848 @@ service AdminBffApi {
 	post /sessions/kick (SessionKickReq) returns (SessionKickResp)
 }
 
+// ============================================================
+// S4 业务域（S4-05）：party / catalog / inventory / notification / audit
+// 全部走对应 RPC 转发；ID 一律 string（E8）；金额 DECIMAL 字符串。
+// ============================================================
+// ---- 参与方 ----
+type PartyItem {
+	PartyID    string   `json:"party_id"`
+	Name       string   `json:"name"`
+	Type       []string `json:"type"` // JSON SET 语义:多类型并存
+	Status     int      `json:"status"`
+	CreditCode string   `json:"credit_code"`
+	Region     string   `json:"region"`
+	Address    string   `json:"address"`
+	Remark     string   `json:"remark"`
+	CreatedAt  int64    `json:"created_at"`
+	UpdatedAt  int64    `json:"updated_at"`
+}
+
+type PartyListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+	Type    string `form:"type,optional"`
+	Status  int    `form:"status,optional"`
+}
+
+type PartyListResp {
+	List  []PartyItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type PartyCreateReq {
+	Name       string   `json:"name"`
+	Type       []string `json:"type"`
+	CreditCode string   `json:"credit_code,optional"`
+	Region     string   `json:"region,optional"`
+	Address    string   `json:"address,optional"`
+	Remark     string   `json:"remark,optional"`
+}
+
+type PartyUpdateReq {
+	Id         string   `path:"id"`
+	Name       string   `json:"name"`
+	Type       []string `json:"type"`
+	Status     int      `json:"status,optional"`
+	CreditCode string   `json:"credit_code,optional"`
+	Region     string   `json:"region,optional"`
+	Address    string   `json:"address,optional"`
+	Remark     string   `json:"remark,optional"`
+}
+
+type PartyDetailResp {
+	Party PartyItem `json:"party"`
+}
+
+type ContactItem {
+	ContactID  string `json:"contact_id"`
+	PartyID    string `json:"party_id"`
+	Name       string `json:"name"`
+	Mobile     string `json:"mobile"`
+	Position   string `json:"position"`
+	IsDefault  bool   `json:"is_default"`
+	NotifyPref string `json:"notify_pref"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ContactListResp {
+	List []ContactItem `json:"list"`
+}
+
+type ContactCreateReq {
+	Id         string `path:"id"`
+	Name       string `json:"name"`
+	Mobile     string `json:"mobile"`
+	Position   string `json:"position,optional"`
+	IsDefault  bool   `json:"is_default,optional"`
+	NotifyPref string `json:"notify_pref,optional"`
+}
+
+type CrmRecordItem {
+	RecordID     string `json:"record_id"`
+	PartyID      string `json:"party_id"`
+	Content      string `json:"content"`
+	NextFollowAt int64  `json:"next_follow_at"`
+	CreatedBy    string `json:"created_by"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
+type CrmRecordListResp {
+	List []CrmRecordItem `json:"list"`
+}
+
+type CrmRecordCreateReq {
+	Id           string `path:"id"`
+	Content      string `json:"content"`
+	NextFollowAt int64  `json:"next_follow_at,optional"`
+}
+
+type StaffItem {
+	StaffID    string   `json:"staff_id"`
+	PartyID    string   `json:"party_id"`
+	UserID     string   `json:"user_id"`
+	Name       string   `json:"name"`
+	StaffType  string   `json:"staff_type"`
+	SkillTags  []string `json:"skill_tags"`
+	WorkRegion string   `json:"work_region"`
+	Status     int      `json:"status"`
+	CreatedAt  int64    `json:"created_at"`
+}
+
+type StaffListResp {
+	List  []StaffItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type StaffCreateReq {
+	PartyID    string   `json:"party_id"`
+	UserID     string   `json:"user_id,optional"`
+	Name       string   `json:"name"`
+	StaffType  string   `json:"staff_type,optional"`
+	SkillTags  []string `json:"skill_tags,optional"`
+	WorkRegion string   `json:"work_region,optional"`
+}
+
+type DealerExtItem {
+	PartyID          string `json:"party_id"`
+	DealerLevel      string `json:"dealer_level"`
+	AuthorizedRegion string `json:"authorized_region"`
+	RebateRule       string `json:"rebate_rule"`
+	UpdatedAt        int64  `json:"updated_at"`
+}
+
+type DealerExtResp {
+	DealerExt DealerExtItem `json:"dealer_ext"`
+}
+
+type DealerExtUpsertReq {
+	Id               string `path:"id"`
+	DealerLevel      string `json:"dealer_level,optional"`
+	AuthorizedRegion string `json:"authorized_region,optional"`
+	RebateRule       string `json:"rebate_rule,optional"`
+}
+
+// ---- 商机 ----
+type OpportunityItem {
+	OpportunityID string `json:"opportunity_id"`
+	PartyID       string `json:"party_id"`
+	PartyName     string `json:"party_name"`
+	Title         string `json:"title"`
+	Stage         string `json:"stage"`
+	Amount        string `json:"amount"`
+	ExpectedClose int64  `json:"expected_close_date"`
+	Remark        string `json:"remark"`
+	CreatedAt     int64  `json:"created_at"`
+	UpdatedAt     int64  `json:"updated_at"`
+}
+
+type OpportunityListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	PartyID string `form:"party_id,optional"`
+	Stage   string `form:"stage,optional"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type OpportunityListResp {
+	List  []OpportunityItem `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type OpportunityCreateReq {
+	PartyID       string `json:"party_id"`
+	Title         string `json:"title"`
+	Amount        string `json:"amount,optional"`
+	ExpectedClose int64  `json:"expected_close_date,optional"`
+	Remark        string `json:"remark,optional"`
+}
+
+type OpportunityStageReq {
+	Id    string `path:"id"`
+	Stage string `json:"stage"`
+}
+
+// ---- 商品 ----
+type ProductItem {
+	ProductID string `json:"product_id"`
+	Name      string `json:"name"`
+	Category  string `json:"category"`
+	Status    int    `json:"status"`
+	Remark    string `json:"remark"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type ProductListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+	Status  int    `form:"status,optional"`
+}
+
+type ProductListResp {
+	List  []ProductItem `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type ProductCreateReq {
+	Name     string `json:"name"`
+	Category string `json:"category,optional"`
+	Remark   string `json:"remark,optional"`
+}
+
+type SkuItem {
+	SkuID     string `json:"sku_id"`
+	ProductID string `json:"product_id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Type      string `json:"type"` // STANDARD/EXT_WARRANTY
+	Spec      string `json:"spec"`
+	Status    int    `json:"status"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type SkuListReq {
+	Page      int    `form:"page,range=[1:10000]"`
+	Size      int    `form:"size,range=[1:100]"`
+	ProductID string `form:"product_id,optional"`
+	Keyword   string `form:"keyword,optional"`
+}
+
+type SkuListResp {
+	List  []SkuItem `json:"list"`
+	Total int64     `json:"total"`
+}
+
+type SkuCreateReq {
+	ProductID string `json:"product_id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Type      string `json:"type,optional"`
+	Spec      string `json:"spec,optional"`
+}
+
+type PriceItem {
+	PriceID   string `json:"price_id"`
+	SkuID     string `json:"sku_id"`
+	PriceType string `json:"price_type"` // RETAIL/DEALER/TIER
+	TierQty   int    `json:"tier_qty"`
+	Amount    string `json:"amount"`
+	Version   int    `json:"version"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type PriceListReq {
+	SkuID      string `form:"sku_id"`
+	LatestOnly bool   `form:"latest_only,optional"`
+}
+
+type PriceListResp {
+	List  []PriceItem `json:"list"`
+	Total int64       `json:"total"`
+}
+
+type PriceSetReq {
+	Id        string `path:"id"`
+	PriceType string `json:"price_type"`
+	TierQty   int    `json:"tier_qty,optional"`
+	Amount    string `json:"amount"`
+}
+
+type PriceSetResp {
+	Version int `json:"version"`
+}
+
+type WarrantyPolicyItem {
+	SkuID        string `json:"sku_id"`
+	PeriodMonths int    `json:"period_months"`
+	StartRule    string `json:"start_rule"` // ACTIVATION/RECEIPT
+}
+
+type WarrantyPolicyUpsertReq {
+	Id           string `path:"id"`
+	PeriodMonths int    `json:"period_months"`
+	StartRule    string `json:"start_rule"`
+}
+
+type StationProductItem {
+	StationProductID string    `json:"station_product_id"`
+	Name             string    `json:"name"`
+	Remark           string    `json:"remark"`
+	Items            []BomItem `json:"items,optional"`
+	CreatedAt        int64     `json:"created_at"`
+}
+
+type BomItem {
+	SkuID   string `json:"sku_id"`
+	SkuName string `json:"sku_name"`
+	Qty     int    `json:"qty"`
+}
+
+type StationProductListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type StationProductListResp {
+	List  []StationProductItem `json:"list"`
+	Total int64                `json:"total"`
+}
+
+type StationProductCreateReq {
+	Name   string    `json:"name"`
+	Remark string    `json:"remark,optional"`
+	Items  []BomItem `json:"items"`
+}
+
+type StationProductDetailResp {
+	StationProduct StationProductItem `json:"station_product"`
+}
+
+// ---- 库存 ----
+type WarehouseItem {
+	WarehouseID string `json:"warehouse_id"`
+	Code        string `json:"code"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
+	Status      int    `json:"status"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type WarehouseListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type WarehouseListResp {
+	List  []WarehouseItem `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type WarehouseCreateReq {
+	Code    string `json:"code"`
+	Name    string `json:"name"`
+	Address string `json:"address,optional"`
+}
+
+type InventoryItem {
+	InventoryID       string `json:"inventory_id"`
+	WarehouseID       string `json:"warehouse_id"`
+	SkuID             string `json:"sku_id"`
+	Available         int    `json:"available"`
+	Locked            int    `json:"locked"`
+	InTransit         int    `json:"in_transit"`
+	Defective         int    `json:"defective"`
+	LowStockThreshold int    `json:"low_stock_threshold"`
+	UpdatedAt         int64  `json:"updated_at"`
+}
+
+type InventoryListReq {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	SkuID       string `form:"sku_id,optional"`
+	LowOnly     bool   `form:"low_only,optional"`
+}
+
+type InventoryListResp {
+	List  []InventoryItem `json:"list"`
+	Total int64           `json:"total"`
+}
+
+type StockOpReq {
+	WarehouseID string `json:"warehouse_id"`
+	SkuID       string `json:"sku_id"`
+	Qty         int    `json:"qty"`
+	BizType     string `json:"biz_type,optional"`
+	BizNo       string `json:"biz_no,optional"`
+	Remark      string `json:"remark,optional"`
+}
+
+type StockOpResp {
+	RecordID string `json:"record_id"`
+}
+
+type StockRecordItem {
+	RecordID        string `json:"record_id"`
+	InventoryID     string `json:"inventory_id"`
+	WarehouseID     string `json:"warehouse_id"`
+	SkuID           string `json:"sku_id"`
+	BizType         string `json:"biz_type"`
+	BizNo           string `json:"biz_no"`
+	Qty             int    `json:"qty"`
+	BeforeAvailable int    `json:"before_available"`
+	AfterAvailable  int    `json:"after_available"`
+	BeforeLocked    int    `json:"before_locked"`
+	AfterLocked     int    `json:"after_locked"`
+	Remark          string `json:"remark"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type StockRecordListReq {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	SkuID       string `form:"sku_id,optional"`
+	BizType     string `form:"biz_type,optional"`
+}
+
+type StockRecordListResp {
+	List  []StockRecordItem `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type StocktakeItem {
+	ItemID     string `json:"item_id"`
+	SkuID      string `json:"sku_id"`
+	BookQty    int    `json:"book_qty"`
+	CountedQty int    `json:"counted_qty"` // 未提交 = -1
+	DiffQty    int    `json:"diff_qty"`
+}
+
+type StocktakeRecord {
+	StocktakeID string          `json:"stocktake_id"`
+	WarehouseID string          `json:"warehouse_id"`
+	Status      int             `json:"status"` // 1 草稿/2 已提交/3 已审批/4 已驳回
+	Remark      string          `json:"remark"`
+	Items       []StocktakeItem `json:"items,optional"`
+	CreatedAt   int64           `json:"created_at"`
+}
+
+type StocktakeCreateReq {
+	WarehouseID string `json:"warehouse_id"`
+	Remark      string `json:"remark,optional"`
+}
+
+type StocktakeSubmitItem {
+	SkuID      string `json:"sku_id"`
+	CountedQty int    `json:"counted_qty"`
+}
+
+type StocktakeSubmitReq {
+	Id    string                `path:"id"`
+	Items []StocktakeSubmitItem `json:"items"`
+}
+
+type StocktakeApproveReq {
+	Id      string `path:"id"`
+	Approve bool   `json:"approve"`
+	Remark  string `json:"remark,optional"`
+}
+
+type StocktakeListReq {
+	Page        int    `form:"page,range=[1:10000]"`
+	Size        int    `form:"size,range=[1:100]"`
+	WarehouseID string `form:"warehouse_id,optional"`
+	Status      int    `form:"status,optional"`
+}
+
+type StocktakeListResp {
+	List  []StocktakeRecord `json:"list"`
+	Total int64             `json:"total"`
+}
+
+type StocktakeDetailResp {
+	Stocktake StocktakeRecord `json:"stocktake"`
+}
+
+// ---- 消息 ----
+type MessageItem {
+	MessageID string `json:"message_id"`
+	UserID    string `json:"user_id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	IsRead    bool   `json:"is_read"`
+	BizType   string `json:"biz_type"`
+	BizID     string `json:"biz_id"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type MessageListReq {
+	Page       int    `form:"page,range=[1:10000]"`
+	Size       int    `form:"size,range=[1:100]"`
+	UserID     string `form:"user_id,optional"`
+	OnlyUnread bool   `form:"only_unread,optional"`
+}
+
+type MessageListResp {
+	List  []MessageItem `json:"list"`
+	Total int64         `json:"total"`
+}
+
+type UnreadCountResp {
+	Count int64 `json:"count"`
+}
+
+type TemplateItem {
+	TemplateID      string `json:"template_id"`
+	Code            string `json:"code"`
+	TitleTemplate   string `json:"title_template"`
+	ContentTemplate string `json:"content_template"`
+	Channel         string `json:"channel"`
+	Status          int    `json:"status"`
+}
+
+type TemplateListReq {
+	Page    int    `form:"page,range=[1:10000]"`
+	Size    int    `form:"size,range=[1:100]"`
+	Keyword string `form:"keyword,optional"`
+}
+
+type TemplateListResp {
+	List  []TemplateItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type TemplateUpsertReq {
+	Code            string `json:"code"`
+	TitleTemplate   string `json:"title_template"`
+	ContentTemplate string `json:"content_template"`
+	Channel         string `json:"channel,optional"`
+	Status          int    `json:"status,optional"`
+}
+
+type NotifySettingItem {
+	UserID       string `json:"user_id"`
+	TemplateCode string `json:"template_code"`
+	Enabled      bool   `json:"enabled"`
+	QuietHours   string `json:"quiet_hours"`
+}
+
+type NotifySettingListReq {
+	UserID string `form:"user_id"`
+}
+
+type NotifySettingListResp {
+	List []NotifySettingItem `json:"list"`
+}
+
+type NotifySettingUpsertReq {
+	UserID       string `json:"user_id,optional"`
+	TemplateCode string `json:"template_code"`
+	Enabled      bool   `json:"enabled"`
+	QuietHours   string `json:"quiet_hours,optional"`
+}
+
+// ---- 审计 ----
+type AuditLogItem {
+	LogID      string `json:"log_id"`
+	TraceID    string `json:"trace_id"`
+	UID        string `json:"uid"`
+	Action     string `json:"action"`
+	TargetType string `json:"target_type"`
+	TargetID   string `json:"target_id"`
+	BeforeJson string `json:"before_json"`
+	AfterJson  string `json:"after_json"`
+	Result     string `json:"result"`
+	Client     string `json:"client"`
+	OnBehalfOf string `json:"on_behalf_of"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type AuditLogListReq {
+	Page       int    `form:"page,range=[1:10000]"`
+	Size       int    `form:"size,range=[1:100]"`
+	Action     string `form:"action,optional"`
+	UID        string `form:"uid,optional"`
+	TargetType string `form:"target_type,optional"`
+	TargetID   string `form:"target_id,optional"`
+}
+
+type AuditLogListResp {
+	List  []AuditLogItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type CmdAuditItem {
+	CmdAuditID  string `json:"cmd_audit_id"`
+	CmdID       string `json:"cmd_id"`
+	SN          string `json:"sn"`
+	UID         string `json:"uid"`
+	Action      string `json:"action"`
+	PayloadJson string `json:"payload_json"`
+	Result      string `json:"result"`
+	Error       string `json:"error"`
+	TraceID     string `json:"trace_id"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type CmdAuditListReq {
+	Page  int    `form:"page,range=[1:10000]"`
+	Size  int    `form:"size,range=[1:100]"`
+	SN    string `form:"sn,optional"`
+	CmdID string `form:"cmd_id,optional"`
+}
+
+type CmdAuditListResp {
+	List  []CmdAuditItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+// ---- 参与方路由 ----
+@server (
+	prefix:     /api/v1
+	group:      party
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "参与方列表(perm: party:party:list)"
+	@handler listParties
+	get /parties (PartyListReq) returns (PartyListResp)
+
+	@doc "新建参与方(perm: party:party:create)"
+	@handler createParty
+	post /parties (PartyCreateReq) returns (SimpleResp)
+
+	@doc "参与方详情(perm: party:party:list)"
+	@handler getParty
+	get /parties/:id (IDPath) returns (PartyDetailResp)
+
+	@doc "编辑参与方(perm: party:party:update)"
+	@handler updateParty
+	put /parties/:id (PartyUpdateReq) returns (SimpleResp)
+
+	@doc "联系人列表(perm: party:party:list)"
+	@handler listContacts
+	get /parties/:id/contacts (IDPath) returns (ContactListResp)
+
+	@doc "新增联系人(perm: party:contact:create)"
+	@handler addContact
+	post /parties/:id/contacts (ContactCreateReq) returns (SimpleResp)
+
+	@doc "跟进记录(perm: party:party:list)"
+	@handler listCrmRecords
+	get /parties/:id/crm (IDPath) returns (CrmRecordListResp)
+
+	@doc "追加跟进(perm: party:crm:create)"
+	@handler addCrmRecord
+	post /parties/:id/crm (CrmRecordCreateReq) returns (SimpleResp)
+
+	@doc "员工列表(perm: party:party:list)"
+	@handler listStaff
+	get /parties/:id/staff (IDPath) returns (StaffListResp)
+
+	@doc "新建员工(perm: party:staff:create)"
+	@handler createStaff
+	post /staff (StaffCreateReq) returns (SimpleResp)
+
+	@doc "经销商扩展(perm: party:party:list)"
+	@handler getDealerExt
+	get /parties/:id/dealer-ext (IDPath) returns (DealerExtResp)
+
+	@doc "经销商扩展 Upsert(perm: party:dealer:update)"
+	@handler upsertDealerExt
+	put /parties/:id/dealer-ext (DealerExtUpsertReq) returns (SimpleResp)
+}
+
+// ---- 商机路由 ----
+@server (
+	prefix:     /api/v1
+	group:      party
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "商机列表(perm: party:opportunity:list)"
+	@handler listOpportunities
+	get /opportunities (OpportunityListReq) returns (OpportunityListResp)
+
+	@doc "新建商机(perm: party:opportunity:create)"
+	@handler createOpportunity
+	post /opportunities (OpportunityCreateReq) returns (SimpleResp)
+
+	@doc "商机阶段推进(perm: party:opportunity:update)"
+	@handler updateOpportunityStage
+	put /opportunities/:id/stage (OpportunityStageReq) returns (SimpleResp)
+}
+
+// ---- 商品路由 ----
+@server (
+	prefix:     /api/v1
+	group:      catalog
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "商品列表(perm: catalog:product:list)"
+	@handler listProducts
+	get /products (ProductListReq) returns (ProductListResp)
+
+	@doc "新建商品(perm: catalog:product:create)"
+	@handler createProduct
+	post /products (ProductCreateReq) returns (SimpleResp)
+
+	@doc "SKU 列表(perm: catalog:sku:list)"
+	@handler listSkus
+	get /skus (SkuListReq) returns (SkuListResp)
+
+	@doc "新建 SKU(perm: catalog:sku:create)"
+	@handler createSku
+	post /skus (SkuCreateReq) returns (SimpleResp)
+
+	@doc "SKU 价格列表(版本化:latest_only=价目表/false=全版本历史,perm: catalog:price:list)"
+	@handler listPrices
+	get /prices (PriceListReq) returns (PriceListResp)
+
+	@doc "设置价格(新版本落库,perm: catalog:price:set)"
+	@handler setPrice
+	post /skus/:id/prices (PriceSetReq) returns (SimpleResp)
+
+	@doc "质保策略 Upsert(perm: catalog:warranty:update)"
+	@handler upsertWarranty
+	put /skus/:id/warranty-policy (WarrantyPolicyUpsertReq) returns (SimpleResp)
+
+	@doc "场站模板列表(perm: catalog:station:list)"
+	@handler listStationProducts
+	get /station-products (StationProductListReq) returns (StationProductListResp)
+
+	@doc "场站模板详情(含 BOM,perm: catalog:station:list)"
+	@handler getStationProduct
+	get /station-products/:id (IDPath) returns (StationProductDetailResp)
+
+	@doc "新建场站模板(perm: catalog:station:create)"
+	@handler createStationProduct
+	post /station-products (StationProductCreateReq) returns (SimpleResp)
+}
+
+// ---- 库存路由 ----
+@server (
+	prefix:     /api/v1
+	group:      inventory
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "仓库列表(perm: inventory:warehouse:list)"
+	@handler listWarehouses
+	get /warehouses (WarehouseListReq) returns (WarehouseListResp)
+
+	@doc "新建仓库(perm: inventory:warehouse:create)"
+	@handler createWarehouse
+	post /warehouses (WarehouseCreateReq) returns (SimpleResp)
+
+	@doc "库存列表(四态;low_only=低库存预警,perm: inventory:inventory:list)"
+	@handler listInventory
+	get /inventory (InventoryListReq) returns (InventoryListResp)
+
+	@doc "入库(perm: inventory:stock:in)"
+	@handler stockIn
+	post /inventory/stock-in (StockOpReq) returns (StockOpResp)
+
+	@doc "预留(perm: inventory:stock:reserve)"
+	@handler reserveStock
+	post /inventory/reserve (StockOpReq) returns (StockOpResp)
+
+	@doc "释放(perm: inventory:stock:release)"
+	@handler releaseStock
+	post /inventory/release (StockOpReq) returns (StockOpResp)
+
+	@doc "出库发货(perm: inventory:stock:deduct)"
+	@handler deductStock
+	post /inventory/deduct (StockOpReq) returns (StockOpResp)
+
+	@doc "备件领用(perm: inventory:stock:spare-out)"
+	@handler spareOut
+	post /inventory/spare-out (StockOpReq) returns (StockOpResp)
+
+	@doc "备件退库(perm: inventory:stock:spare-return)"
+	@handler spareReturn
+	post /inventory/spare-return (StockOpReq) returns (StockOpResp)
+
+	@doc "库存流水(perm: inventory:record:list)"
+	@handler listStockRecords
+	get /inventory/records (StockRecordListReq) returns (StockRecordListResp)
+
+	@doc "盘点单列表(perm: inventory:stocktake:list)"
+	@handler listStocktakes
+	get /stocktakes (StocktakeListReq) returns (StocktakeListResp)
+
+	@doc "创建盘点单(快照账面,perm: inventory:stocktake:create)"
+	@handler createStocktake
+	post /stocktakes (StocktakeCreateReq) returns (SimpleResp)
+
+	@doc "盘点单详情(perm: inventory:stocktake:list)"
+	@handler getStocktake
+	get /stocktakes/:id (IDPath) returns (StocktakeDetailResp)
+
+	@doc "提交实盘(perm: inventory:stocktake:submit)"
+	@handler submitStocktake
+	post /stocktakes/:id/submit (StocktakeSubmitReq) returns (SimpleResp)
+
+	@doc "盘点审批(通过生成账面调整流水,perm: inventory:stocktake:approve)"
+	@handler approveStocktake
+	post /stocktakes/:id/approve (StocktakeApproveReq) returns (SimpleResp)
+}
+
+// ---- 消息路由 ----
+@server (
+	prefix:     /api/v1
+	group:      notification
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "消息列表(perm: notification:message:list)"
+	@handler listMessages
+	get /messages (MessageListReq) returns (MessageListResp)
+
+	@doc "未读数(perm: notification:message:list)"
+	@handler unreadCount
+	get /messages/unread-count returns (UnreadCountResp)
+
+	@doc "标记已读(perm: notification:message:read)"
+	@handler markRead
+	post /messages/:id/read (IDPath) returns (SimpleResp)
+
+	@doc "模板列表(perm: notification:template:list)"
+	@handler listTemplates
+	get /notify-templates (TemplateListReq) returns (TemplateListResp)
+
+	@doc "模板 Upsert(perm: notification:template:update)"
+	@handler upsertTemplate
+	post /notify-templates (TemplateUpsertReq) returns (SimpleResp)
+
+	@doc "我的通知设置(perm: notification:setting:list)"
+	@handler listNotifySettings
+	get /notify-settings returns (NotifySettingListResp)
+
+	@doc "通知设置 Upsert(perm: notification:setting:update)"
+	@handler upsertNotifySetting
+	post /notify-settings (NotifySettingUpsertReq) returns (SimpleResp)
+}
+
+// ---- 审计路由 ----
+@server (
+	prefix:     /api/v1
+	group:      audit
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "操作审计(perm: audit:log:list)"
+	@handler listAuditLogs
+	get /audit-logs (AuditLogListReq) returns (AuditLogListResp)
+
+	@doc "指令审计(perm: audit:cmd:list)"
+	@handler listCmdLogs
+	get /cmd-logs (CmdAuditListReq) returns (CmdAuditListResp)
+}
+

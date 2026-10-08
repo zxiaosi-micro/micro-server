@@ -5,6 +5,26 @@ IdentityRpc:
   Endpoints:
     - ${IDENTITY_RPC|127.0.0.1:8081}   # dev 直连；prod 换 Etcd+Target
   NonBlock: true
+PartyRpc:
+  Endpoints:
+    - ${PARTY_RPC|127.0.0.1:8082}
+  NonBlock: true
+CatalogRpc:
+  Endpoints:
+    - ${CATALOG_RPC|127.0.0.1:8083}
+  NonBlock: true
+InventoryRpc:
+  Endpoints:
+    - ${INVENTORY_RPC|127.0.0.1:8084}
+  NonBlock: true
+NotificationRpc:
+  Endpoints:
+    - ${NOTIFICATION_RPC|127.0.0.1:8089}
+  NonBlock: true
+AuditRpc:
+  Endpoints:
+    - ${AUDIT_RPC|127.0.0.1:8087}
+  NonBlock: true
 Jwt:
   KeysDir: "${JWT_KEYS_DIR|}"          # 缺省回落 JWT_KEYS_DIR 环境变量
 Sessionx:

@@ -6,7 +6,12 @@ import (
 	"os"
 
 	"micro-server/services/admin-bff/internal/config"
-	"micro-server/services/identity/pb"
+	apb "micro-server/services/audit/pb"
+	cpb "micro-server/services/catalog/pb"
+	ipb "micro-server/services/identity/pb"
+	invpb "micro-server/services/inventory/pb"
+	npb "micro-server/services/notification/pb"
+	ppb "micro-server/services/party/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
@@ -20,18 +25,26 @@ import (
 // ServiceContext admin-bff 根装配。
 type ServiceContext struct {
 	Config   config.Config
-	Authz    rest.Middleware   // goctl @server middleware: Authz 挂载点（az.Handle）
-	Identity pb.IdentityClient // identity RPC 客户端
-	Verifier *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
-	sessions *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
+	Authz    rest.Middleware    // goctl @server middleware: Authz 挂载点（az.Handle）
+	Identity ipb.IdentityClient // identity RPC 客户端
+	// S4 业务域 RPC 客户端（dev 直连 Endpoints；出站统一挂 metadata 桥）
+	Party        ppb.PartyClient
+	Catalog      cpb.CatalogClient
+	Inventory    invpb.InventoryClient
+	Notification npb.NotificationClient
+	Audit        apb.AuditClient
+	Verifier     *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
+	sessions     *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	// identity RPC 客户端：出站挂 metadata 桥（ctxkit → x-micro-*，业务码无损往返）。
+	// RPC 客户端统一构造：出站挂 metadata 桥（ctxkit → x-micro-*，业务码无损往返，02 §9.5）。
 	// 用原生 gRPC dial option（go-zero 内置 client 中间件链不透传自定义拦截器）。
-	identConn := zrpc.MustNewClient(c.IdentityRpc,
-		zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor)))
-	identCli := pb.NewIdentityClient(identConn.Conn())
+	dial := func(conf zrpc.RpcClientConf) grpc.ClientConnInterface {
+		conn := zrpc.MustNewClient(conf,
+			zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor)))
+		return conn.Conn()
+	}
 
 	// 会话中心只读方（sess:{sid} 会话校验 + auth_cache 每请求 GET，Redis DB4）
 	store, err := sessionx.New(sessionx.Conf{
@@ -56,11 +69,16 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 
 	return &ServiceContext{
-		Config:   c,
-		Authz:    az.Handle,
-		Identity: identCli,
-		Verifier: verifier,
-		sessions: store,
+		Config:       c,
+		Authz:        az.Handle,
+		Identity:     ipb.NewIdentityClient(dial(c.IdentityRpc)),
+		Party:        ppb.NewPartyClient(dial(c.PartyRpc)),
+		Catalog:      cpb.NewCatalogClient(dial(c.CatalogRpc)),
+		Inventory:    invpb.NewInventoryClient(dial(c.InventoryRpc)),
+		Notification: npb.NewNotificationClient(dial(c.NotificationRpc)),
+		Audit:        apb.NewAuditClient(dial(c.AuditRpc)),
+		Verifier:     verifier,
+		sessions:     store,
 	}
 }
 

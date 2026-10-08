@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+package catalog;
+
+option go_package = "./pb";
+
+// Catalog 商品服务契约（S4-02，v4/03 阶段 4 任务正本）。
+//
+// 职责边界：catalog_db 是商品/SKU/价格/质保策略/场站模板的唯一写入方；
+// 价格版本化留痕（SetPrice 只插入新版本行，历史不删改，01 FR-CTL-004）；
+// 延保也是 SKU（type=EXT_WARRANTY），下单链路统一。ID 传输用 int64，对外 string（E8）。
+service Catalog {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 商品 ----
+  rpc CreateProduct(CreateProductReq) returns (CreateProductResp);
+  rpc ListProduct(ListProductReq) returns (ListProductResp);
+
+  // ---- SKU ----
+  rpc CreateSKU(CreateSKUReq) returns (CreateSKUResp);
+  rpc ListSKU(ListSKUReq) returns (ListSKUResp);
+
+  // ---- 价格（版本化）----
+  rpc SetPrice(SetPriceReq) returns (SetPriceResp);
+  rpc ListPrice(ListPriceReq) returns (ListPriceResp);
+
+  // ---- 质保策略 ----
+  rpc UpsertWarrantyPolicy(UpsertWarrantyPolicyReq) returns (UpsertWarrantyPolicyResp);
+
+  // ---- 场站模板（BOM）----
+  rpc CreateStationProduct(CreateStationProductReq) returns (CreateStationProductResp);
+  rpc GetStationProduct(GetStationProductReq) returns (GetStationProductResp);
+  rpc ListStationProduct(ListStationProductReq) returns (ListStationProductResp);
+}
+
+message PingReq {}
+
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 商品 ----
+
+message ProductItem {
+  int64 product_id = 1;
+  string name = 2;
+  string category = 3;
+  int32 status = 4;   // 1 上架/2 下架
+  string remark = 5;
+  int64 created_at = 6; // UnixMilli
+}
+
+message CreateProductReq {
+  string name = 1;
+  string category = 2;
+  string remark = 3;
+}
+
+message CreateProductResp {
+  int64 product_id = 1;
+}
+
+message ListProductReq {
+  string keyword = 1; // name 模糊
+  int32 status = 2;   // 0 = 全部
+  int64 page = 3;
+  int64 size = 4;     // 上限 100
+}
+
+message ListProductResp {
+  repeated ProductItem list = 1;
+  int64 total = 2;
+}
+
+// ---- SKU ----
+
+message SkuItem {
+  int64 sku_id = 1;
+  int64 product_id = 2;
+  string code = 3;
+  string name = 4;
+  string type = 5;   // STANDARD/EXT_WARRANTY
+  string spec = 6;   // JSON
+  int32 status = 7;
+  int64 created_at = 8;
+}
+
+message CreateSKUReq {
+  int64 product_id = 1;
+  string code = 2;
+  string name = 3;
+  string type = 4;   // STANDARD/EXT_WARRANTY
+  string spec = 5;   // JSON
+}
+
+message CreateSKUResp {
+  int64 sku_id = 1;
+}
+
+message ListSKUReq {
+  int64 product_id = 1; // 0 = 全部
+  string keyword = 2;   // name/code 模糊
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListSKUResp {
+  repeated SkuItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 价格 ----
+
+message PriceItem {
+  int64 price_id = 1;
+  int64 sku_id = 2;
+  string price_type = 3; // RETAIL/DEALER/TIER
+  int32 tier_qty = 4;
+  string amount = 5;   // DECIMAL 字符串
+  int32 version = 6;
+  int64 created_at = 7;
+}
+
+message SetPriceReq {
+  int64 sku_id = 1;
+  string price_type = 2; // RETAIL/DEALER/TIER
+  int32 tier_qty = 3;
+  string amount = 4;     // DECIMAL 字符串
+}
+
+message SetPriceResp {
+  int32 version = 1; // 本次落库版本
+}
+
+message ListPriceReq {
+  int64 sku_id = 1;
+  bool latest_only = 2; // true=仅各键最新版本（默认价目表）；false=全版本历史（版本切换查看）
+  int64 page = 3;
+  int64 size = 4;
+}
+
+message ListPriceResp {
+  repeated PriceItem list = 1;
+  int64 total = 2;
+}
+
+// ---- 质保策略 ----
+
+message WarrantyPolicyItem {
+  int64 policy_id = 1;
+  int64 sku_id = 2;
+  int32 period_months = 3;
+  string start_rule = 4; // ACTIVATION/RECEIPT
+}
+
+message UpsertWarrantyPolicyReq {
+  int64 sku_id = 1;
+  int32 period_months = 2;
+  string start_rule = 3; // ACTIVATION/RECEIPT
+}
+
+message UpsertWarrantyPolicyResp {}
+
+// ---- 场站模板 ----
+
+message StationProductItem {
+  int64 station_product_id = 1;
+  string name = 2;
+  string remark = 3;
+  repeated BomItem items = 4; // 仅 GetStationProduct 填充
+  int64 created_at = 5;
+}
+
+message BomItem {
+  int64 sku_id = 1;
+  string sku_name = 2; // Get 时联表展示（服务内聚合，非跨库 JOIN）
+  int32 qty = 3;
+}
+
+message CreateStationProductReq {
+  string name = 1;
+  string remark = 2;
+  repeated BomItem items = 3;
+}
+
+message CreateStationProductResp {
+  int64 station_product_id = 1;
+}
+
+message GetStationProductReq {
+  int64 station_product_id = 1;
+}
+
+message GetStationProductResp {
+  StationProductItem station_product = 1;
+}
+
+message ListStationProductReq {
+  string keyword = 1; // name 模糊
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListStationProductResp {
+  repeated StationProductItem list = 1;
+  int64 total = 2;
+}

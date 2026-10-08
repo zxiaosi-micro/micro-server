@@ -25,6 +25,18 @@ AuditRpc:
   Endpoints:
     - ${AUDIT_RPC|127.0.0.1:8087}
   NonBlock: true
+OrderRpc:
+  Endpoints:
+    - ${ORDER_RPC|127.0.0.1:8090}
+  NonBlock: true
+FinanceRpc:
+  Endpoints:
+    - ${FINANCE_RPC|127.0.0.1:8092}
+  NonBlock: true
+ContractRpc:
+  Endpoints:
+    - ${CONTRACT_RPC|127.0.0.1:8093}
+  NonBlock: true
 Jwt:
   KeysDir: "${JWT_KEYS_DIR|}"          # 缺省回落 JWT_KEYS_DIR 环境变量
 Sessionx:
@@ -40,8 +52,13 @@ Authz:
     - /api/v1/auth/step-up
     - /sso
     - /healthz
-  FailClosePrefixes: []                # 预留指令/财务（S5+ 登记，Redis 故障拒绝）
-  SensitivePrefixes: []                # 预留敏感路由（step-up 强制，S4+）
+  FailClosePrefixes:                   # S5 财务指令面（Redis 故障拒绝，02 §10 NFR-AVL-005）
+    - /api/v1/payments
+    - /api/v1/refunds
+  SensitivePrefixes:                   # S5 敏感路由（step-up 强制：对公复核/合同归档/人工重推）
+    - /api/v1/payments                 # 对公复核（ApprovePayment 职责分离）
+    - /api/v1/contracts                # 合同归档上传（FR-CTR-003）
+    - /api/v1/sagas                    # Saga 人工重推
   AllowedClients:
     - ADMIN_WEB                        # admin-bff 仅服务管理后台端
 Prometheus:

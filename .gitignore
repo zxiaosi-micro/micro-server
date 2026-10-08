@@ -30,3 +30,4 @@ coverage.html
 .idea/
 .vscode/
 .DS_Store
+go.mod

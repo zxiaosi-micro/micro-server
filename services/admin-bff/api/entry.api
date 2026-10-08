@@ -1340,3 +1340,754 @@ service AdminBffApi {
 	get /cmd-logs (CmdAuditListReq) returns (CmdAuditListResp)
 }
 
+// ============================================================
+// S5 交易域（S5-02~04）：订单/支付/合同质保。ID/单号一律 string（E8）；金额 DECIMAL 字符串。
+// ============================================================
+type OrderItemInputApi {
+	SkuId       string `json:"sku_id"`
+	WarehouseId string `json:"warehouse_id"`
+	Qty         int    `json:"qty"`
+	Sn          string `json:"sn,optional"`
+}
+
+type OrderCreateReq {
+	Type              string              `json:"type,options=DEVICE|STATION|PURCHASE|RETURN"`
+	BuyerPartyId      string              `json:"buyer_party_id,optional"`
+	Remark            string              `json:"remark,optional"`
+	Items             []OrderItemInputApi `json:"items"`
+	PayTimeoutMinutes int                 `json:"pay_timeout_minutes,optional"`
+}
+
+type OrderCreateResp {
+	OrderId     string `json:"order_id"`
+	OrderNo     string `json:"order_no"`
+	TotalAmount string `json:"total_amount"`
+	PayExpireAt int64  `json:"pay_expire_at"`
+	SagaId      string `json:"saga_id"`
+}
+
+type OrderListReq {
+	Keyword string `json:"keyword,optional"`
+	Type    string `json:"type,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type OrderItemView {
+	ItemId      string `json:"item_id"`
+	SkuId       string `json:"sku_id"`
+	SkuName     string `json:"sku_name"`
+	Sn          string `json:"sn"`
+	WarehouseId string `json:"warehouse_id"`
+	Qty         int    `json:"qty"`
+	UnitPrice   string `json:"unit_price"`
+	Amount      string `json:"amount"`
+	OutQty      int    `json:"out_qty"`
+}
+
+type OrderView {
+	OrderId      string          `json:"order_id"`
+	OrderNo      string          `json:"order_no"`
+	Type         string          `json:"type"`
+	Status       string          `json:"status"`
+	BuyerPartyId string          `json:"buyer_party_id"`
+	TotalAmount  string          `json:"total_amount"`
+	PayExpireAt  int64           `json:"pay_expire_at"`
+	PaidAt       int64           `json:"paid_at"`
+	CancelReason string          `json:"cancel_reason"`
+	Remark       string          `json:"remark"`
+	Items        []OrderItemView `json:"items"`
+	CreatedAt    int64           `json:"created_at"`
+	CreatedBy    string          `json:"created_by"`
+}
+
+type OrderListResp {
+	List  []OrderView `json:"list"`
+	Total int         `json:"total"`
+}
+
+type OrderNoPath {
+	OrderNo string `path:"no"`
+}
+
+type OrderPayReq {
+	OrderNo string `path:"no"`
+	Channel string `json:"channel,options=WECHAT|ALIPAY|BANK_OFFLINE"`
+}
+
+type OrderPayResp {
+	PaymentNo string `json:"payment_no"`
+	Status    string `json:"status"`
+	PayParams string `json:"pay_params"`
+}
+
+type OrderCancelReq {
+	OrderNo string `path:"no"`
+	Reason  string `json:"reason,optional"`
+}
+
+type SagaStepView {
+	Step    int    `json:"step"`
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	IdemKey string `json:"idem_key"`
+}
+
+type SagaView {
+	SagaId      string         `json:"saga_id"`
+	OrderNo     string         `json:"order_no"`
+	OrderType   string         `json:"order_type"`
+	CurrentStep int            `json:"current_step"`
+	Status      string         `json:"status"`
+	RetryCount  int            `json:"retry_count"`
+	NextRetryAt int64          `json:"next_retry_at"`
+	LastError   string         `json:"last_error"`
+	Steps       []SagaStepView `json:"steps"`
+	UpdatedAt   int64          `json:"updated_at"`
+}
+
+type SagaResp {
+	Saga SagaView `json:"saga"`
+}
+
+type SagaRetryReq {
+	Id     int64  `path:"id"`
+	Remark string `json:"remark,optional"`
+}
+
+type ReturnItemInputApi {
+	SkuId  string `json:"sku_id"`
+	Qty    int    `json:"qty"`
+	Sn     string `json:"sn,optional"`
+	Reason string `json:"reason,optional"`
+}
+
+type ReturnCreateReq {
+	OrderNo string               `json:"order_no"`
+	Items   []ReturnItemInputApi `json:"items"`
+	Reason  string               `json:"reason,optional"`
+}
+
+type ReturnCreateResp {
+	ReturnId string `json:"return_id"`
+	ReturnNo string `json:"return_no"`
+}
+
+type ReturnNoPath {
+	ReturnNo string `path:"no"`
+}
+
+type ReturnApproveReq {
+	ReturnNo string `path:"no"`
+	Approve  bool   `json:"approve"`
+	Remark   string `json:"remark,optional"`
+}
+
+type ShipmentItemInputApi {
+	SkuId string `json:"sku_id"`
+	Qty   int    `json:"qty"`
+	Sn    string `json:"sn,optional"`
+}
+
+type ShipmentCreateReq {
+	OrderNo     string                 `json:"order_no"`
+	WarehouseId string                 `json:"warehouse_id"`
+	Items       []ShipmentItemInputApi `json:"items"`
+	Carrier     string                 `json:"carrier,optional"`
+	TrackingNo  string                 `json:"tracking_no,optional"`
+}
+
+type ShipmentCreateResp {
+	ShipmentId string `json:"shipment_id"`
+	ShipmentNo string `json:"shipment_no"`
+}
+
+type ShipmentNoPath {
+	ShipmentNo string `path:"no"`
+}
+
+type TraceAddReq {
+	ShipmentNo  string `path:"no"`
+	Node        string `json:"node"`
+	Description string `json:"description,optional"`
+	TraceTime   int64  `json:"trace_time,optional"`
+}
+
+type ShipmentSignReq {
+	ShipmentNo string `path:"no"`
+	SignedBy   string `json:"signed_by"`
+}
+
+type SalesSumReq {
+	From int64 `json:"from,optional"`
+	To   int64 `json:"to,optional"`
+}
+
+type SalesSumResp {
+	TotalAmount string `json:"total_amount"`
+	OrderCount  int    `json:"order_count"`
+}
+
+// ---- 支付/退款/发票/对账 ----
+type PaymentListReq {
+	Keyword string `json:"keyword,optional"`
+	Channel string `json:"channel,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type PaymentView {
+	PaymentNo    string `json:"payment_no"`
+	OrderNo      string `json:"order_no"`
+	Channel      string `json:"channel"`
+	Status       string `json:"status"`
+	Amount       string `json:"amount"`
+	PaidAmount   string `json:"paid_amount"`
+	ChannelTxnId string `json:"channel_txn_id"`
+	PayerPartyId string `json:"payer_party_id"`
+	CreatedBy    string `json:"created_by"`
+	ApprovedBy   string `json:"approved_by"`
+	Remark       string `json:"remark"`
+	PaidAt       int64  `json:"paid_at"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
+type PaymentListResp {
+	List  []PaymentView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type PaymentNoPath {
+	PaymentNo string `path:"no"`
+}
+
+type PaymentConfirmReq {
+	PaymentNo    string `path:"no"`
+	ChannelTxnId string `json:"channel_txn_id,optional"`
+	PaidAmount   string `json:"paid_amount,optional"`
+	Source       string `json:"source,default=MOCK"`
+}
+
+type PaymentApproveReq {
+	PaymentNo string `path:"no"`
+	Approve   bool   `json:"approve"`
+	Remark    string `json:"remark,optional"`
+}
+
+type PaymentSettleReq {
+	PaymentNo string `path:"no"`
+	Remark    string `json:"remark,optional"`
+}
+
+type RefundListReq {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type RefundView {
+	RefundNo        string `json:"refund_no"`
+	PaymentNo       string `json:"payment_no"`
+	OrderNo         string `json:"order_no"`
+	ReturnNo        string `json:"return_no"`
+	Amount          string `json:"amount"`
+	Channel         string `json:"channel"`
+	Status          string `json:"status"`
+	ChannelRefundId string `json:"channel_refund_id"`
+	Reason          string `json:"reason"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type RefundListResp {
+	List  []RefundView `json:"list"`
+	Total int          `json:"total"`
+}
+
+type RefundCreateReq {
+	PaymentNo string `json:"payment_no"`
+	Amount    string `json:"amount"`
+	ReturnNo  string `json:"return_no,optional"`
+	Reason    string `json:"reason,optional"`
+}
+
+type RefundCreateResp {
+	RefundNo string `json:"refund_no"`
+	Status   string `json:"status"`
+}
+
+type InvoiceListReq {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type InvoiceView {
+	InvoiceNo     string `json:"invoice_no"`
+	PaymentNo     string `json:"payment_no"`
+	OrderNo       string `json:"order_no"`
+	Title         string `json:"title"`
+	TaxNo         string `json:"tax_no"`
+	Amount        string `json:"amount"`
+	Status        string `json:"status"`
+	ReverseReason string `json:"reverse_reason"`
+	IssuedAt      int64  `json:"issued_at"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
+type InvoiceListResp {
+	List  []InvoiceView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type InvoiceCreateReq {
+	PaymentNo string `json:"payment_no"`
+	Title     string `json:"title"`
+	TaxNo     string `json:"tax_no,optional"`
+	Amount    string `json:"amount,optional"`
+}
+
+type InvoiceCreateResp {
+	InvoiceNo string `json:"invoice_no"`
+}
+
+type InvoiceNoPath {
+	InvoiceNo string `path:"no"`
+}
+
+type InvoiceReverseReq {
+	InvoiceNo string `path:"no"`
+	Reason    string `json:"reason,optional"`
+}
+
+type ReconcileListReq {
+	Status string `json:"status,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type ReconcileTaskView {
+	TaskId        string `json:"task_id"`
+	TaskNo        string `json:"task_no"`
+	Type          string `json:"type"`
+	BizDate       string `json:"biz_date"`
+	DiffReport    string `json:"diff_report"`
+	Status        string `json:"status"`
+	Resolution    string `json:"resolution"`
+	ResolveRemark string `json:"resolve_remark"`
+	ResolvedBy    string `json:"resolved_by"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
+type ReconcileListResp {
+	List  []ReconcileTaskView `json:"list"`
+	Total int                 `json:"total"`
+}
+
+type ReconcileResolveReq {
+	Id         int64  `path:"id"`
+	Resolution string `json:"resolution,options=REPLAY|IGNORE"`
+	Remark     string `json:"remark,optional"`
+}
+
+// ---- 合同/质保/SLA/索赔/延保 ----
+type ContractListReq {
+	Keyword string `json:"keyword,optional"`
+	Type    string `json:"type,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type ContractFileView {
+	FileRecId     string `json:"file_rec_id"`
+	FileId        string `json:"file_id"`
+	FileName      string `json:"file_name"`
+	Version       int    `json:"version"`
+	SignPartyName string `json:"sign_party_name"`
+	SignPartyType string `json:"sign_party_type"`
+	Status        string `json:"status"`
+	UploadedBy    string `json:"uploaded_by"`
+	UploaderName  string `json:"uploader_name"`
+	UploadedAt    int64  `json:"uploaded_at"`
+	Remark        string `json:"remark"`
+}
+
+type ContractView {
+	ContractId  string             `json:"contract_id"`
+	ContractNo  string             `json:"contract_no"`
+	Type        string             `json:"type"`
+	Status      string             `json:"status"`
+	Name        string             `json:"name"`
+	TemplateId  string             `json:"template_id"`
+	Amount      string             `json:"amount"`
+	Files       []ContractFileView `json:"files"`
+	EffectiveAt int64              `json:"effective_at"`
+	ArchivedAt  int64              `json:"archived_at"`
+	Remark      string             `json:"remark"`
+	CreatedAt   int64              `json:"created_at"`
+	CreatedBy   string             `json:"created_by"`
+}
+
+type ContractListResp {
+	List  []ContractView `json:"list"`
+	Total int            `json:"total"`
+}
+
+type ContractNoPath {
+	ContractNo string `path:"no"`
+}
+
+type ContractFileUploadReq {
+	ContractNo    string `path:"no"`
+	FileId        string `json:"file_id"`
+	FileName      string `json:"file_name"`
+	SignPartyName string `json:"sign_party_name,optional"`
+	SignPartyType string `json:"sign_party_type,optional"`
+	Remark        string `json:"remark,optional"`
+}
+
+type ContractFileUploadResp {
+	Version int `json:"version"`
+}
+
+type ContractArchiveReq {
+	ContractNo string `path:"no"`
+	Action     string `json:"action,options=EFFECTIVE|ARCHIVE"`
+	Remark     string `json:"remark,optional"`
+}
+
+type WarrantyListReq {
+	Status string `json:"status,optional"`
+	Level  string `json:"level,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type WarrantyView {
+	WarrantyNo string `json:"warranty_no"`
+	Level      string `json:"level"`
+	TargetType string `json:"target_type"`
+	TargetId   string `json:"target_id"`
+	TargetKey  string `json:"target_key"`
+	Status     string `json:"status"`
+	StartAt    int64  `json:"start_at"`
+	EndAt      int64  `json:"end_at"`
+	Months     int    `json:"months"`
+	StartRule  string `json:"start_rule"`
+	SourceType string `json:"source_type"`
+	SourceNo   string `json:"source_no"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type WarrantyListResp {
+	List  []WarrantyView `json:"list"`
+	Total int            `json:"total"`
+}
+
+type WarrantyTargetReq {
+	TargetType string `json:"target_type,options=DEVICE|STATION"`
+	TargetId   string `json:"target_id,optional"`
+	Sn         string `json:"sn,optional"`
+}
+
+type WarrantyTargetResp {
+	List []WarrantyView `json:"list"`
+}
+
+type SlaStrategyView {
+	StrategyId      string `json:"strategy_id"`
+	Code            string `json:"code"`
+	Name            string `json:"name"`
+	Level           string `json:"level"`
+	ResponseMinutes int    `json:"response_minutes"`
+	ResolveMinutes  int    `json:"resolve_minutes"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type SlaListResp {
+	List []SlaStrategyView `json:"list"`
+}
+
+type SlaCreateReq {
+	Code            string `json:"code"`
+	Name            string `json:"name"`
+	Level           string `json:"level"`
+	ResponseMinutes int    `json:"response_minutes"`
+	ResolveMinutes  int    `json:"resolve_minutes"`
+}
+
+type SlaCreateResp {
+	StrategyId string `json:"strategy_id"`
+}
+
+type SlaBindReq {
+	ContractNo string `path:"no"`
+	StrategyId string `json:"strategy_id"`
+}
+
+type ClaimListReq {
+	Status string `json:"status,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type ClaimView {
+	ClaimNo     string `json:"claim_no"`
+	WarrantyId  string `json:"warranty_id"`
+	WarrantyNo  string `json:"warranty_no"`
+	Type        string `json:"type"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	SettleType  string `json:"settle_type"`
+	Amount      string `json:"amount"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type ClaimListResp {
+	List  []ClaimView `json:"list"`
+	Total int         `json:"total"`
+}
+
+type ClaimCreateReq {
+	WarrantyId  string `json:"warranty_id"`
+	Type        string `json:"type,options=QUALITY|TRANSPORT|INSTALL"`
+	Description string `json:"description,optional"`
+}
+
+type ClaimCreateResp {
+	ClaimId string `json:"claim_id"`
+	ClaimNo string `json:"claim_no"`
+}
+
+type ClaimNoPath {
+	ClaimNo string `path:"no"`
+}
+
+type ClaimApproveReq {
+	ClaimNo string `path:"no"`
+	Approve bool   `json:"approve"`
+	Remark  string `json:"remark,optional"`
+}
+
+type ClaimSettleReq {
+	ClaimNo    string `path:"no"`
+	SettleType string `json:"settle_type,options=REPAIR|REPLACE|REFUND|PAID"`
+	Amount     string `json:"amount,optional"`
+}
+
+type ExtensionSellReq {
+	BaseWarrantyId string `json:"base_warranty_id"`
+	Months         int    `json:"months"`
+	OrderNo        string `json:"order_no,optional"`
+	Amount         string `json:"amount,optional"`
+}
+
+type ExtensionSellResp {
+	ExtensionId string `json:"extension_id"`
+	ExtensionNo string `json:"extension_no"`
+}
+
+type ExtensionNoPath {
+	ExtensionNo string `path:"no"`
+}
+
+type ExtensionTransferReq {
+	ExtensionNo  string `path:"no"`
+	ToTargetType string `json:"to_target_type,options=DEVICE|STATION"`
+	ToTargetId   string `json:"to_target_id,optional"`
+	ToTargetKey  string `json:"to_target_key,optional"`
+}
+
+type ExtensionRefundReq {
+	ExtensionNo string `path:"no"`
+	Reason      string `json:"reason,optional"`
+}
+
+// ---- 订单路由 ----
+@server (
+	prefix:     /api/v1
+	group:      order
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "订单列表(perm: trade:order:list)"
+	@handler listOrders
+	get /orders (OrderListReq) returns (OrderListResp)
+
+	@doc "订单详情含明细(perm: trade:order:list)"
+	@handler getOrder
+	get /orders/:no (OrderNoPath) returns (OrderView)
+
+	@doc "创建订单(Saga 步骤1, perm: trade:order:create)"
+	@handler createOrder
+	post /orders (OrderCreateReq) returns (OrderCreateResp)
+
+	@doc "发起支付(Saga 步骤3, perm: trade:order:pay)"
+	@handler payOrder
+	post /orders/:no/pay (OrderPayReq) returns (OrderPayResp)
+
+	@doc "取消订单(补偿释放库存, perm: trade:order:cancel)"
+	@handler cancelOrder
+	post /orders/:no/cancel (OrderCancelReq) returns (SimpleResp)
+
+	@doc "Saga 进度(perm: trade:order:list)"
+	@handler getOrderSaga
+	get /orders/:no/saga (OrderNoPath) returns (SagaResp)
+
+	@doc "Saga 人工重推(perm: trade:order:retry)"
+	@handler retrySaga
+	post /sagas/:id/retry (SagaRetryReq) returns (SimpleResp)
+
+	@doc "已支付销售汇总(perm: trade:order:list)"
+	@handler sumPaidSales
+	get /sales-summary (SalesSumReq) returns (SalesSumResp)
+
+	@doc "退货申请(perm: trade:return:create)"
+	@handler createReturnOrder
+	post /return-orders (ReturnCreateReq) returns (ReturnCreateResp)
+
+	@doc "退货审批(通过→自动退款, perm: trade:return:approve)"
+	@handler approveReturnOrder
+	post /return-orders/:no/approve (ReturnApproveReq) returns (SimpleResp)
+
+	@doc "创建发货单(perm: trade:shipment:create)"
+	@handler createShipment
+	post /shipments (ShipmentCreateReq) returns (ShipmentCreateResp)
+
+	@doc "轨迹手工录入(perm: trade:shipment:trace)"
+	@handler addShipmentTrace
+	post /shipments/:no/traces (TraceAddReq) returns (SimpleResp)
+
+	@doc "签收确认(触发质保起算, perm: trade:shipment:sign)"
+	@handler confirmShipmentSigned
+	post /shipments/:no/confirm-signed (ShipmentSignReq) returns (SimpleResp)
+}
+
+// ---- 支付路由 ----
+@server (
+	prefix:     /api/v1
+	group:      finance
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "支付单列表(REVIEWING 高亮, perm: finance:payment:list)"
+	@handler listPayments
+	get /payments (PaymentListReq) returns (PaymentListResp)
+
+	@doc "支付确认(dev 模拟网关/回调, perm: finance:payment:confirm)"
+	@handler confirmPayment
+	post /payments/:no/confirm (PaymentConfirmReq) returns (SimpleResp)
+
+	@doc "对公第二人复核(职责分离, perm: finance:payment:approve)"
+	@handler approvePayment
+	post /payments/:no/approve (PaymentApproveReq) returns (SimpleResp)
+
+	@doc "对账核销(perm: finance:payment:settle)"
+	@handler settlePayment
+	post /payments/:no/settle (PaymentSettleReq) returns (SimpleResp)
+
+	@doc "退款列表(perm: finance:refund:list)"
+	@handler listRefunds
+	get /refunds (RefundListReq) returns (RefundListResp)
+
+	@doc "手工退款(原路退回, perm: finance:refund:create)"
+	@handler createRefund
+	post /refunds (RefundCreateReq) returns (RefundCreateResp)
+
+	@doc "发票列表(perm: finance:invoice:list)"
+	@handler listInvoices
+	get /invoices (InvoiceListReq) returns (InvoiceListResp)
+
+	@doc "开票(perm: finance:invoice:issue)"
+	@handler createInvoice
+	post /invoices (InvoiceCreateReq) returns (InvoiceCreateResp)
+
+	@doc "红冲(perm: finance:invoice:reverse)"
+	@handler reverseInvoice
+	post /invoices/:no/reverse (InvoiceReverseReq) returns (SimpleResp)
+
+	@doc "对账任务列表(perm: finance:reconcile:list)"
+	@handler listReconcileTasks
+	get /reconcile-tasks (ReconcileListReq) returns (ReconcileListResp)
+
+	@doc "对账任务处理(仅 REPLAY/IGNORE, perm: finance:reconcile:resolve)"
+	@handler resolveReconcileTask
+	post /reconcile-tasks/:id/resolve (ReconcileResolveReq) returns (SimpleResp)
+}
+
+// ---- 合同质保路由 ----
+@server (
+	prefix:     /api/v1
+	group:      contract
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "合同列表(perm: contract:contract:list)"
+	@handler listContracts
+	get /contracts (ContractListReq) returns (ContractListResp)
+
+	@doc "合同详情(归档件版本列表, perm: contract:contract:list)"
+	@handler getContract
+	get /contracts/:no (ContractNoPath) returns (ContractView)
+
+	@doc "归档件上传登记(受控下载经 file 服务, perm: contract:contract:archive)"
+	@handler uploadContractFile
+	post /contracts/:no/files (ContractFileUploadReq) returns (ContractFileUploadResp)
+
+	@doc "合同生效/归档(perm: contract:contract:archive)"
+	@handler archiveContract
+	post /contracts/:no/archive (ContractArchiveReq) returns (SimpleResp)
+
+	@doc "质保列表(perm: contract:warranty:list)"
+	@handler listWarranties
+	get /warranties (WarrantyListReq) returns (WarrantyListResp)
+
+	@doc "按对象查质保(双层, perm: contract:warranty:list)"
+	@handler getWarrantyByTarget
+	get /warranty-by-target (WarrantyTargetReq) returns (WarrantyTargetResp)
+
+	@doc "SLA 策略列表(perm: contract:sla:list)"
+	@handler listSlaStrategies
+	get /sla-strategies returns (SlaListResp)
+
+	@doc "SLA 策略创建(perm: contract:sla:create)"
+	@handler createSlaStrategy
+	post /sla-strategies (SlaCreateReq) returns (SlaCreateResp)
+
+	@doc "合同绑定 SLA(快照冻结, perm: contract:sla:bind)"
+	@handler bindContractSla
+	post /contracts/:no/sla (SlaBindReq) returns (SimpleResp)
+
+	@doc "索赔列表(perm: contract:claim:list)"
+	@handler listClaims
+	get /claims (ClaimListReq) returns (ClaimListResp)
+
+	@doc "索赔申请(perm: contract:claim:create)"
+	@handler createClaim
+	post /claims (ClaimCreateReq) returns (ClaimCreateResp)
+
+	@doc "索赔审批(perm: contract:claim:approve)"
+	@handler approveClaim
+	post /claims/:no/approve (ClaimApproveReq) returns (SimpleResp)
+
+	@doc "索赔结算(perm: contract:claim:settle)"
+	@handler settleClaim
+	post /claims/:no/settle (ClaimSettleReq) returns (SimpleResp)
+
+	@doc "延保销售(衔接原质保, perm: contract:extension:sell)"
+	@handler sellExtension
+	post /warranty-extensions (ExtensionSellReq) returns (ExtensionSellResp)
+
+	@doc "延保转移(perm: contract:extension:transfer)"
+	@handler transferExtension
+	post /warranty-extensions/:no/transfer (ExtensionTransferReq) returns (SimpleResp)
+
+	@doc "延保退款(perm: contract:extension:refund)"
+	@handler refundExtension
+	post /warranty-extensions/:no/refund (ExtensionRefundReq) returns (SimpleResp)
+}
+

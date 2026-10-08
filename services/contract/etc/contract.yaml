@@ -1,0 +1,41 @@
+# contract 服务配置（S5-04；敏感值走 ${ENV|default} 占位，E11）
+Name: contract
+ListenOn: 0.0.0.0:${RPC_PORT|8093}
+Mode: dev
+
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: contract.rpc
+
+Mysql:
+  DataSource: ${MICRO_DSN_CONTRACT|micro_app:pass@tcp(127.0.0.1:23306)/micro_contract?charset=utf8mb4&parseTime=true&loc=Local&timeout=5s}
+
+Cache:
+  - Host: ${REDIS_HOSTS|127.0.0.1:26379}
+    Pass: ${REDIS_PASS|}
+
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: contract-warranty-d2
+
+FileRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: file.rpc
+  Timeout: 5000
+
+ConfigKey: ${CONFIG_KEY|/micro/config/contract/main}
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: ${METRICS_PORT|9113}
+  Path: /metrics
+
+Telemetry:
+  Name: contract
+  Endpoint: ${OTLP_ENDPOINT|http://127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc

@@ -1,0 +1,240 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "./pb";
+
+// Order 订单服务契约（S5-02，v4/03 阶段 5 任务正本）。
+//
+// 职责边界：order_db 是订单/发运/退货/Saga 的唯一写入方（FR-ORD）。
+// 出库统一由 inventory 执行（唯一写入方，FR-INV-004），order 只发 Reserve/Release/DeductLocked 指令，
+// 幂等键 biz_no = <order_no>:<sku_id>（inventory stock_record (biz_type,biz_no) 唯一约束兜底）。
+// Saga 步骤 3 发起支付由 PayOrder 触达 finance；支付成功由 finance 发 order_paid 事件驱动推进。
+// 全链无 MQ 延迟消息（ADR-09）：支付超时 = pay_expire_at 列 cron 扫描；重试 = next_retry_at 退避扫描。
+// Saga 补偿纪律（02 §9.1）：补偿是新的业务动作；步骤 4 出库成功后不可自动补偿 → 人工队列。
+// ID 传输 int64，对外 string（E8）；金额 DECIMAL 字符串。
+service Order {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 订单 ----
+  rpc CreateOrder(CreateOrderReq) returns (CreateOrderResp);
+  rpc GetOrder(GetOrderReq) returns (GetOrderResp);
+  rpc ListOrder(ListOrderReq) returns (ListOrderResp);
+  rpc PayOrder(PayOrderReq) returns (PayOrderResp);          // 发起支付（Saga 步骤 3，调 finance.CreatePayment）
+  rpc CancelOrder(CancelOrderReq) returns (CancelOrderResp); // 取消（步骤≤3：补偿释放库存）
+
+  // ---- Saga ----
+  rpc GetSaga(GetSagaReq) returns (GetSagaResp);
+  rpc RetrySaga(RetrySagaReq) returns (RetrySagaResp); // 人工介入后重推（前端人工介入按钮）
+
+  // ---- 退货（FR-ORD-004：申请/审核/退款联动）----
+  rpc CreateReturnOrder(CreateReturnOrderReq) returns (CreateReturnOrderResp);
+  rpc ApproveReturnOrder(ApproveReturnOrderReq) returns (ApproveReturnOrderResp);
+
+  // ---- 发货单与物流轨迹（FR-ORD-005，轨迹手工录入基线）----
+  rpc CreateShipment(CreateShipmentReq) returns (CreateShipmentResp);
+  rpc AddShipmentTrace(AddShipmentTraceReq) returns (AddShipmentTraceResp);
+  rpc ConfirmShipmentSigned(ConfirmShipmentSignedReq) returns (ConfirmShipmentSignedResp); // 签收 → shipment_signed 事件驱动质保起算
+
+  // ---- 统计 ----
+  rpc SumPaidSales(SumPaidSalesReq) returns (SumPaidSalesResp);
+}
+
+message PingReq {}
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 订单 ----
+
+message OrderItemInput {
+  int64 sku_id = 1;
+  int64 warehouse_id = 2; // 出库仓（Reserve/DeductLocked 指定）
+  int32 qty = 3;
+  string sn = 4;          // 设备 SN（DEVICE 单选填；e2esmoke 用）
+}
+
+message CreateOrderReq {
+  string type = 1;               // DEVICE/STATION/PURCHASE/RETURN
+  int64 buyer_party_id = 2;
+  string remark = 3;
+  repeated OrderItemInput items = 4;
+  int32 pay_timeout_minutes = 5; // 0 = 取服务配置默认（30min，FR-ORD-006）
+}
+
+message CreateOrderResp {
+  int64 order_id = 1;
+  string order_no = 2;
+  string total_amount = 3; // 快照价汇总
+  int64 pay_expire_at = 4; // UnixMilli（超时扫描列）
+  int64 saga_id = 5;
+}
+
+message OrderItem {
+  int64 item_id = 1;
+  int64 sku_id = 2;
+  string sku_name = 3;
+  string sn = 4;
+  int64 warehouse_id = 5;
+  int32 qty = 6;
+  string unit_price = 7; // 下单时单价快照（catalog.ListPrice latest）
+  string amount = 8;
+  int32 out_qty = 9;     // 已出库确认数（DeductLocked 成功 + stock_out 事件双路回写，幂等）
+}
+
+message OrderDetail {
+  int64 order_id = 1;
+  string order_no = 2;
+  string type = 3;
+  string status = 4;       // CREATED/LOCKED/PAYING/PAID/STOCK_OUT/CONTRACTED/DONE/CANCELLED/PAY_TIMEOUT
+  int64 buyer_party_id = 5;
+  string total_amount = 6;
+  int64 pay_expire_at = 7; // UnixMilli；0=已终结单
+  int64 paid_at = 8;
+  string cancel_reason = 9;
+  string remark = 10;
+  repeated OrderItem items = 11;
+  int64 created_at = 12;
+  int64 created_by = 13;
+}
+
+message GetOrderReq {
+  int64 order_id = 1; // 二选一
+  string order_no = 2;
+}
+message GetOrderResp {
+  OrderDetail order = 1;
+}
+
+message ListOrderReq {
+  string keyword = 1; // order_no 模糊
+  string type = 2;    // 空=全部
+  string status = 3;  // 空=全部
+  int64 page = 4;
+  int64 size = 5;
+}
+message ListOrderResp {
+  repeated OrderDetail list = 1;
+  int64 total = 2;
+}
+
+message PayOrderReq {
+  string order_no = 1;
+  string channel = 2;    // WECHAT/ALIPAY/BANK_OFFLINE
+}
+message PayOrderResp {
+  string payment_no = 1;
+  string status = 2;     // PAYING/REVIEWING（对公录入待复核）
+  string pay_params = 3; // 渠道透传（dev 模拟网关 = mock URL JSON）
+}
+
+message CancelOrderReq {
+  string order_no = 1;
+  string reason = 2;
+}
+message CancelOrderResp {}
+
+// ---- Saga ----
+
+message GetSagaReq {
+  int64 saga_id = 1; // 二选一
+  string order_no = 2;
+}
+message SagaStep {
+  int32 step = 1;      // 1~6（02 §9.1 补偿表）
+  string name = 2;     // 创建订单/锁定库存/发起支付/出库扣减/合同质保/建站绑设备
+  string status = 3;   // PENDING/RUNNING/DONE/FAILED/MANUAL/SKIPPED
+  string idem_key = 4; // saga_id+lock 等幂等键语义
+}
+message SagaDetail {
+  int64 saga_id = 1;
+  string order_no = 2;
+  string order_type = 3;
+  int32 current_step = 4;
+  string status = 5;       // RUNNING/COMPENSATING/DONE/CANCELLED/MANUAL
+  int32 retry_count = 6;
+  int64 next_retry_at = 7; // UnixMilli；0=无
+  string last_error = 8;
+  repeated SagaStep steps = 9;
+  int64 updated_at = 10;
+}
+message GetSagaResp {
+  SagaDetail saga = 1;
+}
+
+message RetrySagaReq {
+  int64 saga_id = 1;
+  string remark = 2; // 人工处理备注（进审计）
+}
+message RetrySagaResp {}
+
+// ---- 退货 ----
+
+message ReturnItemInput {
+  int64 sku_id = 1;
+  int32 qty = 2;
+  string sn = 3;
+  string reason = 4;
+}
+
+message CreateReturnOrderReq {
+  string order_no = 1; // 原销售单（退货校验，FR-ORD-004）
+  repeated ReturnItemInput items = 2;
+  string reason = 3;
+}
+message CreateReturnOrderResp {
+  int64 return_id = 1;
+  string return_no = 2;
+}
+
+message ApproveReturnOrderReq {
+  string return_no = 1;
+  bool approve = 2; // false=驳回
+  string remark = 3;
+}
+message ApproveReturnOrderResp {}
+
+// ---- 发货单 ----
+
+message ShipmentItemInput {
+  int64 sku_id = 1;
+  int32 qty = 2;
+  string sn = 3;
+}
+
+message CreateShipmentReq {
+  string order_no = 1;
+  int64 warehouse_id = 2;
+  repeated ShipmentItemInput items = 3;
+  string carrier = 4; // 承运方（手工基线）
+  string tracking_no = 5;
+}
+message CreateShipmentResp {
+  int64 shipment_id = 1;
+  string shipment_no = 2;
+}
+
+message AddShipmentTraceReq {
+  string shipment_no = 1;
+  string node = 2;      // 节点（如 华东分拨中心）
+  string description = 3;
+  int64 trace_time = 4; // UnixMilli；0=取服务器当前
+}
+message AddShipmentTraceResp {}
+
+message ConfirmShipmentSignedReq {
+  string shipment_no = 1;
+  string signed_by = 2;
+}
+message ConfirmShipmentSignedResp {}
+
+// ---- 统计 ----
+
+message SumPaidSalesReq {
+  int64 from = 1; // UnixMilli
+  int64 to = 2;   // UnixMilli
+}
+message SumPaidSalesResp {
+  string total_amount = 1; // 已支付销售总额（PAID 起含，含支付后各态）
+  int64 order_count = 2;
+}

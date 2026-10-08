@@ -1,0 +1,9 @@
+-- order_db 000001 回滚：按建表逆序 drop。
+DROP TABLE IF EXISTS `event_outbox`;
+DROP TABLE IF EXISTS `return_item`;
+DROP TABLE IF EXISTS `return_order`;
+DROP TABLE IF EXISTS `shipment_trace`;
+DROP TABLE IF EXISTS `shipment`;
+DROP TABLE IF EXISTS `saga`;
+DROP TABLE IF EXISTS `order_item`;
+DROP TABLE IF EXISTS `order`;

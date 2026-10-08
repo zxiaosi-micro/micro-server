@@ -1,0 +1,66 @@
+# order 服务配置（S5-02；敏感值走 ${ENV|default} 占位，confx 展开——go-zero conf 不做 env 展开）
+Name: order
+ListenOn: 0.0.0.0:${RPC_PORT|8090}
+Mode: dev
+
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: order.rpc
+
+Mysql:
+  DataSource: ${MICRO_DSN_ORDER|micro_app:pass@tcp(127.0.0.1:23306)/micro_order?charset=utf8mb4&parseTime=true&loc=Local&timeout=5s}
+
+Cache:
+  - Host: ${REDIS_HOSTS|127.0.0.1:26379}
+    Pass: ${REDIS_PASS|}
+
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: order-saga-d2
+
+# dev 直连（prod 换 Etcd+Target）；NonBlock=启动不阻塞——下游宕机由 Saga 退避兜底（02 §10）
+InventoryRpc:
+  Endpoints:
+    - ${INVENTORY_RPC|127.0.0.1:8084}
+  NonBlock: true
+  Timeout: 5000
+
+FinanceRpc:
+  Endpoints:
+    - ${FINANCE_RPC|127.0.0.1:8092}
+  NonBlock: true
+  Timeout: 5000
+
+ContractRpc:
+  Endpoints:
+    - ${CONTRACT_RPC|127.0.0.1:8093}
+  NonBlock: true
+  Timeout: 5000
+
+CatalogRpc:
+  Endpoints:
+    - ${CATALOG_RPC|127.0.0.1:8083}
+  NonBlock: true
+  Timeout: 5000
+
+PayTimeoutMinutes: 30
+SagaRetryBackoffMinutes:
+  - 1
+  - 5
+  - 30
+SagaMaxRetry: 3
+
+ConfigKey: ${CONFIG_KEY|/micro/config/order/main}
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: ${METRICS_PORT|9110}
+  Path: /metrics
+
+Telemetry:
+  Name: order
+  Endpoint: ${OTLP_ENDPOINT|http://127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc

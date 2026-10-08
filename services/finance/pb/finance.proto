@@ -1,0 +1,278 @@
+syntax = "proto3";
+
+package finance;
+
+option go_package = "./pb";
+
+// Finance 财务服务契约（S5-03，v4/03 阶段 5 任务正本）。
+//
+// 职责边界：finance_db 是支付单/退款/发票/对账任务的唯一写入方（FR-FIN）。
+// 渠道：微信 v3（JSAPI+回调验签）/ 支付宝 RSA2 / 对公转账（BANK_OFFLINE）；
+// dev 模拟网关（MockGateway=true，冒烟不依赖真实商户号，02 §10 渠道韧性策略表）。
+// 对公收款职责分离：录入（CreatePayment）→ REVIEWING → 第二人复核（ApprovePayment，
+// created_by == 复核人 拒绝）→ PAID；回调验签成功才 ConfirmPayment。
+// 支付成功（ConfirmPayment/ApprovePayment）发 order_paid 事件（topic 契约固定，key=order_no）；
+// 退货审批事件 order_return_approved → 自动 CreateRefund 原路退回 → payment_refunded 回写。
+// 退款幂等：payment_no + return_no 唯一约束（FR-FIN-002）。
+// ID 传输 int64，对外 string（E8）；金额 DECIMAL 字符串。
+service Finance {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 支付单 ----
+  rpc CreatePayment(CreatePaymentReq) returns (CreatePaymentResp);
+  rpc ConfirmPayment(ConfirmPaymentReq) returns (ConfirmPaymentResp);   // 回调/模拟网关确认 → PAID + order_paid
+  rpc ApprovePayment(ApprovePaymentReq) returns (ApprovePaymentResp);   // 对公第二人复核（职责分离）
+  rpc SettlePayment(SettlePaymentReq) returns (SettlePaymentResp);      // 对账核销 PAID → SETTLED
+  rpc GetPayment(GetPaymentReq) returns (GetPaymentResp);
+  rpc ListPayment(ListPaymentReq) returns (ListPaymentResp);
+
+  // ---- 渠道 ----
+  rpc WechatPayURL(WechatPayURLReq) returns (WechatPayURLResp);
+  rpc WechatCallback(WechatCallbackReq) returns (WechatCallbackResp);   // v3 回调验签 → ConfirmPayment
+  rpc AlipayPayURL(AlipayPayURLReq) returns (AlipayPayURLResp);
+  rpc AlipayCallback(AlipayCallbackReq) returns (AlipayCallbackResp);   // RSA2 验签 → ConfirmPayment
+
+  // ---- 退款 ----
+  rpc CreateRefund(CreateRefundReq) returns (CreateRefundResp);         // 原路退回（幂等：payment_no+return_no）
+  rpc ListRefund(ListRefundReq) returns (ListRefundResp);
+
+  // ---- 发票（ISSUED/REVERSED 状态机桩，FR-FIN-004）----
+  rpc IssueInvoice(IssueInvoiceReq) returns (IssueInvoiceResp);
+  rpc ReverseInvoice(ReverseInvoiceReq) returns (ReverseInvoiceResp);
+  rpc ListInvoice(ListInvoiceReq) returns (ListInvoiceResp);
+
+  // ---- 对账任务（FR-FIN-003，差异修复只允许补投递重放，E10）----
+  rpc CreateReconcileTask(CreateReconcileTaskReq) returns (CreateReconcileTaskResp);
+  rpc ResolveReconcileTask(ResolveReconcileTaskReq) returns (ResolveReconcileTaskResp);
+  rpc ListReconcileTask(ListReconcileTaskReq) returns (ListReconcileTaskResp);
+}
+
+message PingReq {}
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 支付单 ----
+
+message CreatePaymentReq {
+  string order_no = 1;
+  string amount = 2;    // DECIMAL 字符串（order 快照总额）
+  string channel = 3;   // WECHAT/ALIPAY/BANK_OFFLINE
+  int64 payer_party_id = 4;
+  string remark = 5;
+}
+message CreatePaymentResp {
+  string payment_no = 1;
+  string status = 2;    // PAYING（线上）/REVIEWING（对公录入）
+  string pay_params = 3; // 渠道透传 JSON（dev mock = {"mock_url":...}）
+}
+
+message ConfirmPaymentReq {
+  string payment_no = 1;
+  string channel_txn_id = 2; // 渠道流水号（UK，回调验签后必传）
+  string paid_amount = 3;    // 实收金额（金额不一致 → 差异对账任务）
+  string source = 4;         // WECHAT_CALLBACK/ALIPAY_CALLBACK/MOCK（dev 模拟网关）
+}
+message ConfirmPaymentResp {
+  string status = 1; // PAID
+}
+
+message ApprovePaymentReq {
+  string payment_no = 1;
+  bool approve = 2;    // false=复核驳回（→ REJECTED，可重新录入）
+  string remark = 3;   // 复核意见
+}
+message ApprovePaymentResp {}
+
+message SettlePaymentReq {
+  string payment_no = 1;
+  string remark = 2;
+}
+message SettlePaymentResp {}
+
+message PaymentDetail {
+  string payment_no = 1;
+  string order_no = 2;
+  string channel = 3;
+  string status = 4;         // PAYING/REVIEWING/PAID/REJECTED/SETTLED/CLOSED
+  string amount = 5;
+  string paid_amount = 6;
+  string channel_txn_id = 7; // 渠道流水（脱敏由 BFF 决定，财务域明文）
+  int64 payer_party_id = 8;
+  int64 created_by = 9;      // 录入人（对公复核职责分离比对）
+  int64 approved_by = 10;    // 复核人
+  string remark = 11;
+  int64 paid_at = 12;
+  int64 created_at = 13;
+}
+
+message GetPaymentReq {
+  string payment_no = 1;
+}
+message GetPaymentResp {
+  PaymentDetail payment = 1;
+}
+
+message ListPaymentReq {
+  string keyword = 1;  // payment_no/order_no 模糊
+  string channel = 2;  // 空=全部
+  string status = 3;   // 空=全部；REVIEWING 高亮（前端）
+  int64 page = 4;
+  int64 size = 5;
+}
+message ListPaymentResp {
+  repeated PaymentDetail list = 1;
+  int64 total = 2;
+}
+
+// ---- 渠道 ----
+
+message WechatPayURLReq {
+  string payment_no = 1;
+}
+message WechatPayURLResp {
+  string pay_url = 1;   // JSAPI/Native 支付链接（dev = mock URL）
+}
+
+message WechatCallbackReq {
+  string headers_json = 1; // Wechatpay-Timestamp/Nonce/Signature/Serial
+  string body = 2;         // 回调报文原文（AES-GCM 密文解密后取 amount/txn）
+}
+message WechatCallbackResp {
+  bool accepted = 1; // true = 已受理（验签+落账），应答渠道成功
+}
+
+message AlipayPayURLReq {
+  string payment_no = 1;
+}
+message AlipayPayURLResp {
+  string pay_url = 1;
+}
+
+message AlipayCallbackReq {
+  string form_json = 1; // 异步通知表单（sign/sign_type/字段集）
+}
+message AlipayCallbackResp {
+  bool accepted = 1;
+}
+
+// ---- 退款 ----
+
+message RefundDetail {
+  string refund_no = 1;
+  string payment_no = 2;
+  string order_no = 3;
+  string return_no = 4;    // 触发退货单（空=手工退款）
+  string amount = 5;
+  string channel = 6;      // 原路退回 = 原支付渠道
+  string status = 7;       // PROCESSING/SUCCESS/FAILED
+  string channel_refund_id = 8;
+  string reason = 9;
+  int64 created_at = 10;
+}
+
+message CreateRefundReq {
+  string payment_no = 1; // 原路退回锚点
+  string amount = 2;
+  string return_no = 3;  // 退货审批触发时必传（幂等键成分）
+  string reason = 4;
+}
+message CreateRefundResp {
+  string refund_no = 1;
+  string status = 2;
+}
+
+message ListRefundReq {
+  string keyword = 1; // refund_no/payment_no/order_no
+  string status = 2;
+  int64 page = 3;
+  int64 size = 4;
+}
+message ListRefundResp {
+  repeated RefundDetail list = 1;
+  int64 total = 2;
+}
+
+// ---- 发票 ----
+
+message InvoiceDetail {
+  string invoice_no = 1;
+  string payment_no = 2;
+  string order_no = 3;
+  string title = 4;      // 抬头
+  string tax_no = 5;     // 税号
+  string amount = 6;
+  string status = 7;     // ISSUED/REVERSED
+  string reverse_reason = 8;
+  int64 issued_at = 9;
+  int64 created_at = 10;
+}
+
+message IssueInvoiceReq {
+  string payment_no = 1;
+  string title = 2;
+  string tax_no = 3;
+  string amount = 4;
+}
+message IssueInvoiceResp {
+  string invoice_no = 1;
+}
+
+message ReverseInvoiceReq {
+  string invoice_no = 1;
+  string reason = 2;
+}
+message ReverseInvoiceResp {}
+
+message ListInvoiceReq {
+  string keyword = 1; // invoice_no/payment_no/order_no
+  string status = 2;
+  int64 page = 3;
+  int64 size = 4;
+}
+message ListInvoiceResp {
+  repeated InvoiceDetail list = 1;
+  int64 total = 2;
+}
+
+// ---- 对账任务 ----
+
+message ReconcileTaskDetail {
+  int64 task_id = 1;
+  string task_no = 2;
+  string type = 3;         // PAYMENT/REFUND（资金日结；库存日结在 tools/reconcile）
+  string biz_date = 4;     // yyyy-MM-dd
+  string diff_report = 5;  // 差异报告 JSON（渠道账单 vs 系统流水）
+  string status = 6;       // OPEN/RESOLVED
+  string resolution = 7;   // REPLAY（补投递重放，唯一允许的修复，E10）/IGNORE/…
+  string resolve_remark = 8;
+  int64 resolved_by = 9;
+  int64 created_at = 10;
+}
+
+message CreateReconcileTaskReq {
+  string type = 1;
+  string biz_date = 2;
+  string diff_report = 3;
+}
+message CreateReconcileTaskResp {
+  int64 task_id = 1;
+  string task_no = 2;
+}
+
+message ResolveReconcileTaskReq {
+  int64 task_id = 1;
+  string resolution = 2; // REPLAY/IGNORE
+  string remark = 3;
+}
+message ResolveReconcileTaskResp {}
+
+message ListReconcileTaskReq {
+  string status = 1; // 空=全部
+  int64 page = 2;
+  int64 size = 3;
+}
+message ListReconcileTaskResp {
+  repeated ReconcileTaskDetail list = 1;
+  int64 total = 2;
+}

@@ -8,9 +8,12 @@ import (
 	"micro-server/services/admin-bff/internal/config"
 	apb "micro-server/services/audit/pb"
 	cpb "micro-server/services/catalog/pb"
+	ctpb "micro-server/services/contract/pb"
+	finpb "micro-server/services/finance/pb"
 	ipb "micro-server/services/identity/pb"
 	invpb "micro-server/services/inventory/pb"
 	npb "micro-server/services/notification/pb"
+	opb "micro-server/services/order/pb"
 	ppb "micro-server/services/party/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -33,8 +36,12 @@ type ServiceContext struct {
 	Inventory    invpb.InventoryClient
 	Notification npb.NotificationClient
 	Audit        apb.AuditClient
-	Verifier     *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
-	sessions     *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
+	// S5 交易域 RPC 客户端
+	Order    opb.OrderClient
+	Finance  finpb.FinanceClient
+	Contract ctpb.ContractClient
+	Verifier *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
+	sessions *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -77,6 +84,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Inventory:    invpb.NewInventoryClient(dial(c.InventoryRpc)),
 		Notification: npb.NewNotificationClient(dial(c.NotificationRpc)),
 		Audit:        apb.NewAuditClient(dial(c.AuditRpc)),
+		Order:        opb.NewOrderClient(dial(c.OrderRpc)),
+		Finance:      finpb.NewFinanceClient(dial(c.FinanceRpc)),
+		Contract:     ctpb.NewContractClient(dial(c.ContractRpc)),
 		Verifier:     verifier,
 		sessions:     store,
 	}

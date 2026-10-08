@@ -5,11 +5,14 @@ use (
 	./services/admin-bff
 	./services/audit
 	./services/catalog
+	./services/contract
 	./services/file
+	./services/finance
 	./services/hello
 	./services/identity
 	./services/inventory
 	./services/notification
+	./services/order
 	./services/party
 	./tools
 )

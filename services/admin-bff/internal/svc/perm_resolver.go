@@ -20,9 +20,9 @@ func routeKey(r *http.Request) string {
 	segments := segs
 	out := make([]string, 0, len(segments))
 	for i, seg := range segments {
-		// 最后一段是数字 ID 且前缀是已知资源 → :id
-		if isNumericID(seg) && i > 0 {
-			out = append(out, ":id")
+		// 数字 ID → :id；业务单号（ORD/RET/SHP/PAY/RFD/INV/CTR/CLM/EXT 前缀）→ :no
+		if i > 0 && (isNumericID(seg) || isBizNo(seg)) {
+			out = append(out, ":no")
 			continue
 		}
 		out = append(out, seg)
@@ -121,6 +121,51 @@ var routePerms = map[string]string{
 	// 审计
 	"GET /audit-logs": "audit:log:list",
 	"GET /cmd-logs":   "audit:cmd:list",
+
+	// —— S5 交易域（S5-02~04；与 000005_s5_menu_seed perm_code 同源）——
+	// 订单
+	"GET /orders":                        "trade:order:list",
+	"GET /orders/:no":                    "trade:order:list",
+	"GET /orders/:no/saga":               "trade:order:list",
+	"POST /orders":                       "trade:order:create",
+	"POST /orders/:no/pay":               "trade:order:pay",
+	"POST /orders/:no/cancel":            "trade:order:cancel",
+	"POST /sagas/:no/retry":              "trade:order:retry",
+	"GET /sales-summary":                 "trade:order:list",
+	"POST /return-orders":                "trade:return:create",
+	"POST /return-orders/:no/approve":    "trade:return:approve",
+	"POST /shipments":                    "trade:shipment:create",
+	"POST /shipments/:no/traces":         "trade:shipment:trace",
+	"POST /shipments/:no/confirm-signed": "trade:shipment:sign",
+	// 支付/退款/发票/对账
+	"GET /payments":                     "finance:payment:list",
+	"POST /payments/:no/confirm":        "finance:payment:confirm",
+	"POST /payments/:no/approve":        "finance:payment:approve",
+	"POST /payments/:no/settle":         "finance:payment:settle",
+	"GET /refunds":                      "finance:refund:list",
+	"POST /refunds":                     "finance:refund:create",
+	"GET /invoices":                     "finance:invoice:list",
+	"POST /invoices":                    "finance:invoice:issue",
+	"POST /invoices/:no/reverse":        "finance:invoice:reverse",
+	"GET /reconcile-tasks":              "finance:reconcile:list",
+	"POST /reconcile-tasks/:no/resolve": "finance:reconcile:resolve",
+	// 合同/质保/SLA/索赔/延保
+	"GET /contracts":                         "contract:contract:list",
+	"GET /contracts/:no":                     "contract:contract:list",
+	"POST /contracts/:no/files":              "contract:contract:archive",
+	"POST /contracts/:no/archive":            "contract:contract:archive",
+	"POST /contracts/:no/sla":                "contract:sla:bind",
+	"GET /warranties":                        "contract:warranty:list",
+	"GET /warranty-by-target":                "contract:warranty:list",
+	"GET /sla-strategies":                    "contract:sla:list",
+	"POST /sla-strategies":                   "contract:sla:create",
+	"GET /claims":                            "contract:claim:list",
+	"POST /claims":                           "contract:claim:create",
+	"POST /claims/:no/approve":               "contract:claim:approve",
+	"POST /claims/:no/settle":                "contract:claim:settle",
+	"POST /warranty-extensions":              "contract:extension:sell",
+	"POST /warranty-extensions/:no/transfer": "contract:extension:transfer",
+	"POST /warranty-extensions/:no/refund":   "contract:extension:refund",
 }
 
 func splitPath(p string) []string {
@@ -152,6 +197,22 @@ func joinPath(parts []string) string {
 		out += "/" + p
 	}
 	return out
+}
+
+// isBizNo 业务单号判定（S5 交易域前缀 + 纯数字）。
+func isBizNo(s string) bool {
+	prefixes := []string{"ORD", "RET", "SHP", "PAY", "RFD", "INV", "CTR", "CLM", "EXT", "WAR"}
+	for _, p := range prefixes {
+		if len(s) > len(p) && s[:len(p)] == p {
+			for i := len(p); i < len(s); i++ {
+				if s[i] < '0' || s[i] > '9' {
+					return false
+				}
+			}
+			return true
+		}
+	}
+	return false
 }
 
 func isNumericID(s string) bool {

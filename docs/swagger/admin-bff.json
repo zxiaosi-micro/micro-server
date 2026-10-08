@@ -341,6 +341,195 @@
         }
       }
     },
+    "/api/v1/claims": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "索赔列表(perm: contract:claim:list)",
+        "operationId": "contractListClaims",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ClaimListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "索赔申请(perm: contract:claim:create)",
+        "operationId": "contractCreateClaim",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ClaimCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/claims/{no}/approve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "索赔审批(perm: contract:claim:approve)",
+        "operationId": "contractApproveClaim",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimApproveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/claims/{no}/settle": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "索赔结算(perm: contract:claim:settle)",
+        "operationId": "contractSettleClaim",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimSettleReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/cmd-logs": {
       "get": {
         "produces": [
@@ -394,6 +583,246 @@
                 },
                 "data": {
                   "$ref": "#/definitions/CmdAuditListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contracts": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "合同列表(perm: contract:contract:list)",
+        "operationId": "contractListContracts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContractListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contracts/{no}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "合同详情(归档件版本列表, perm: contract:contract:list)",
+        "operationId": "contractGetContract",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContractView"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contracts/{no}/archive": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "合同生效/归档(perm: contract:contract:archive)",
+        "operationId": "contractArchiveContract",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContractArchiveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contracts/{no}/files": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "归档件上传登记(受控下载经 file 服务, perm: contract:contract:archive)",
+        "operationId": "contractUploadContractFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ContractFileUploadReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContractFileUploadResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contracts/{no}/sla": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "合同绑定 SLA(快照冻结, perm: contract:sla:bind)",
+        "operationId": "contractBindContractSla",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SlaBindReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -824,6 +1253,141 @@
                 },
                 "data": {
                   "$ref": "#/definitions/StockOpResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "发票列表(perm: finance:invoice:list)",
+        "operationId": "financeListInvoices",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InvoiceListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "开票(perm: finance:invoice:issue)",
+        "operationId": "financeCreateInvoice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InvoiceCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InvoiceCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invoices/{no}/reverse": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "红冲(perm: finance:invoice:reverse)",
+        "operationId": "financeReverseInvoice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InvoiceReverseReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -1506,6 +2070,281 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "订单列表(perm: trade:order:list)",
+        "operationId": "orderListOrders",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OrderListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建订单(Saga 步骤1, perm: trade:order:create)",
+        "operationId": "orderCreateOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OrderCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{no}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "订单详情含明细(perm: trade:order:list)",
+        "operationId": "orderGetOrder",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OrderView"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{no}/cancel": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "取消订单(补偿释放库存, perm: trade:order:cancel)",
+        "operationId": "orderCancelOrder",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderCancelReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{no}/pay": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "发起支付(Saga 步骤3, perm: trade:order:pay)",
+        "operationId": "orderPayOrder",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderPayReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OrderPayResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{no}/saga": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "Saga 进度(perm: trade:order:list)",
+        "operationId": "orderGetOrderSaga",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SagaResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -2237,6 +3076,203 @@
         }
       }
     },
+    "/api/v1/payments": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "支付单列表(REVIEWING 高亮, perm: finance:payment:list)",
+        "operationId": "financeListPayments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/PaymentListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{no}/approve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "对公第二人复核(职责分离, perm: finance:payment:approve)",
+        "operationId": "financeApprovePayment",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentApproveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{no}/confirm": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "支付确认(dev 模拟网关/回调, perm: finance:payment:confirm)",
+        "operationId": "financeConfirmPayment",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentConfirmReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{no}/settle": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "对账核销(perm: finance:payment:settle)",
+        "operationId": "financeSettlePayment",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaymentSettleReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/prices": {
       "get": {
         "produces": [
@@ -2369,6 +3405,278 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/ProductCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reconcile-tasks": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "对账任务列表(perm: finance:reconcile:list)",
+        "operationId": "financeListReconcileTasks",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ReconcileListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reconcile-tasks/{id}/resolve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "对账任务处理(仅 REPLAY/IGNORE, perm: finance:reconcile:resolve)",
+        "operationId": "financeResolveReconcileTask",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReconcileResolveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/refunds": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退款列表(perm: finance:refund:list)",
+        "operationId": "financeListRefunds",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RefundListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "手工退款(原路退回, perm: finance:refund:create)",
+        "operationId": "financeCreateRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RefundCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RefundCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/return-orders": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退货申请(perm: trade:return:create)",
+        "operationId": "orderCreateReturnOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReturnCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ReturnCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/return-orders/{no}/approve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退货审批(通过→自动退款, perm: trade:return:approve)",
+        "operationId": "orderApproveReturnOrder",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReturnApproveReq"
             }
           }
         ],
@@ -2641,6 +3949,95 @@
         }
       }
     },
+    "/api/v1/sagas/{id}/retry": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "Saga 人工重推(perm: trade:order:retry)",
+        "operationId": "orderRetrySaga",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SagaRetryReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sales-summary": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "已支付销售汇总(perm: trade:order:list)",
+        "operationId": "orderSumPaidSales",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SalesSumResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/sessions": {
       "get": {
         "produces": [
@@ -2727,6 +4124,162 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SessionKickResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shipments": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建发货单(perm: trade:shipment:create)",
+        "operationId": "orderCreateShipment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ShipmentCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ShipmentCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shipments/{no}/confirm-signed": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "签收确认(触发质保起算, perm: trade:shipment:sign)",
+        "operationId": "orderConfirmShipmentSigned",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ShipmentSignReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shipments/{no}/traces": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "轨迹手工录入(perm: trade:shipment:trace)",
+        "operationId": "orderAddShipmentTrace",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TraceAddReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -2946,6 +4499,87 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sla-strategies": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SLA 策略列表(perm: contract:sla:list)",
+        "operationId": "contractListSlaStrategies",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SlaListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SLA 策略创建(perm: contract:sla:create)",
+        "operationId": "contractCreateSlaStrategy",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SlaCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SlaCreateResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -4137,6 +5771,232 @@
           }
         }
       }
+    },
+    "/api/v1/warranties": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "质保列表(perm: contract:warranty:list)",
+        "operationId": "contractListWarranties",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WarrantyListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty-by-target": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "按对象查质保(双层, perm: contract:warranty:list)",
+        "operationId": "contractGetWarrantyByTarget",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WarrantyTargetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty-extensions": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "延保销售(衔接原质保, perm: contract:extension:sell)",
+        "operationId": "contractSellExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ExtensionSellReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ExtensionSellResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty-extensions/{no}/refund": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "延保退款(perm: contract:extension:refund)",
+        "operationId": "contractRefundExtension",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ExtensionRefundReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/warranty-extensions/{no}/transfer": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "延保转移(perm: contract:extension:transfer)",
+        "operationId": "contractTransferExtension",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "no",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ExtensionTransferReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -4231,6 +6091,164 @@
           "type": "string"
         },
         "sku_name": {
+          "type": "string"
+        }
+      }
+    },
+    "ClaimApproveReq": {
+      "type": "object",
+      "required": [
+        "approve"
+      ],
+      "properties": {
+        "approve": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "ClaimCreateReq": {
+      "type": "object",
+      "required": [
+        "warranty_id",
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "QUALITY",
+            "TRANSPORT",
+            "INSTALL"
+          ]
+        },
+        "warranty_id": {
+          "type": "string"
+        }
+      }
+    },
+    "ClaimCreateResp": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "claim_no"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_no": {
+          "type": "string"
+        }
+      }
+    },
+    "ClaimListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ClaimListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ClaimView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ClaimNoPath": {
+      "type": "object"
+    },
+    "ClaimSettleReq": {
+      "type": "object",
+      "required": [
+        "settle_type"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "settle_type": {
+          "type": "string",
+          "enum": [
+            "REPAIR",
+            "REPLACE",
+            "REFUND",
+            "PAID"
+          ]
+        }
+      }
+    },
+    "ClaimView": {
+      "type": "object",
+      "required": [
+        "claim_no",
+        "warranty_id",
+        "warranty_no",
+        "type",
+        "description",
+        "status",
+        "settle_type",
+        "amount",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "claim_no": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "settle_type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "warranty_id": {
+          "type": "string"
+        },
+        "warranty_no": {
           "type": "string"
         }
       }
@@ -4380,6 +6398,221 @@
         }
       }
     },
+    "ContractArchiveReq": {
+      "type": "object",
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "EFFECTIVE",
+            "ARCHIVE"
+          ]
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "ContractFileUploadReq": {
+      "type": "object",
+      "required": [
+        "file_id",
+        "file_name"
+      ],
+      "properties": {
+        "file_id": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sign_party_name": {
+          "type": "string"
+        },
+        "sign_party_type": {
+          "type": "string"
+        }
+      }
+    },
+    "ContractFileUploadResp": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "ContractFileView": {
+      "type": "object",
+      "required": [
+        "file_rec_id",
+        "file_id",
+        "file_name",
+        "version",
+        "sign_party_name",
+        "sign_party_type",
+        "status",
+        "uploaded_by",
+        "uploader_name",
+        "uploaded_at",
+        "remark"
+      ],
+      "properties": {
+        "file_id": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "file_rec_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sign_party_name": {
+          "type": "string"
+        },
+        "sign_party_type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "uploaded_at": {
+          "type": "integer"
+        },
+        "uploaded_by": {
+          "type": "string"
+        },
+        "uploader_name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "ContractListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "ContractListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContractView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ContractNoPath": {
+      "type": "object"
+    },
+    "ContractView": {
+      "type": "object",
+      "required": [
+        "contract_id",
+        "contract_no",
+        "type",
+        "status",
+        "name",
+        "template_id",
+        "amount",
+        "files",
+        "effective_at",
+        "archived_at",
+        "remark",
+        "created_at",
+        "created_by"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "archived_at": {
+          "type": "integer"
+        },
+        "contract_id": {
+          "type": "string"
+        },
+        "contract_no": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "effective_at": {
+          "type": "integer"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContractFileView"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
     "CrmRecordCreateReq": {
       "type": "object",
       "required": [
@@ -4516,6 +6749,74 @@
         }
       }
     },
+    "ExtensionNoPath": {
+      "type": "object"
+    },
+    "ExtensionRefundReq": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "ExtensionSellReq": {
+      "type": "object",
+      "required": [
+        "base_warranty_id",
+        "months"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "base_warranty_id": {
+          "type": "string"
+        },
+        "months": {
+          "type": "integer"
+        },
+        "order_no": {
+          "type": "string"
+        }
+      }
+    },
+    "ExtensionSellResp": {
+      "type": "object",
+      "required": [
+        "extension_id",
+        "extension_no"
+      ],
+      "properties": {
+        "extension_id": {
+          "type": "string"
+        },
+        "extension_no": {
+          "type": "string"
+        }
+      }
+    },
+    "ExtensionTransferReq": {
+      "type": "object",
+      "required": [
+        "to_target_type"
+      ],
+      "properties": {
+        "to_target_id": {
+          "type": "string"
+        },
+        "to_target_key": {
+          "type": "string"
+        },
+        "to_target_type": {
+          "type": "string",
+          "enum": [
+            "DEVICE",
+            "STATION"
+          ]
+        }
+      }
+    },
     "IDPath": {
       "type": "object"
     },
@@ -4580,6 +6881,139 @@
         },
         "total": {
           "type": "integer"
+        }
+      }
+    },
+    "InvoiceCreateReq": {
+      "type": "object",
+      "required": [
+        "payment_no",
+        "title"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "tax_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "InvoiceCreateResp": {
+      "type": "object",
+      "required": [
+        "invoice_no"
+      ],
+      "properties": {
+        "invoice_no": {
+          "type": "string"
+        }
+      }
+    },
+    "InvoiceListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "InvoiceListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InvoiceView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "InvoiceNoPath": {
+      "type": "object"
+    },
+    "InvoiceReverseReq": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "InvoiceView": {
+      "type": "object",
+      "required": [
+        "invoice_no",
+        "payment_no",
+        "order_no",
+        "title",
+        "tax_no",
+        "amount",
+        "status",
+        "reverse_reason",
+        "issued_at",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "invoice_no": {
+          "type": "string"
+        },
+        "issued_at": {
+          "type": "integer"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "reverse_reason": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "tax_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
         }
       }
     },
@@ -5044,6 +7478,285 @@
         }
       }
     },
+    "OrderCancelReq": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderCreateReq": {
+      "type": "object",
+      "required": [
+        "type",
+        "items"
+      ],
+      "properties": {
+        "buyer_party_id": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderItemInputApi"
+          }
+        },
+        "pay_timeout_minutes": {
+          "type": "integer"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "DEVICE",
+            "STATION",
+            "PURCHASE",
+            "RETURN"
+          ]
+        }
+      }
+    },
+    "OrderCreateResp": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "order_no",
+        "total_amount",
+        "pay_expire_at",
+        "saga_id"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "pay_expire_at": {
+          "type": "integer"
+        },
+        "saga_id": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderItemInputApi": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "warehouse_id",
+        "qty"
+      ],
+      "properties": {
+        "qty": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderItemView": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "sku_id",
+        "sku_name",
+        "sn",
+        "warehouse_id",
+        "qty",
+        "unit_price",
+        "amount",
+        "out_qty"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "out_qty": {
+          "type": "integer"
+        },
+        "qty": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "sku_name": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "unit_price": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "OrderNoPath": {
+      "type": "object"
+    },
+    "OrderPayReq": {
+      "type": "object",
+      "required": [
+        "channel"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string",
+          "enum": [
+            "WECHAT",
+            "ALIPAY",
+            "BANK_OFFLINE"
+          ]
+        }
+      }
+    },
+    "OrderPayResp": {
+      "type": "object",
+      "required": [
+        "payment_no",
+        "status",
+        "pay_params"
+      ],
+      "properties": {
+        "pay_params": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "OrderView": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "order_no",
+        "type",
+        "status",
+        "buyer_party_id",
+        "total_amount",
+        "pay_expire_at",
+        "paid_at",
+        "cancel_reason",
+        "remark",
+        "items",
+        "created_at",
+        "created_by"
+      ],
+      "properties": {
+        "buyer_party_id": {
+          "type": "string"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OrderItemView"
+          }
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "paid_at": {
+          "type": "integer"
+        },
+        "pay_expire_at": {
+          "type": "integer"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
     "OrgCreateReq": {
       "type": "object",
       "required": [
@@ -5308,6 +8021,155 @@
         }
       }
     },
+    "PaymentApproveReq": {
+      "type": "object",
+      "required": [
+        "approve"
+      ],
+      "properties": {
+        "approve": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "PaymentConfirmReq": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "channel_txn_id": {
+          "type": "string"
+        },
+        "paid_amount": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "default": "MOCK",
+          "example": "MOCK"
+        }
+      }
+    },
+    "PaymentListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string"
+        },
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "PaymentListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PaymentView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "PaymentNoPath": {
+      "type": "object"
+    },
+    "PaymentSettleReq": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "PaymentView": {
+      "type": "object",
+      "required": [
+        "payment_no",
+        "order_no",
+        "channel",
+        "status",
+        "amount",
+        "paid_amount",
+        "channel_txn_id",
+        "payer_party_id",
+        "created_by",
+        "approved_by",
+        "remark",
+        "paid_at",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "approved_by": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string"
+        },
+        "channel_txn_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "paid_amount": {
+          "type": "string"
+        },
+        "paid_at": {
+          "type": "integer"
+        },
+        "payer_party_id": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
     "PriceItem": {
       "type": "object",
       "required": [
@@ -5463,6 +8325,111 @@
         }
       }
     },
+    "ReconcileListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ReconcileListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReconcileTaskView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ReconcileResolveReq": {
+      "type": "object",
+      "required": [
+        "resolution"
+      ],
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "resolution": {
+          "type": "string",
+          "enum": [
+            "REPLAY",
+            "IGNORE"
+          ]
+        }
+      }
+    },
+    "ReconcileTaskView": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "task_no",
+        "type",
+        "biz_date",
+        "diff_report",
+        "status",
+        "resolution",
+        "resolve_remark",
+        "resolved_by",
+        "created_at"
+      ],
+      "properties": {
+        "biz_date": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "diff_report": {
+          "type": "string"
+        },
+        "resolution": {
+          "type": "string"
+        },
+        "resolve_remark": {
+          "type": "string"
+        },
+        "resolved_by": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "task_no": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
     "RefreshReq": {
       "type": "object",
       "required": [
@@ -5505,6 +8472,206 @@
           "$ref": "#/definitions/TokenPair"
         }
       }
+    },
+    "RefundCreateReq": {
+      "type": "object",
+      "required": [
+        "payment_no",
+        "amount"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "return_no": {
+          "type": "string"
+        }
+      }
+    },
+    "RefundCreateResp": {
+      "type": "object",
+      "required": [
+        "refund_no",
+        "status"
+      ],
+      "properties": {
+        "refund_no": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "RefundListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "RefundListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RefundView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "RefundView": {
+      "type": "object",
+      "required": [
+        "refund_no",
+        "payment_no",
+        "order_no",
+        "return_no",
+        "amount",
+        "channel",
+        "status",
+        "channel_refund_id",
+        "reason",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string"
+        },
+        "channel_refund_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "refund_no": {
+          "type": "string"
+        },
+        "return_no": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ReturnApproveReq": {
+      "type": "object",
+      "required": [
+        "approve"
+      ],
+      "properties": {
+        "approve": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "ReturnCreateReq": {
+      "type": "object",
+      "required": [
+        "order_no",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReturnItemInputApi"
+          }
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "ReturnCreateResp": {
+      "type": "object",
+      "required": [
+        "return_id",
+        "return_no"
+      ],
+      "properties": {
+        "return_id": {
+          "type": "string"
+        },
+        "return_no": {
+          "type": "string"
+        }
+      }
+    },
+    "ReturnItemInputApi": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "qty"
+      ],
+      "properties": {
+        "qty": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "ReturnNoPath": {
+      "type": "object"
     },
     "RoleCreateReq": {
       "type": "object",
@@ -5655,6 +8822,172 @@
         }
       }
     },
+    "SagaResp": {
+      "type": "object",
+      "required": [
+        "saga"
+      ],
+      "properties": {
+        "saga": {
+          "type": "object",
+          "required": [
+            "saga_id",
+            "order_no",
+            "order_type",
+            "current_step",
+            "status",
+            "retry_count",
+            "next_retry_at",
+            "last_error",
+            "steps",
+            "updated_at"
+          ],
+          "properties": {
+            "current_step": {
+              "type": "integer"
+            },
+            "last_error": {
+              "type": "string"
+            },
+            "next_retry_at": {
+              "type": "integer"
+            },
+            "order_no": {
+              "type": "string"
+            },
+            "order_type": {
+              "type": "string"
+            },
+            "retry_count": {
+              "type": "integer"
+            },
+            "saga_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SagaStepView"
+              }
+            },
+            "updated_at": {
+              "type": "integer"
+            }
+          },
+          "$ref": "#/definitions/SagaView"
+        }
+      }
+    },
+    "SagaRetryReq": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "SagaStepView": {
+      "type": "object",
+      "required": [
+        "step",
+        "name",
+        "status",
+        "idem_key"
+      ],
+      "properties": {
+        "idem_key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "step": {
+          "type": "integer"
+        }
+      }
+    },
+    "SagaView": {
+      "type": "object",
+      "required": [
+        "saga_id",
+        "order_no",
+        "order_type",
+        "current_step",
+        "status",
+        "retry_count",
+        "next_retry_at",
+        "last_error",
+        "steps",
+        "updated_at"
+      ],
+      "properties": {
+        "current_step": {
+          "type": "integer"
+        },
+        "last_error": {
+          "type": "string"
+        },
+        "next_retry_at": {
+          "type": "integer"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "order_type": {
+          "type": "string"
+        },
+        "retry_count": {
+          "type": "integer"
+        },
+        "saga_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SagaStepView"
+          }
+        },
+        "updated_at": {
+          "type": "integer"
+        }
+      }
+    },
+    "SalesSumReq": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "integer"
+        },
+        "to": {
+          "type": "integer"
+        }
+      }
+    },
+    "SalesSumResp": {
+      "type": "object",
+      "required": [
+        "total_amount",
+        "order_count"
+      ],
+      "properties": {
+        "order_count": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "string"
+        }
+      }
+    },
     "SessionItem": {
       "type": "object",
       "required": [
@@ -5713,6 +9046,81 @@
           "items": {
             "$ref": "#/definitions/SessionItem"
           }
+        }
+      }
+    },
+    "ShipmentCreateReq": {
+      "type": "object",
+      "required": [
+        "order_no",
+        "warehouse_id",
+        "items"
+      ],
+      "properties": {
+        "carrier": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShipmentItemInputApi"
+          }
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "tracking_no": {
+          "type": "string"
+        },
+        "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "ShipmentCreateResp": {
+      "type": "object",
+      "required": [
+        "shipment_id",
+        "shipment_no"
+      ],
+      "properties": {
+        "shipment_id": {
+          "type": "string"
+        },
+        "shipment_no": {
+          "type": "string"
+        }
+      }
+    },
+    "ShipmentItemInputApi": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "qty"
+      ],
+      "properties": {
+        "qty": {
+          "type": "integer"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "ShipmentNoPath": {
+      "type": "object"
+    },
+    "ShipmentSignReq": {
+      "type": "object",
+      "required": [
+        "signed_by"
+      ],
+      "properties": {
+        "signed_by": {
+          "type": "string"
         }
       }
     },
@@ -5807,6 +9215,104 @@
         },
         "total": {
           "type": "integer"
+        }
+      }
+    },
+    "SlaBindReq": {
+      "type": "object",
+      "required": [
+        "strategy_id"
+      ],
+      "properties": {
+        "strategy_id": {
+          "type": "string"
+        }
+      }
+    },
+    "SlaCreateReq": {
+      "type": "object",
+      "required": [
+        "code",
+        "name",
+        "level",
+        "response_minutes",
+        "resolve_minutes"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resolve_minutes": {
+          "type": "integer"
+        },
+        "response_minutes": {
+          "type": "integer"
+        }
+      }
+    },
+    "SlaCreateResp": {
+      "type": "object",
+      "required": [
+        "strategy_id"
+      ],
+      "properties": {
+        "strategy_id": {
+          "type": "string"
+        }
+      }
+    },
+    "SlaListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SlaStrategyView"
+          }
+        }
+      }
+    },
+    "SlaStrategyView": {
+      "type": "object",
+      "required": [
+        "strategy_id",
+        "code",
+        "name",
+        "level",
+        "response_minutes",
+        "resolve_minutes",
+        "created_at"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resolve_minutes": {
+          "type": "integer"
+        },
+        "response_minutes": {
+          "type": "integer"
+        },
+        "strategy_id": {
+          "type": "string"
         }
       }
     },
@@ -6544,6 +10050,23 @@
         }
       }
     },
+    "TraceAddReq": {
+      "type": "object",
+      "required": [
+        "node"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        },
+        "trace_time": {
+          "type": "integer"
+        }
+      }
+    },
     "UnreadCountResp": {
       "type": "object",
       "required": [
@@ -6795,6 +10318,49 @@
         }
       }
     },
+    "WarrantyListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "level": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "WarrantyListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WarrantyView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
     "WarrantyPolicyItem": {
       "type": "object",
       "required": [
@@ -6829,6 +10395,100 @@
           "type": "string"
         }
       }
+    },
+    "WarrantyTargetReq": {
+      "type": "object",
+      "required": [
+        "target_type"
+      ],
+      "properties": {
+        "sn": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_type": {
+          "type": "string",
+          "enum": [
+            "DEVICE",
+            "STATION"
+          ]
+        }
+      }
+    },
+    "WarrantyTargetResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WarrantyView"
+          }
+        }
+      }
+    },
+    "WarrantyView": {
+      "type": "object",
+      "required": [
+        "warranty_no",
+        "level",
+        "target_type",
+        "target_id",
+        "target_key",
+        "status",
+        "start_at",
+        "end_at",
+        "months",
+        "start_rule",
+        "source_type",
+        "source_no",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "end_at": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "months": {
+          "type": "integer"
+        },
+        "source_no": {
+          "type": "string"
+        },
+        "source_type": {
+          "type": "string"
+        },
+        "start_at": {
+          "type": "integer"
+        },
+        "start_rule": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_key": {
+          "type": "string"
+        },
+        "target_type": {
+          "type": "string"
+        },
+        "warranty_no": {
+          "type": "string"
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -6839,7 +10499,7 @@
       "in": "header"
     }
   },
-  "x-date": "2026-10-08 12:01:21",
+  "x-date": "2026-10-09 00:56:20",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

@@ -1,0 +1,319 @@
+syntax = "proto3";
+
+package contract;
+
+option go_package = "./pb";
+
+// Contract 合同质保服务契约（S5-04，v4/03 阶段 5 任务正本）。
+//
+// 职责边界：contract_db 是合同/归档件/质保/延保/SLA 策略/索赔的唯一写入方（FR-CTR）。
+// 合同签署基线 = 线下签署 + 上传归档（FR-CTR-003，在线签署为 L3）：
+//   归档五要素 = 上传人（审计）/版本/关联（订单/客户/场站）/状态/受控下载；
+//   平台不解析文件内容；文件本体存 file 服务合同桶（micro-contract，版本控制），本服务只存归档元数据。
+// 质保起算（FR-CTR-005）：消费 device_activated / shipment_signed 事件 → 按 start_rule 快照写
+//   warranty.start_at → 发 warranty_started 事件；场站级 + 设备级双层。
+// SLA（FR-CTR-007）：策略在合同域定义，计时由 ops 执行（快照冻结，S7 消费）。
+// 打印稿（FR-CTR-001，L2 辅助）：模板变量填充 → Go 原生 PDF（ADR-18，无 Gotenberg）。
+// ID 传输 int64，对外 string（E8）；金额 DECIMAL 字符串。
+service Contract {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 模板（L2）----
+  rpc CreateTemplate(CreateTemplateReq) returns (CreateTemplateResp);
+  rpc RenderTemplate(RenderTemplateReq) returns (RenderTemplateResp); // 变量填充 → PDF base64（Go 原生库）
+
+  // ---- 合同 ----
+  rpc CreateFromOrder(CreateFromOrderReq) returns (CreateFromOrderResp); // Saga 步骤 5 入口：合同+质保计划
+  rpc GetContract(GetContractReq) returns (GetContractResp);
+  rpc ListContract(ListContractReq) returns (ListContractResp);
+  rpc UploadContractFile(UploadContractFileReq) returns (UploadContractFileResp); // 已签合同上传归档（step-up 由 BFF 面）
+  rpc ArchiveContract(ArchiveContractReq) returns (ArchiveContractResp);          // EFFECTIVE 生效 / ARCHIVE 归档（须有归档件）
+
+  // ---- 质保 ----
+  rpc ListWarranty(ListWarrantyReq) returns (ListWarrantyResp);
+  rpc GetWarrantyByTarget(GetWarrantyByTargetReq) returns (GetWarrantyByTargetResp);
+
+  // ---- SLA（FR-CTR-007）----
+  rpc CreateSlaStrategy(CreateSlaStrategyReq) returns (CreateSlaStrategyResp);
+  rpc BindContractSla(BindContractSlaReq) returns (BindContractSlaResp);
+  rpc ListSlaStrategy(ListSlaStrategyReq) returns (ListSlaStrategyResp);
+
+  // ---- 索赔（FR-CTR-008）----
+  rpc CreateClaim(CreateClaimReq) returns (CreateClaimResp);
+  rpc ApproveClaim(ApproveClaimReq) returns (ApproveClaimResp);
+  rpc SettleClaim(SettleClaimReq) returns (SettleClaimResp);
+  rpc ListClaim(ListClaimReq) returns (ListClaimResp);
+
+  // ---- 延保（FR-CTR-006：销售/衔接/转移/退款）----
+  rpc SellExtension(SellExtensionReq) returns (SellExtensionResp);
+  rpc TransferExtension(TransferExtensionReq) returns (TransferExtensionResp);
+  rpc RefundExtension(RefundExtensionReq) returns (RefundExtensionResp);
+}
+
+message PingReq {}
+message PingResp {
+  string pong = 1;
+}
+
+// ---- 模板 ----
+
+message CreateTemplateReq {
+  string code = 1;        // 租户内唯一
+  string name = 2;
+  string contract_type = 3; // SALES/STATION/SERVICE/FRAMEWORK/EXTENDED
+  string variables_json = 4; // 变量定义 JSON（[{key,label,required}]）
+  string body = 5;           // 模板正文（占位 {{key}}）
+}
+message CreateTemplateResp {
+  int64 template_id = 1;
+}
+
+message RenderTemplateReq {
+  int64 template_id = 1;
+  string variables_json = 2; // 业务侧填充值（订单/客户数据自动填充，FR-CTR-001）
+}
+message RenderTemplateResp {
+  string pdf_base64 = 1; // 打印稿（本地打印辅助，非正式文书）
+}
+
+// ---- 合同 ----
+
+message ContractTarget {
+  string type = 1; // ORDER/PARTY/STATION（关联可追溯，归档五要素之「关联」）
+  int64 target_id = 2;
+  string target_no = 3;
+}
+
+message ContractFile {
+  int64 file_rec_id = 1;
+  string file_id = 2;         // file 服务对象 ID（合同桶）
+  string file_name = 3;
+  int32 version = 4;          // 合同内版本号（1 起，重签递增）
+  string sign_party_name = 5; // 签署方信息
+  string sign_party_type = 6; // BUYER/SELLER/OTHER
+  string status = 7;          // ACTIVE/REPLACED（重签后旧版 REPLACED）
+  int64 uploaded_by = 8;      // 上传人（审计要素）
+  string uploader_name = 9;
+  int64 uploaded_at = 10;
+  string remark = 11;
+}
+
+message ContractDetail {
+  int64 contract_id = 1;
+  string contract_no = 2;
+  string type = 3;            // SALES/STATION/SERVICE/FRAMEWORK/EXTENDED
+  string status = 4;          // DRAFT/ACTIVE/ARCHIVED
+  string name = 5;
+  int64 template_id = 6;
+  repeated ContractTarget targets = 7;
+  string amount = 8;
+  repeated ContractFile files = 9; // 归档件版本列表
+  int64 effective_at = 10;
+  int64 archived_at = 11;
+  string remark = 12;
+  int64 created_at = 13;
+  int64 created_by = 14;
+}
+
+message CreateFromOrderReq {
+  string order_no = 1;
+  string order_type = 2;      // DEVICE→SALES / STATION→STATION（合同类型映射）
+  int64 buyer_party_id = 3;
+  string buyer_name = 4;
+  string amount = 5;
+  string items_json = 6;      // [{sku_id,sn,qty}]（质保对象清单来源）
+  int64 contract_template_id = 7; // 0=无模板（纯记录基线）
+}
+message CreateFromOrderResp {
+  int64 contract_id = 1;
+  string contract_no = 2;
+  int64 warranty_count = 3; // 随单建立的质保计划数（STATION 层 + DEVICE 层）
+}
+
+message GetContractReq {
+  int64 contract_id = 1; // 二选一
+  string contract_no = 2;
+}
+message GetContractResp {
+  ContractDetail contract = 1;
+}
+
+message ListContractReq {
+  string keyword = 1;     // contract_no/name
+  string type = 2;
+  string status = 3;
+  int64 page = 4;
+  int64 size = 5;
+}
+message ListContractResp {
+  repeated ContractDetail list = 1;
+  int64 total = 2;
+}
+
+message UploadContractFileReq {
+  string contract_no = 1;
+  string file_id = 2;         // file 服务已上传对象的 ID
+  string file_name = 3;
+  string sign_party_name = 4;
+  string sign_party_type = 5;
+  string remark = 6;
+}
+message UploadContractFileResp {
+  int32 version = 1; // 本次归档版本号
+}
+
+message ArchiveContractReq {
+  string contract_no = 1;
+  string action = 2;  // EFFECTIVE（草稿→生效，须≥1 归档件）/ARCHIVE（生效→归档）
+  string remark = 3;
+}
+message ArchiveContractResp {}
+
+// ---- 质保 ----
+
+message WarrantyItem {
+  int64 warranty_id = 1;
+  string warranty_no = 2;
+  string level = 3;          // STATION/DEVICE 双层（FR-CTR-005）
+  string target_type = 4;    // STATION/DEVICE
+  int64 target_id = 5;
+  string target_key = 6;     // SN / 场站编号（展示）
+  string status = 7;         // PENDING/ACTIVE/EXPIRED/REFUNDED
+  int64 start_at = 8;        // UnixMilli；0=未起算
+  int64 end_at = 9;
+  int32 months = 10;
+  string start_rule = 11;    // 起算规则快照 JSON（{"event":"shipment_signed","months":24}）
+  string source_type = 12;   // ORDER/EXTENSION（来源）
+  string source_no = 13;
+  int64 created_at = 14;
+}
+
+message ListWarrantyReq {
+  string status = 1;    // 空=全部
+  string level = 2;     // STATION/DEVICE
+  int64 page = 3;
+  int64 size = 4;
+}
+message ListWarrantyResp {
+  repeated WarrantyItem list = 1;
+  int64 total = 2;
+}
+
+message GetWarrantyByTargetReq {
+  string target_type = 1; // STATION/DEVICE
+  int64 target_id = 2;    // DEVICE 层传 device_id（SN 经设备域映射，S6 起）
+  string sn = 3;          // DEVICE 层可直接按 SN 查（0 target_id 时生效）
+}
+message GetWarrantyByTargetResp {
+  repeated WarrantyItem list = 1;
+}
+
+// ---- SLA ----
+
+message SlaStrategyDetail {
+  int64 strategy_id = 1;
+  string code = 2;
+  string name = 3;
+  string level = 4;          // P1/P2/P3 分级
+  int32 response_minutes = 5;
+  int32 resolve_minutes = 6;
+  int64 created_at = 7;
+}
+
+message CreateSlaStrategyReq {
+  string code = 1;
+  string name = 2;
+  string level = 3;
+  int32 response_minutes = 4;
+  int32 resolve_minutes = 5;
+}
+message CreateSlaStrategyResp {
+  int64 strategy_id = 1;
+}
+
+message BindContractSlaReq {
+  string contract_no = 1;
+  int64 strategy_id = 2;
+}
+message BindContractSlaResp {} // 绑定即快照冻结（ops 计时按快照，FR-CTR-007）
+
+message ListSlaStrategyReq {}
+message ListSlaStrategyResp {
+  repeated SlaStrategyDetail list = 1;
+}
+
+message ListClaimReq {
+  string status = 1; // 空=全部
+  int64 page = 2;
+  int64 size = 3;
+}
+message ListClaimResp {
+  repeated ClaimDetail list = 1;
+  int64 total = 2;
+}
+
+// ---- 索赔 ----
+
+message ClaimDetail {
+  int64 claim_id = 1;
+  string claim_no = 2;
+  int64 warranty_id = 3;
+  string warranty_no = 4;
+  string type = 5;         // QUALITY/TRANSPORT/INSTALL
+  string description = 6;
+  string status = 7;       // APPLYING/APPROVED/REJECTED/SETTLED
+  string settle_type = 8;  // REPAIR/REPLACE/REFUND/PAID（质保外转付费报价）
+  string amount = 9;
+  int64 created_at = 10;
+}
+
+message CreateClaimReq {
+  int64 warranty_id = 1;
+  string type = 2;
+  string description = 3;
+}
+message CreateClaimResp {
+  int64 claim_id = 1;
+  string claim_no = 2;
+}
+
+message ApproveClaimReq {
+  string claim_no = 1;
+  bool approve = 2;
+  string remark = 3;
+}
+message ApproveClaimResp {}
+
+message SettleClaimReq {
+  string claim_no = 1;
+  string settle_type = 2; // REPAIR/REPLACE/REFUND/PAID
+  string amount = 3;      // PAID/REFUND 时必填（结算联动 finance，FR-CTR-008）
+}
+message SettleClaimResp {}
+
+// ---- 延保 ----
+
+message SellExtensionReq {
+  int64 base_warranty_id = 1; // 衔接的原质保（无缝衔接，FR-CTR-006）
+  int32 months = 2;
+  string order_no = 3;        // 延保销售订单
+  string amount = 4;
+}
+message SellExtensionResp {
+  int64 extension_id = 1;
+  string extension_no = 2;
+}
+
+message TransferExtensionReq {
+  string extension_no = 1;
+  string to_target_type = 2; // 转移目标（DEVICE/STATION）
+  int64 to_target_id = 3;
+  string to_target_key = 4;
+}
+message TransferExtensionResp {}
+
+message RefundExtensionReq {
+  string extension_no = 1;
+  string reason = 2; // 退款联动 finance（退差按剩余月份比例，基线全额）
+}
+message RefundExtensionResp {}

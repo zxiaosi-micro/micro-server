@@ -1,0 +1,11 @@
+-- contract_db 000001 回滚：按建表逆序 drop。
+DROP TABLE IF EXISTS `event_outbox`;
+DROP TABLE IF EXISTS `claim`;
+DROP TABLE IF EXISTS `contract_sla`;
+DROP TABLE IF EXISTS `sla_strategy`;
+DROP TABLE IF EXISTS `warranty_extension`;
+DROP TABLE IF EXISTS `warranty`;
+DROP TABLE IF EXISTS `contract_file`;
+DROP TABLE IF EXISTS `contract_target`;
+DROP TABLE IF EXISTS `contract`;
+DROP TABLE IF EXISTS `contract_template`;

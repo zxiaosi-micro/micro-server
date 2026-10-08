@@ -1,0 +1,50 @@
+# finance 服务配置（S5-03；敏感值走 ${ENV|default} 占位——渠道密钥由 env 注入，E11）
+Name: finance
+ListenOn: 0.0.0.0:${RPC_PORT|8092}
+Mode: dev
+
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: finance.rpc
+
+Mysql:
+  DataSource: ${MICRO_DSN_FINANCE|micro_app:pass@tcp(127.0.0.1:23306)/micro_finance?charset=utf8mb4&parseTime=true&loc=Local&timeout=5s}
+
+Cache:
+  - Host: ${REDIS_HOSTS|127.0.0.1:26379}
+    Pass: ${REDIS_PASS|}
+
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: finance-refund-d2
+
+# 微信支付 v3（JSAPI/Native + 回调验签；未配置 → dev 模拟网关）
+Wechat:
+  MchID: ${WECHAT_MCH_ID|}
+  MchSerialNo: ${WECHAT_MCH_SERIAL_NO|}
+  AppID: ${WECHAT_APP_ID|}
+  MchPrivateKey: ${WECHAT_MCH_PRIVATE_KEY|}
+  PlatPublicKey: ${WECHAT_PLAT_PUBLIC_KEY|}
+  APIv3Key: ${WECHAT_API_V3_KEY|}
+
+# 支付宝 RSA2（未配置 → dev 模拟网关）
+Alipay:
+  AppID: ${ALIPAY_APP_ID|}
+  AppPrivateKey: ${ALIPAY_APP_PRIVATE_KEY|}
+  AlipayPublicKey: ${ALIPAY_PUBLIC_KEY|}
+  Gateway: ${ALIPAY_GATEWAY|https://openapi.alipay.com/gateway.do}
+
+ConfigKey: ${CONFIG_KEY|/micro/config/finance/main}
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: ${METRICS_PORT|9112}
+  Path: /metrics
+
+Telemetry:
+  Name: finance
+  Endpoint: ${OTLP_ENDPOINT|http://127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc

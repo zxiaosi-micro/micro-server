@@ -38,6 +38,56 @@ type BomItem struct {
 	Qty     int    `json:"qty"`
 }
 
+type ClaimApproveReq struct {
+	ClaimNo string `path:"no"`
+	Approve bool   `json:"approve"`
+	Remark  string `json:"remark,optional"`
+}
+
+type ClaimCreateReq struct {
+	WarrantyId  string `json:"warranty_id"`
+	Type        string `json:"type,options=QUALITY|TRANSPORT|INSTALL"`
+	Description string `json:"description,optional"`
+}
+
+type ClaimCreateResp struct {
+	ClaimId string `json:"claim_id"`
+	ClaimNo string `json:"claim_no"`
+}
+
+type ClaimListReq struct {
+	Status string `json:"status,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type ClaimListResp struct {
+	List  []ClaimView `json:"list"`
+	Total int         `json:"total"`
+}
+
+type ClaimNoPath struct {
+	ClaimNo string `path:"no"`
+}
+
+type ClaimSettleReq struct {
+	ClaimNo    string `path:"no"`
+	SettleType string `json:"settle_type,options=REPAIR|REPLACE|REFUND|PAID"`
+	Amount     string `json:"amount,optional"`
+}
+
+type ClaimView struct {
+	ClaimNo     string `json:"claim_no"`
+	WarrantyId  string `json:"warranty_id"`
+	WarrantyNo  string `json:"warranty_no"`
+	Type        string `json:"type"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	SettleType  string `json:"settle_type"`
+	Amount      string `json:"amount"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
 type CmdAuditItem struct {
 	CmdAuditID  string `json:"cmd_audit_id"`
 	CmdID       string `json:"cmd_id"`
@@ -87,6 +137,72 @@ type ContactListResp struct {
 	List []ContactItem `json:"list"`
 }
 
+type ContractArchiveReq struct {
+	ContractNo string `path:"no"`
+	Action     string `json:"action,options=EFFECTIVE|ARCHIVE"`
+	Remark     string `json:"remark,optional"`
+}
+
+type ContractFileUploadReq struct {
+	ContractNo    string `path:"no"`
+	FileId        string `json:"file_id"`
+	FileName      string `json:"file_name"`
+	SignPartyName string `json:"sign_party_name,optional"`
+	SignPartyType string `json:"sign_party_type,optional"`
+	Remark        string `json:"remark,optional"`
+}
+
+type ContractFileUploadResp struct {
+	Version int `json:"version"`
+}
+
+type ContractFileView struct {
+	FileRecId     string `json:"file_rec_id"`
+	FileId        string `json:"file_id"`
+	FileName      string `json:"file_name"`
+	Version       int    `json:"version"`
+	SignPartyName string `json:"sign_party_name"`
+	SignPartyType string `json:"sign_party_type"`
+	Status        string `json:"status"`
+	UploadedBy    string `json:"uploaded_by"`
+	UploaderName  string `json:"uploader_name"`
+	UploadedAt    int64  `json:"uploaded_at"`
+	Remark        string `json:"remark"`
+}
+
+type ContractListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Type    string `json:"type,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type ContractListResp struct {
+	List  []ContractView `json:"list"`
+	Total int            `json:"total"`
+}
+
+type ContractNoPath struct {
+	ContractNo string `path:"no"`
+}
+
+type ContractView struct {
+	ContractId  string             `json:"contract_id"`
+	ContractNo  string             `json:"contract_no"`
+	Type        string             `json:"type"`
+	Status      string             `json:"status"`
+	Name        string             `json:"name"`
+	TemplateId  string             `json:"template_id"`
+	Amount      string             `json:"amount"`
+	Files       []ContractFileView `json:"files"`
+	EffectiveAt int64              `json:"effective_at"`
+	ArchivedAt  int64              `json:"archived_at"`
+	Remark      string             `json:"remark"`
+	CreatedAt   int64              `json:"created_at"`
+	CreatedBy   string             `json:"created_by"`
+}
+
 type CrmRecordCreateReq struct {
 	Id           string `path:"id"`
 	Content      string `json:"content"`
@@ -125,6 +241,34 @@ type DealerExtUpsertReq struct {
 	RebateRule       string `json:"rebate_rule,optional"`
 }
 
+type ExtensionNoPath struct {
+	ExtensionNo string `path:"no"`
+}
+
+type ExtensionRefundReq struct {
+	ExtensionNo string `path:"no"`
+	Reason      string `json:"reason,optional"`
+}
+
+type ExtensionSellReq struct {
+	BaseWarrantyId string `json:"base_warranty_id"`
+	Months         int    `json:"months"`
+	OrderNo        string `json:"order_no,optional"`
+	Amount         string `json:"amount,optional"`
+}
+
+type ExtensionSellResp struct {
+	ExtensionId string `json:"extension_id"`
+	ExtensionNo string `json:"extension_no"`
+}
+
+type ExtensionTransferReq struct {
+	ExtensionNo  string `path:"no"`
+	ToTargetType string `json:"to_target_type,options=DEVICE|STATION"`
+	ToTargetId   string `json:"to_target_id,optional"`
+	ToTargetKey  string `json:"to_target_key,optional"`
+}
+
 type IDPath struct {
 	ID string `path:"id"`
 }
@@ -152,6 +296,51 @@ type InventoryListReq struct {
 type InventoryListResp struct {
 	List  []InventoryItem `json:"list"`
 	Total int64           `json:"total"`
+}
+
+type InvoiceCreateReq struct {
+	PaymentNo string `json:"payment_no"`
+	Title     string `json:"title"`
+	TaxNo     string `json:"tax_no,optional"`
+	Amount    string `json:"amount,optional"`
+}
+
+type InvoiceCreateResp struct {
+	InvoiceNo string `json:"invoice_no"`
+}
+
+type InvoiceListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type InvoiceListResp struct {
+	List  []InvoiceView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type InvoiceNoPath struct {
+	InvoiceNo string `path:"no"`
+}
+
+type InvoiceReverseReq struct {
+	InvoiceNo string `path:"no"`
+	Reason    string `json:"reason,optional"`
+}
+
+type InvoiceView struct {
+	InvoiceNo     string `json:"invoice_no"`
+	PaymentNo     string `json:"payment_no"`
+	OrderNo       string `json:"order_no"`
+	Title         string `json:"title"`
+	TaxNo         string `json:"tax_no"`
+	Amount        string `json:"amount"`
+	Status        string `json:"status"`
+	ReverseReason string `json:"reverse_reason"`
+	IssuedAt      int64  `json:"issued_at"`
+	CreatedAt     int64  `json:"created_at"`
 }
 
 type LoginReq struct {
@@ -302,6 +491,90 @@ type OpportunityStageReq struct {
 	Stage string `json:"stage"`
 }
 
+type OrderCancelReq struct {
+	OrderNo string `path:"no"`
+	Reason  string `json:"reason,optional"`
+}
+
+type OrderCreateReq struct {
+	Type              string              `json:"type,options=DEVICE|STATION|PURCHASE|RETURN"`
+	BuyerPartyId      string              `json:"buyer_party_id,optional"`
+	Remark            string              `json:"remark,optional"`
+	Items             []OrderItemInputApi `json:"items"`
+	PayTimeoutMinutes int                 `json:"pay_timeout_minutes,optional"`
+}
+
+type OrderCreateResp struct {
+	OrderId     string `json:"order_id"`
+	OrderNo     string `json:"order_no"`
+	TotalAmount string `json:"total_amount"`
+	PayExpireAt int64  `json:"pay_expire_at"`
+	SagaId      string `json:"saga_id"`
+}
+
+type OrderItemInputApi struct {
+	SkuId       string `json:"sku_id"`
+	WarehouseId string `json:"warehouse_id"`
+	Qty         int    `json:"qty"`
+	Sn          string `json:"sn,optional"`
+}
+
+type OrderItemView struct {
+	ItemId      string `json:"item_id"`
+	SkuId       string `json:"sku_id"`
+	SkuName     string `json:"sku_name"`
+	Sn          string `json:"sn"`
+	WarehouseId string `json:"warehouse_id"`
+	Qty         int    `json:"qty"`
+	UnitPrice   string `json:"unit_price"`
+	Amount      string `json:"amount"`
+	OutQty      int    `json:"out_qty"`
+}
+
+type OrderListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Type    string `json:"type,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type OrderListResp struct {
+	List  []OrderView `json:"list"`
+	Total int         `json:"total"`
+}
+
+type OrderNoPath struct {
+	OrderNo string `path:"no"`
+}
+
+type OrderPayReq struct {
+	OrderNo string `path:"no"`
+	Channel string `json:"channel,options=WECHAT|ALIPAY|BANK_OFFLINE"`
+}
+
+type OrderPayResp struct {
+	PaymentNo string `json:"payment_no"`
+	Status    string `json:"status"`
+	PayParams string `json:"pay_params"`
+}
+
+type OrderView struct {
+	OrderId      string          `json:"order_id"`
+	OrderNo      string          `json:"order_no"`
+	Type         string          `json:"type"`
+	Status       string          `json:"status"`
+	BuyerPartyId string          `json:"buyer_party_id"`
+	TotalAmount  string          `json:"total_amount"`
+	PayExpireAt  int64           `json:"pay_expire_at"`
+	PaidAt       int64           `json:"paid_at"`
+	CancelReason string          `json:"cancel_reason"`
+	Remark       string          `json:"remark"`
+	Items        []OrderItemView `json:"items"`
+	CreatedAt    int64           `json:"created_at"`
+	CreatedBy    string          `json:"created_by"`
+}
+
 type OrgCreateReq struct {
 	ParentID string `json:"parent_id,optional"`
 	Name     string `json:"name"`
@@ -376,6 +649,57 @@ type PartyUpdateReq struct {
 	Remark     string   `json:"remark,optional"`
 }
 
+type PaymentApproveReq struct {
+	PaymentNo string `path:"no"`
+	Approve   bool   `json:"approve"`
+	Remark    string `json:"remark,optional"`
+}
+
+type PaymentConfirmReq struct {
+	PaymentNo    string `path:"no"`
+	ChannelTxnId string `json:"channel_txn_id,optional"`
+	PaidAmount   string `json:"paid_amount,optional"`
+	Source       string `json:"source,default=MOCK"`
+}
+
+type PaymentListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Channel string `json:"channel,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type PaymentListResp struct {
+	List  []PaymentView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type PaymentNoPath struct {
+	PaymentNo string `path:"no"`
+}
+
+type PaymentSettleReq struct {
+	PaymentNo string `path:"no"`
+	Remark    string `json:"remark,optional"`
+}
+
+type PaymentView struct {
+	PaymentNo    string `json:"payment_no"`
+	OrderNo      string `json:"order_no"`
+	Channel      string `json:"channel"`
+	Status       string `json:"status"`
+	Amount       string `json:"amount"`
+	PaidAmount   string `json:"paid_amount"`
+	ChannelTxnId string `json:"channel_txn_id"`
+	PayerPartyId string `json:"payer_party_id"`
+	CreatedBy    string `json:"created_by"`
+	ApprovedBy   string `json:"approved_by"`
+	Remark       string `json:"remark"`
+	PaidAt       int64  `json:"paid_at"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
 type PriceItem struct {
 	PriceID   string `json:"price_id"`
 	SkuID     string `json:"sku_id"`
@@ -434,12 +758,107 @@ type ProductListResp struct {
 	Total int64         `json:"total"`
 }
 
+type ReconcileListReq struct {
+	Status string `json:"status,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type ReconcileListResp struct {
+	List  []ReconcileTaskView `json:"list"`
+	Total int                 `json:"total"`
+}
+
+type ReconcileResolveReq struct {
+	Id         int64  `path:"id"`
+	Resolution string `json:"resolution,options=REPLAY|IGNORE"`
+	Remark     string `json:"remark,optional"`
+}
+
+type ReconcileTaskView struct {
+	TaskId        string `json:"task_id"`
+	TaskNo        string `json:"task_no"`
+	Type          string `json:"type"`
+	BizDate       string `json:"biz_date"`
+	DiffReport    string `json:"diff_report"`
+	Status        string `json:"status"`
+	Resolution    string `json:"resolution"`
+	ResolveRemark string `json:"resolve_remark"`
+	ResolvedBy    string `json:"resolved_by"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
 type RefreshReq struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
 type RefreshResp struct {
 	Tokens TokenPair `json:"tokens"`
+}
+
+type RefundCreateReq struct {
+	PaymentNo string `json:"payment_no"`
+	Amount    string `json:"amount"`
+	ReturnNo  string `json:"return_no,optional"`
+	Reason    string `json:"reason,optional"`
+}
+
+type RefundCreateResp struct {
+	RefundNo string `json:"refund_no"`
+	Status   string `json:"status"`
+}
+
+type RefundListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type RefundListResp struct {
+	List  []RefundView `json:"list"`
+	Total int          `json:"total"`
+}
+
+type RefundView struct {
+	RefundNo        string `json:"refund_no"`
+	PaymentNo       string `json:"payment_no"`
+	OrderNo         string `json:"order_no"`
+	ReturnNo        string `json:"return_no"`
+	Amount          string `json:"amount"`
+	Channel         string `json:"channel"`
+	Status          string `json:"status"`
+	ChannelRefundId string `json:"channel_refund_id"`
+	Reason          string `json:"reason"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type ReturnApproveReq struct {
+	ReturnNo string `path:"no"`
+	Approve  bool   `json:"approve"`
+	Remark   string `json:"remark,optional"`
+}
+
+type ReturnCreateReq struct {
+	OrderNo string               `json:"order_no"`
+	Items   []ReturnItemInputApi `json:"items"`
+	Reason  string               `json:"reason,optional"`
+}
+
+type ReturnCreateResp struct {
+	ReturnId string `json:"return_id"`
+	ReturnNo string `json:"return_no"`
+}
+
+type ReturnItemInputApi struct {
+	SkuId  string `json:"sku_id"`
+	Qty    int    `json:"qty"`
+	Sn     string `json:"sn,optional"`
+	Reason string `json:"reason,optional"`
+}
+
+type ReturnNoPath struct {
+	ReturnNo string `path:"no"`
 }
 
 type RoleCreateReq struct {
@@ -483,6 +902,45 @@ type RoleUpdateReq struct {
 	MenuIDs   []string `json:"menu_ids,optional"` // 传空数组=清空；不传=不变更
 }
 
+type SagaResp struct {
+	Saga SagaView `json:"saga"`
+}
+
+type SagaRetryReq struct {
+	Id     int64  `path:"id"`
+	Remark string `json:"remark,optional"`
+}
+
+type SagaStepView struct {
+	Step    int    `json:"step"`
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	IdemKey string `json:"idem_key"`
+}
+
+type SagaView struct {
+	SagaId      string         `json:"saga_id"`
+	OrderNo     string         `json:"order_no"`
+	OrderType   string         `json:"order_type"`
+	CurrentStep int            `json:"current_step"`
+	Status      string         `json:"status"`
+	RetryCount  int            `json:"retry_count"`
+	NextRetryAt int64          `json:"next_retry_at"`
+	LastError   string         `json:"last_error"`
+	Steps       []SagaStepView `json:"steps"`
+	UpdatedAt   int64          `json:"updated_at"`
+}
+
+type SalesSumReq struct {
+	From int64 `json:"from,optional"`
+	To   int64 `json:"to,optional"`
+}
+
+type SalesSumResp struct {
+	TotalAmount string `json:"total_amount"`
+	OrderCount  int    `json:"order_count"`
+}
+
 type SessionItem struct {
 	SID       string `json:"sid"`
 	Client    string `json:"client"`
@@ -506,6 +964,34 @@ type SessionListReq struct {
 
 type SessionListResp struct {
 	List []SessionItem `json:"list"`
+}
+
+type ShipmentCreateReq struct {
+	OrderNo     string                 `json:"order_no"`
+	WarehouseId string                 `json:"warehouse_id"`
+	Items       []ShipmentItemInputApi `json:"items"`
+	Carrier     string                 `json:"carrier,optional"`
+	TrackingNo  string                 `json:"tracking_no,optional"`
+}
+
+type ShipmentCreateResp struct {
+	ShipmentId string `json:"shipment_id"`
+	ShipmentNo string `json:"shipment_no"`
+}
+
+type ShipmentItemInputApi struct {
+	SkuId string `json:"sku_id"`
+	Qty   int    `json:"qty"`
+	Sn    string `json:"sn,optional"`
+}
+
+type ShipmentNoPath struct {
+	ShipmentNo string `path:"no"`
+}
+
+type ShipmentSignReq struct {
+	ShipmentNo string `path:"no"`
+	SignedBy   string `json:"signed_by"`
 }
 
 type SimpleResp struct {
@@ -541,6 +1027,37 @@ type SkuListReq struct {
 type SkuListResp struct {
 	List  []SkuItem `json:"list"`
 	Total int64     `json:"total"`
+}
+
+type SlaBindReq struct {
+	ContractNo string `path:"no"`
+	StrategyId string `json:"strategy_id"`
+}
+
+type SlaCreateReq struct {
+	Code            string `json:"code"`
+	Name            string `json:"name"`
+	Level           string `json:"level"`
+	ResponseMinutes int    `json:"response_minutes"`
+	ResolveMinutes  int    `json:"resolve_minutes"`
+}
+
+type SlaCreateResp struct {
+	StrategyId string `json:"strategy_id"`
+}
+
+type SlaListResp struct {
+	List []SlaStrategyView `json:"list"`
+}
+
+type SlaStrategyView struct {
+	StrategyId      string `json:"strategy_id"`
+	Code            string `json:"code"`
+	Name            string `json:"name"`
+	Level           string `json:"level"`
+	ResponseMinutes int    `json:"response_minutes"`
+	ResolveMinutes  int    `json:"resolve_minutes"`
+	CreatedAt       int64  `json:"created_at"`
 }
 
 type StaffCreateReq struct {
@@ -778,6 +1295,13 @@ type TokenPair struct {
 	RefreshExpiresIn int64  `json:"refresh_expires_in"`
 }
 
+type TraceAddReq struct {
+	ShipmentNo  string `path:"no"`
+	Node        string `json:"node"`
+	Description string `json:"description,optional"`
+	TraceTime   int64  `json:"trace_time,optional"`
+}
+
 type UnreadCountResp struct {
 	Count int64 `json:"count"`
 }
@@ -864,6 +1388,18 @@ type WarehouseListResp struct {
 	Total int64           `json:"total"`
 }
 
+type WarrantyListReq struct {
+	Status string `json:"status,optional"`
+	Level  string `json:"level,optional"`
+	Page   int    `json:"page,default=1"`
+	Size   int    `json:"size,default=20"`
+}
+
+type WarrantyListResp struct {
+	List  []WarrantyView `json:"list"`
+	Total int            `json:"total"`
+}
+
 type WarrantyPolicyItem struct {
 	SkuID        string `json:"sku_id"`
 	PeriodMonths int    `json:"period_months"`
@@ -874,4 +1410,30 @@ type WarrantyPolicyUpsertReq struct {
 	Id           string `path:"id"`
 	PeriodMonths int    `json:"period_months"`
 	StartRule    string `json:"start_rule"`
+}
+
+type WarrantyTargetReq struct {
+	TargetType string `json:"target_type,options=DEVICE|STATION"`
+	TargetId   string `json:"target_id,optional"`
+	Sn         string `json:"sn,optional"`
+}
+
+type WarrantyTargetResp struct {
+	List []WarrantyView `json:"list"`
+}
+
+type WarrantyView struct {
+	WarrantyNo string `json:"warranty_no"`
+	Level      string `json:"level"`
+	TargetType string `json:"target_type"`
+	TargetId   string `json:"target_id"`
+	TargetKey  string `json:"target_key"`
+	Status     string `json:"status"`
+	StartAt    int64  `json:"start_at"`
+	EndAt      int64  `json:"end_at"`
+	Months     int    `json:"months"`
+	StartRule  string `json:"start_rule"`
+	SourceType string `json:"source_type"`
+	SourceNo   string `json:"source_no"`
+	CreatedAt  int64  `json:"created_at"`
 }

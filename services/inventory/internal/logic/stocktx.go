@@ -181,7 +181,7 @@ func stockLowEvents(tid, wid, skuId int64, before, after *model.Inventory) []eve
 	if before.Available >= after.LowStockThreshold && after.Available < after.LowStockThreshold {
 		return []eventbus.EmitInput{{
 			Topic:    eventbus.TopicStockLow,
-			Type:     "stock.low",
+			Type:     eventbus.TypeStockLow,
 			Key:      itoa(wid) + ":" + itoa(skuId),
 			TenantID: tid,
 			Payload: map[string]any{
@@ -197,7 +197,7 @@ func stockLowEvents(tid, wid, skuId int64, before, after *model.Inventory) []eve
 func stockOutEvent(tid, wid, skuId int64, qty int64, bizNo string) eventbus.EmitInput {
 	return eventbus.EmitInput{
 		Topic:    eventbus.TopicStockOut,
-		Type:     "stock.out",
+		Type:     eventbus.TypeStockOut,
 		Key:      itoa(wid) + ":" + itoa(skuId),
 		TenantID: tid,
 		Payload: map[string]any{

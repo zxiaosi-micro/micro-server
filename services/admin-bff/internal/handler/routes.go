@@ -9,9 +9,12 @@ import (
 	audit "micro-server/services/admin-bff/internal/handler/audit"
 	auth "micro-server/services/admin-bff/internal/handler/auth"
 	catalog "micro-server/services/admin-bff/internal/handler/catalog"
+	contract "micro-server/services/admin-bff/internal/handler/contract"
+	finance "micro-server/services/admin-bff/internal/handler/finance"
 	inventory "micro-server/services/admin-bff/internal/handler/inventory"
 	menu "micro-server/services/admin-bff/internal/handler/menu"
 	notification "micro-server/services/admin-bff/internal/handler/notification"
+	order "micro-server/services/admin-bff/internal/handler/order"
 	org "micro-server/services/admin-bff/internal/handler/org"
 	party "micro-server/services/admin-bff/internal/handler/party"
 	role "micro-server/services/admin-bff/internal/handler/role"
@@ -159,6 +162,186 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodGet,
 					Path:    "/station-products/:id",
 					Handler: catalog.GetStationProductHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 索赔列表(perm: contract:claim:list)
+					Method:  http.MethodGet,
+					Path:    "/claims",
+					Handler: contract.ListClaimsHandler(serverCtx),
+				},
+				{
+					// 索赔申请(perm: contract:claim:create)
+					Method:  http.MethodPost,
+					Path:    "/claims",
+					Handler: contract.CreateClaimHandler(serverCtx),
+				},
+				{
+					// 索赔审批(perm: contract:claim:approve)
+					Method:  http.MethodPost,
+					Path:    "/claims/:no/approve",
+					Handler: contract.ApproveClaimHandler(serverCtx),
+				},
+				{
+					// 索赔结算(perm: contract:claim:settle)
+					Method:  http.MethodPost,
+					Path:    "/claims/:no/settle",
+					Handler: contract.SettleClaimHandler(serverCtx),
+				},
+				{
+					// 合同列表(perm: contract:contract:list)
+					Method:  http.MethodGet,
+					Path:    "/contracts",
+					Handler: contract.ListContractsHandler(serverCtx),
+				},
+				{
+					// 合同详情(归档件版本列表, perm: contract:contract:list)
+					Method:  http.MethodGet,
+					Path:    "/contracts/:no",
+					Handler: contract.GetContractHandler(serverCtx),
+				},
+				{
+					// 合同生效/归档(perm: contract:contract:archive)
+					Method:  http.MethodPost,
+					Path:    "/contracts/:no/archive",
+					Handler: contract.ArchiveContractHandler(serverCtx),
+				},
+				{
+					// 归档件上传登记(受控下载经 file 服务, perm: contract:contract:archive)
+					Method:  http.MethodPost,
+					Path:    "/contracts/:no/files",
+					Handler: contract.UploadContractFileHandler(serverCtx),
+				},
+				{
+					// 合同绑定 SLA(快照冻结, perm: contract:sla:bind)
+					Method:  http.MethodPost,
+					Path:    "/contracts/:no/sla",
+					Handler: contract.BindContractSlaHandler(serverCtx),
+				},
+				{
+					// SLA 策略列表(perm: contract:sla:list)
+					Method:  http.MethodGet,
+					Path:    "/sla-strategies",
+					Handler: contract.ListSlaStrategiesHandler(serverCtx),
+				},
+				{
+					// SLA 策略创建(perm: contract:sla:create)
+					Method:  http.MethodPost,
+					Path:    "/sla-strategies",
+					Handler: contract.CreateSlaStrategyHandler(serverCtx),
+				},
+				{
+					// 质保列表(perm: contract:warranty:list)
+					Method:  http.MethodGet,
+					Path:    "/warranties",
+					Handler: contract.ListWarrantiesHandler(serverCtx),
+				},
+				{
+					// 按对象查质保(双层, perm: contract:warranty:list)
+					Method:  http.MethodGet,
+					Path:    "/warranty-by-target",
+					Handler: contract.GetWarrantyByTargetHandler(serverCtx),
+				},
+				{
+					// 延保销售(衔接原质保, perm: contract:extension:sell)
+					Method:  http.MethodPost,
+					Path:    "/warranty-extensions",
+					Handler: contract.SellExtensionHandler(serverCtx),
+				},
+				{
+					// 延保退款(perm: contract:extension:refund)
+					Method:  http.MethodPost,
+					Path:    "/warranty-extensions/:no/refund",
+					Handler: contract.RefundExtensionHandler(serverCtx),
+				},
+				{
+					// 延保转移(perm: contract:extension:transfer)
+					Method:  http.MethodPost,
+					Path:    "/warranty-extensions/:no/transfer",
+					Handler: contract.TransferExtensionHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 发票列表(perm: finance:invoice:list)
+					Method:  http.MethodGet,
+					Path:    "/invoices",
+					Handler: finance.ListInvoicesHandler(serverCtx),
+				},
+				{
+					// 开票(perm: finance:invoice:issue)
+					Method:  http.MethodPost,
+					Path:    "/invoices",
+					Handler: finance.CreateInvoiceHandler(serverCtx),
+				},
+				{
+					// 红冲(perm: finance:invoice:reverse)
+					Method:  http.MethodPost,
+					Path:    "/invoices/:no/reverse",
+					Handler: finance.ReverseInvoiceHandler(serverCtx),
+				},
+				{
+					// 支付单列表(REVIEWING 高亮, perm: finance:payment:list)
+					Method:  http.MethodGet,
+					Path:    "/payments",
+					Handler: finance.ListPaymentsHandler(serverCtx),
+				},
+				{
+					// 对公第二人复核(职责分离, perm: finance:payment:approve)
+					Method:  http.MethodPost,
+					Path:    "/payments/:no/approve",
+					Handler: finance.ApprovePaymentHandler(serverCtx),
+				},
+				{
+					// 支付确认(dev 模拟网关/回调, perm: finance:payment:confirm)
+					Method:  http.MethodPost,
+					Path:    "/payments/:no/confirm",
+					Handler: finance.ConfirmPaymentHandler(serverCtx),
+				},
+				{
+					// 对账核销(perm: finance:payment:settle)
+					Method:  http.MethodPost,
+					Path:    "/payments/:no/settle",
+					Handler: finance.SettlePaymentHandler(serverCtx),
+				},
+				{
+					// 对账任务列表(perm: finance:reconcile:list)
+					Method:  http.MethodGet,
+					Path:    "/reconcile-tasks",
+					Handler: finance.ListReconcileTasksHandler(serverCtx),
+				},
+				{
+					// 对账任务处理(仅 REPLAY/IGNORE, perm: finance:reconcile:resolve)
+					Method:  http.MethodPost,
+					Path:    "/reconcile-tasks/:id/resolve",
+					Handler: finance.ResolveReconcileTaskHandler(serverCtx),
+				},
+				{
+					// 退款列表(perm: finance:refund:list)
+					Method:  http.MethodGet,
+					Path:    "/refunds",
+					Handler: finance.ListRefundsHandler(serverCtx),
+				},
+				{
+					// 手工退款(原路退回, perm: finance:refund:create)
+					Method:  http.MethodPost,
+					Path:    "/refunds",
+					Handler: finance.CreateRefundHandler(serverCtx),
 				},
 			}...,
 		),
@@ -342,6 +525,93 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/notify-templates",
 					Handler: notification.UpsertTemplateHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 订单列表(perm: trade:order:list)
+					Method:  http.MethodGet,
+					Path:    "/orders",
+					Handler: order.ListOrdersHandler(serverCtx),
+				},
+				{
+					// 创建订单(Saga 步骤1, perm: trade:order:create)
+					Method:  http.MethodPost,
+					Path:    "/orders",
+					Handler: order.CreateOrderHandler(serverCtx),
+				},
+				{
+					// 订单详情含明细(perm: trade:order:list)
+					Method:  http.MethodGet,
+					Path:    "/orders/:no",
+					Handler: order.GetOrderHandler(serverCtx),
+				},
+				{
+					// 取消订单(补偿释放库存, perm: trade:order:cancel)
+					Method:  http.MethodPost,
+					Path:    "/orders/:no/cancel",
+					Handler: order.CancelOrderHandler(serverCtx),
+				},
+				{
+					// 发起支付(Saga 步骤3, perm: trade:order:pay)
+					Method:  http.MethodPost,
+					Path:    "/orders/:no/pay",
+					Handler: order.PayOrderHandler(serverCtx),
+				},
+				{
+					// Saga 进度(perm: trade:order:list)
+					Method:  http.MethodGet,
+					Path:    "/orders/:no/saga",
+					Handler: order.GetOrderSagaHandler(serverCtx),
+				},
+				{
+					// 退货申请(perm: trade:return:create)
+					Method:  http.MethodPost,
+					Path:    "/return-orders",
+					Handler: order.CreateReturnOrderHandler(serverCtx),
+				},
+				{
+					// 退货审批(通过→自动退款, perm: trade:return:approve)
+					Method:  http.MethodPost,
+					Path:    "/return-orders/:no/approve",
+					Handler: order.ApproveReturnOrderHandler(serverCtx),
+				},
+				{
+					// Saga 人工重推(perm: trade:order:retry)
+					Method:  http.MethodPost,
+					Path:    "/sagas/:id/retry",
+					Handler: order.RetrySagaHandler(serverCtx),
+				},
+				{
+					// 已支付销售汇总(perm: trade:order:list)
+					Method:  http.MethodGet,
+					Path:    "/sales-summary",
+					Handler: order.SumPaidSalesHandler(serverCtx),
+				},
+				{
+					// 创建发货单(perm: trade:shipment:create)
+					Method:  http.MethodPost,
+					Path:    "/shipments",
+					Handler: order.CreateShipmentHandler(serverCtx),
+				},
+				{
+					// 签收确认(触发质保起算, perm: trade:shipment:sign)
+					Method:  http.MethodPost,
+					Path:    "/shipments/:no/confirm-signed",
+					Handler: order.ConfirmShipmentSignedHandler(serverCtx),
+				},
+				{
+					// 轨迹手工录入(perm: trade:shipment:trace)
+					Method:  http.MethodPost,
+					Path:    "/shipments/:no/traces",
+					Handler: order.AddShipmentTraceHandler(serverCtx),
 				},
 			}...,
 		),

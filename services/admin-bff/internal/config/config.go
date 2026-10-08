@@ -17,6 +17,10 @@ type Config struct {
 	InventoryRpc    zrpc.RpcClientConf `json:",optional"`
 	NotificationRpc zrpc.RpcClientConf `json:",optional"`
 	AuditRpc        zrpc.RpcClientConf `json:",optional"`
+	// S5 交易域 RPC 客户端（S5-02~04 接入；dev 直连 Endpoints）。
+	OrderRpc    zrpc.RpcClientConf `json:",optional"`
+	FinanceRpc  zrpc.RpcClientConf `json:",optional"`
+	ContractRpc zrpc.RpcClientConf `json:",optional"`
 	// Jwt 公钥目录（与 identity 同源 keygen 产出；验签按 kid 选钥）。
 	Jwt struct {
 		KeysDir string `json:",optional"`

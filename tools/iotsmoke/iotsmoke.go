@@ -11,6 +11,8 @@ package main
 
 import (
 	"context"
+	crand "crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -39,8 +41,8 @@ const (
 var (
 	kafkaBrokers = envOr("KAFKA_BROKERS", "127.0.0.1:29092")
 	mqttBroker   = envOr("EMQX_BROKER", "tcp://127.0.0.1:21883")
-	mqttUser     = envOr("EMQX_PLATFORM_USER", "micro-dev-device")
-	mqttPass     = envOr("EMQX_PLATFORM_PASS", "")
+	mqttUser     = envOr("EMQX_DEVICE_USER", "micro-dev-device")
+	mqttPass     = envOr("EMQX_DEVICE_PASS", "")
 	tdRest       = envOr("TDENGINE_REST", "http://127.0.0.1:26041")
 	tdUser       = envOr("TDENGINE_USER", "root")
 	tdPass       = envOr("MICRO_DEV_TDENGINE_PW", "taosdata")
@@ -104,7 +106,11 @@ func main() {
 			"soc": 80.5, "voltage": voltage, "current": 10.2,
 			"temperature": 31.5, "power": 480.0, "ts": time.Now().UnixMilli(),
 		})
-		mcli.Publish(upTopic, 1, false, payload)
+		// QoS1 必须等 PUBACK（keepalive 30s，长等待窗口后连接可能重连中——不等会丢报文）
+		token := mcli.Publish(upTopic, 1, false, payload)
+		if !token.WaitTimeout(10*time.Second) || token.Error() != nil {
+			fail("MQTT publish 超时/失败: %v", token.Error())
+		}
 		return time.Now()
 	}
 	sendTelemetry(48.0)
@@ -131,7 +137,7 @@ func main() {
 		if err != nil {
 			return false, nil
 		}
-		return len(body) > 2 && (body[0] == '[' || body[0] == '{') && string(body) != `{"code":0,"desc":null}` && !jsonEmptyCount(body), nil
+		return jsonValid(body) && !jsonEmptyCount(body), nil
 	})
 	sendTS := sendTelemetry(48.2)
 	waitFor(10*time.Second, 200*time.Millisecond, "端到端 P95<5s（最新 ts 落库）", func() (bool, error) {
@@ -222,16 +228,38 @@ func (v *verifier) has(key string) bool {
 
 func (v *verifier) Close() { _ = v.reader.Close() }
 
+// produceEvent 直投 Kafka 业务事件（eventbus 信封包装——device 经 Subscriber 消费，
+// envelope.event_id 是 dedup 幂等键；与 inventory Outbox Relay 产出同构）。
 func produceEvent(topic string, payload map[string]any) {
 	raw, _ := json.Marshal(payload)
+	env := map[string]any{
+		"event_id":    fmt.Sprintf("smoke-%d-%s", time.Now().UnixNano(), randHex(4)),
+		"event_type":  topicTopicToType(topic),
+		"tenant_id":   tenantID,
+		"trace_id":    "iotsmoke",
+		"occurred_at": time.Now().UTC().Format(time.RFC3339Nano),
+		"payload":     json.RawMessage(raw),
+	}
+	envRaw, _ := json.Marshal(env)
 	w := &kafka.Writer{Addr: kafka.TCP(kafkaBrokers), Topic: topic, AllowAutoTopicCreation: false}
-	if err := w.WriteMessages(context.Background(), kafka.Message{Key: []byte(sn0()), Value: raw}); err != nil {
+	if err := w.WriteMessages(context.Background(), kafka.Message{Key: []byte("iotsmoke"), Value: envRaw}); err != nil {
 		fail("Kafka 生产 %s 失败: %v", topic, err)
 	}
 	_ = w.Close()
 }
 
-func sn0() string { return "iotsmoke" }
+func topicTopicToType(t string) string {
+	if t == "stock_in" {
+		return "stock.in"
+	}
+	return "stock.out"
+}
+
+func randHex(n int) string {
+	b := make([]byte, n)
+	_, _ = crand.Read(b)
+	return hex.EncodeToString(b)
+}
 
 func tdQuery(sql string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodPost, tdRest+"/rest/sql", strings.NewReader(sql))
@@ -249,41 +277,61 @@ func tdQuery(sql string) ([]byte, error) {
 	return body[:n], nil
 }
 
+// jsonEmptyCount count(*) 结果是否为 0（REST 对象响应；解析失败视为空集不通过）。
 func jsonEmptyCount(body []byte) bool {
-	var arr []any
-	if err := json.Unmarshal(body, &arr); err == nil {
-		return len(arr) == 0 || fmt.Sprintf("%v", arr) == "[[0]]"
+	var out tdResp
+	if err := json.Unmarshal(body, &out); err != nil || out.Code != 0 || len(out.Data) == 0 || len(out.Data[0]) == 0 {
+		return true
 	}
-	return false
+	return out.Data[0][0] == 0
+}
+
+// tdResp TDengine REST 响应（JSON 对象：code/desc/data/rows）。
+type tdResp struct {
+	Code int         `json:"code"`
+	Desc string      `json:"desc"`
+	Data [][]float64 `json:"data"` // 数值结果（count(*)）
+}
+
+// parseTS 解析 TDengine last(ts) 返回（REST 返回 UTC ISO 串，如 2026-10-10T23:43:31.869Z）。
+// jsonValid 响应是合法 JSON 且 code=0。
+func jsonValid(body []byte) bool {
+	var out tdResp
+	return json.Unmarshal(body, &out) == nil && out.Code == 0
 }
 
 func parseTS(body []byte) int64 {
-	var arr []any
-	if err := json.Unmarshal(body, &arr); err != nil || len(arr) == 0 {
+	var out struct {
+		Code int        `json:"code"`
+		Desc string     `json:"desc"`
+		Data [][]string `json:"data"`
+	}
+	if err := json.Unmarshal(body, &out); err != nil || out.Code != 0 || len(out.Data) == 0 || len(out.Data[0]) == 0 {
 		return 0
 	}
-	row, ok := arr[0].([]any)
-	if !ok || len(row) < 2 {
-		return 0
+	s := out.Data[0][0]
+	if f, err := time.Parse(time.RFC3339Nano, s); err == nil {
+		return f.UnixMilli()
 	}
-	var ms int64
-	// TDengine last(ts) 返回 ISO 串；粗解析毫秒
-	s := fmt.Sprintf("%v", row[1])
-	if t, err := time.Parse("2006-01-02 15:04:05.000", s+"Z"[0:0]); err == nil {
-		ms = t.UnixMilli()
-	} else if f, err := time.Parse(time.RFC3339Nano, s); err == nil {
-		ms = f.UnixMilli()
+	if t, err := time.ParseInLocation("2006-01-02 15:04:05.000", s, time.Local); err == nil {
+		return t.UnixMilli()
 	}
-	return ms
+	return 0
 }
 
+// snLower 子表名归一（与 iotingest tdengine.sanitize 同规则：小写 + 非 [a-z0-9_] → '_'，
+// 不一致会导致查不到子表或 TDengine 把 '-' 解析为算术）。
 func snLower(sn string) string {
-	out := make([]byte, len(sn))
-	for i, c := range []byte(sn) {
+	out := make([]byte, 0, len(sn))
+	for _, c := range []byte(sn) {
 		if c >= 'A' && c <= 'Z' {
 			c += 32
 		}
-		out[i] = c
+		if (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' {
+			out = append(out, c)
+		} else {
+			out = append(out, '_')
+		}
 	}
 	return string(out)
 }

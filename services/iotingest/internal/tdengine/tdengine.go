@@ -99,6 +99,12 @@ func tableName(pk, sn string) string {
 	return "iot_" + sanitize(pk) + "_" + sanitize(sn)
 }
 
+// qualified 表名限定（REST 无连接态默认库，全部显式带 <db>. 前缀——9750 Database not specified 教训）。
+func (c *Client) qualifiedStable(pk string) string { return c.db + "." + stableName(pk) }
+func (c *Client) qualifiedTable(pk, sn string) string {
+	return c.db + "." + tableName(pk, sn)
+}
+
 func sanitize(s string) string {
 	var b strings.Builder
 	for _, r := range strings.ToLower(s) {
@@ -118,7 +124,7 @@ func (c *Client) ensureStable(ctx context.Context, pk string) error {
 	}
 	sql := fmt.Sprintf(
 		"CREATE STABLE IF NOT EXISTS %s (ts TIMESTAMP, soc FLOAT, voltage FLOAT, current FLOAT, temperature FLOAT, power FLOAT, raw VARCHAR(1024)) TAGS (sn VARCHAR(64) , tenant_id BIGINT)",
-		stableName(pk))
+		c.qualifiedStable(pk))
 	if err := c.exec(ctx, sql); err != nil {
 		return err
 	}
@@ -133,25 +139,22 @@ func (c *Client) WriteBatch(ctx context.Context, pts []Point) error {
 	}
 	var b bytes.Buffer
 	b.WriteString("INSERT INTO ")
-	seen := map[string]bool{}
 	for _, p := range pts {
 		if err := c.ensureStable(ctx, p.ProductKey); err != nil {
 			return err
 		}
-		t := tableName(p.ProductKey, p.Sn)
-		if !seen[t] {
-			seen[t] = true
-			fmt.Fprintf(&b, "%s USING %s TAGS ('%s', %d) ",
-				t, stableName(p.ProductKey), strings.ReplaceAll(p.Sn, "'", "''"), p.TenantId)
-		} else {
-			b.WriteString(" ")
-		}
+		// 每块都写全 USING 形式：TDengine 3.3 带库名前缀时，同子表续写块省略 USING 会报
+		// 9731 Table does not exist（实测）；重复 USING 幂等无害。
+		fmt.Fprintf(&b, "%s USING %s TAGS ('%s', %d) ",
+			c.qualifiedTable(p.ProductKey, p.Sn), c.qualifiedStable(p.ProductKey),
+			strings.ReplaceAll(p.Sn, "'", "''"), p.TenantId)
 		fmt.Fprintf(&b, "VALUES ('%s', %g, %g, %g, %g, %g, '%s') ",
 			p.Ts.Format("2006-01-02 15:04:05.000"),
 			p.Soc, p.Voltage, p.Current, p.Temperature, p.Power,
 			strings.ReplaceAll(truncate(p.Raw, 1000), "'", "''"))
 	}
 	if err := c.exec(ctx, b.String()); err != nil {
+		logx.WithContext(ctx).Errorf("tdengine SQL 失败（前 500 字符）: %.500s", b.String())
 		return err
 	}
 	logx.WithContext(ctx).Debugf("tdengine batch written n=%d", len(pts))

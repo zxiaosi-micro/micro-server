@@ -40,8 +40,8 @@ func main() {
 	rate := flag.Int("rate", 1, "每台每秒上报条数")
 	dur := flag.Duration("dur", 0, "运行时长（0=直到 Ctrl+C）")
 	broker := flag.String("broker", envOr("EMQX_BROKER", "tcp://127.0.0.1:21883"), "EMQX broker")
-	user := flag.String("user", envOr("EMQX_PLATFORM_USER", "micro-dev-device"), "MQTT 用户（dev 平台联调账号）")
-	pass := flag.String("pass", envOr("EMQX_PLATFORM_PASS", ""), "MQTT 密码")
+	user := flag.String("user", envOr("EMQX_DEVICE_USER", "micro-dev-device"), "MQTT 用户（dev 设备联调账号，ACL pub up/#）")
+	pass := flag.String("pass", envOr("EMQX_DEVICE_PASS", ""), "MQTT 密码")
 	tenant := flag.Int64("tenant", 1, "租户 ID")
 	pk := flag.String("pk", "ESS-DEMO", "product_key")
 	snPrefix := flag.String("prefix", "DEV", "SN 前缀")
@@ -139,7 +139,9 @@ func (s *deviceSim) run() {
 			"power":       round1(480 + 240*math.Sin(phase) + mrand.NormFloat64()*20),
 			"ts":          time.Now().UnixMilli(),
 		})
-		s.client.Publish(s.topic, 1, false, payload)
+		if token := s.client.Publish(s.topic, 1, false, payload); !token.WaitTimeout(5*time.Second) || token.Error() != nil {
+			fmt.Fprintf(os.Stderr, "publish 失败 sn=%s: %v\n", s.sn, token.Error())
+		}
 	}
 }
 

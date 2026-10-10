@@ -28,17 +28,23 @@ type Replayer interface {
 	Replay(key, val string) error
 }
 
+// Evaluator 越限初筛抽象（rules.Evaluator；业务判定归 ops，FR-IOT-009）。
+type Evaluator interface {
+	Evaluate(ctx context.Context, tenantId int64, pk, sn, payload string, ts int64, source string)
+}
+
 // Writer 遥测写入器。
 type Writer struct {
 	td     *tdengine.Client
 	shadow ShadowStore
 	rep    Replayer
+	ev     Evaluator
 	bulk   *executors.BulkExecutor
 }
 
 // New 构造（WithBulkTasks(500) + WithBulkInterval(200ms)，FR-IOT-003/02 §9.6）。
-func New(td *tdengine.Client, shadow ShadowStore, rep Replayer) *Writer {
-	w := &Writer{td: td, shadow: shadow, rep: rep}
+func New(td *tdengine.Client, shadow ShadowStore, rep Replayer, ev Evaluator) *Writer {
+	w := &Writer{td: td, shadow: shadow, rep: rep, ev: ev}
 	w.bulk = executors.NewBulkExecutor(
 		func(items []any) {
 			w.flush(context.WithoutCancel(context.Background()), items)
@@ -87,13 +93,16 @@ func (w *Writer) flush(ctx context.Context, items []interface{}) {
 		w.replayAll(ctx, items, err)
 		return
 	}
-	// 影子写入（Lua 时间戳防乱序；失败仅记日志——影子可从最新遥测重建）
+	// 影子写入（Lua 时间戳防乱序；失败仅记日志——影子可从最新遥测重建）+ 越限初筛
 	for sn, msg := range shadowMap {
 		metrics := parseMetrics(msg.Payload)
 		if w.shadow != nil {
 			if err := w.shadow.Write(ctx, sn, msg.Ts, metrics, msg.Payload); err != nil {
 				logx.Errorf("writer: 影子写入失败 sn=%s err=%v", sn, err)
 			}
+		}
+		if w.ev != nil {
+			w.ev.Evaluate(ctx, msg.TenantId, msg.ProductKey, sn, msg.Payload, msg.Ts, "telemetry")
 		}
 	}
 }

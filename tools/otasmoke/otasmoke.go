@@ -12,16 +12,19 @@ package main
 import (
 	"context"
 	"crypto/ed25519"
+	crand "crypto/rand"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"encoding/pem"
 	"flag"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/zrpc"
 	"github.com/zxiaosi-micro/micro-common/authz"
 	"github.com/zxiaosi-micro/micro-common/ctxkit"
@@ -105,7 +108,25 @@ func main() {
 	}
 	pass("篡改签名拒绝入库")
 
-	// ---- 4. 灰度任务（单设备清单）----
+	// ---- 4. 状态机驱动（stock_in/stock_out）+ 激活 → OTA 目标态 ACTIVATED ----
+	produceEvent("stock_in", sn, "stock.in", map[string]any{
+		"tenant_id": tenantID, "warehouse_id": 1, "sku_id": 1, "qty": 1, "biz_no": "OTASMOKE-IN-" + sn, "sns": []string{sn},
+	})
+	produceEvent("stock_out", sn, "stock.out", map[string]any{
+		"tenant_id": tenantID, "warehouse_id": 1, "sku_id": 1, "qty": 1, "biz_no": "OTASMOKE-OUT-" + sn, "sns": []string{sn},
+	})
+	waitFor(20*time.Second, 500*time.Millisecond, "设备状态 OUT", func() (bool, error) {
+		resp, err := dev.ListDevice(ctx, &devpb.ListDeviceReq{Keyword: sn})
+		if err != nil {
+			return false, err
+		}
+		return len(resp.List) == 1 && resp.List[0].Status == "OUT", nil
+	})
+	_, err = dev.Activate(ctx, &devpb.ActivateReq{Sn: sn})
+	must(err, "Activate")
+	pass("stock_in/stock_out 状态机推进 + 激活完成")
+
+	// ---- 5. 灰度任务（单设备清单）----
 	// DeviceIds 需要真实 device_id：先反查再创建灰度清单
 	list, err := dev.ListDevice(ctx, &devpb.ListDeviceReq{Keyword: sn})
 	must(err, "ListDevice")
@@ -120,7 +141,7 @@ func main() {
 	must(err, "CreateOtaTask")
 	pass("灰度任务创建 task_id=%d（batch=1，单设备清单）", task2.TaskId)
 
-	// ---- 5. 指令下发扫描推进（dispatch → ota_device SENT）----
+	// ---- 6. 指令下发扫描推进（dispatch → ota_device SENT）----
 	waitFor(90*time.Second, 2*time.Second, "OTA 指令下发（ota_device SENT）", func() (bool, error) {
 		resp, err := dev.GetOtaTask(ctx, &devpb.GetOtaTaskReq{TaskId: task2.TaskId, WithDevices: true})
 		if err != nil {
@@ -135,7 +156,7 @@ func main() {
 	})
 	pass("OTA_UPGRADE 指令已下发（复用指令链路 QoS1）")
 
-	// ---- 6. 回滚（ROLLED_BACK + 明细复位 PENDING 重推旧固件）----
+	// ---- 7. 回滚（ROLLED_BACK + 明细复位 PENDING 重推旧固件）----
 	rb, err := dev.RollbackOtaTask(ctx, &devpb.RollbackOtaTaskReq{
 		TaskId: task2.TaskId, Reason: "otasmoke 验收回滚",
 	})
@@ -148,7 +169,7 @@ func main() {
 	if resp.Task.Status != "ROLLED_BACK" {
 		fail("任务状态非 ROLLED_BACK: %s", resp.Task.Status)
 	}
-	pass("回滚完成 rolled_back=%d 状态=ROLLED_BACK（旧固件重推由扫描器续推）")
+	pass("回滚完成 rolled_back=%d 状态=ROLLED_BACK（旧固件重推由扫描器续推）", rb.RolledBack)
 
 	fmt.Println("\notasmoke: 全部通过 ✅")
 }
@@ -177,6 +198,32 @@ func parsePKCS8(der []byte) (ed25519.PrivateKey, error) {
 		return nil, fmt.Errorf("非 Ed25519 私钥")
 	}
 	return priv, nil
+}
+
+// produceEvent 直投 Kafka 业务事件（eventbus 信封包装——device 经 Subscriber 消费，
+// envelope.event_id 是 dedup 幂等键；与 inventory Outbox Relay 产出同构）。
+func produceEvent(topic, key, eventType string, payload map[string]any) {
+	raw, _ := json.Marshal(payload)
+	env := map[string]any{
+		"event_id":    fmt.Sprintf("smoke-%d-%s", time.Now().UnixNano(), randHex(4)),
+		"event_type":  eventType,
+		"tenant_id":   tenantID,
+		"trace_id":    "otasmoke",
+		"occurred_at": time.Now().UTC().Format(time.RFC3339Nano),
+		"payload":     json.RawMessage(raw),
+	}
+	envRaw, _ := json.Marshal(env)
+	w := &kafka.Writer{Addr: kafka.TCP(envOr("KAFKA_BROKERS", "127.0.0.1:29092")), Topic: topic, AllowAutoTopicCreation: false}
+	if err := w.WriteMessages(context.Background(), kafka.Message{Key: []byte(key), Value: envRaw}); err != nil {
+		fail("Kafka 生产 %s 失败: %v", topic, err)
+	}
+	_ = w.Close()
+}
+
+func randHex(n int) string {
+	b := make([]byte, n)
+	_, _ = crand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 func trimMsg(err error) string {

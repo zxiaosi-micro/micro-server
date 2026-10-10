@@ -19,6 +19,25 @@ export MICRO_FILE_SIGN_KEY=$(grep MICRO_FILE_SIGN_KEY "$DEV_ENV" | cut -d= -f2)
 [ -n "$MICRO_HASH_KEY" ] || export MICRO_HASH_KEY="micro-dev-index-key"
 [ -n "$MICRO_FILE_SIGN_KEY" ] || export MICRO_FILE_SIGN_KEY="micro-dev-file-sign-key"
 
+# EMQX/TDengine/OTA（设备链路，S6 起消费；.env 同源，零硬编码）
+export EMQX_BROKER="${EMQX_BROKER:-tcp://127.0.0.1:21883}"
+export EMQX_API_BASE="${EMQX_API_BASE:-http://127.0.0.1:38083}"
+export EMQX_DASHBOARD_USER=$(grep MICRO_DEV_EMQX_DASHBOARD_USER "$DEV_ENV" | cut -d= -f2)
+export EMQX_DASHBOARD_PASS=$(grep MICRO_DEV_EMQX_DASHBOARD_PW "$DEV_ENV" | cut -d= -f2)
+# 设备联调账号（模拟器/冒烟：ACL pub up/# + sub down/#）
+export EMQX_DEVICE_USER=$(grep MICRO_DEV_EMQX_DEVICE_USER "$DEV_ENV" | cut -d= -f2)
+export EMQX_DEVICE_PASS=$(grep MICRO_DEV_EMQX_DEVICE_PW "$DEV_ENV" | cut -d= -f2)
+# 平台后端账号（device 服务指令下行 + iotingest forwarder：ACL pub down/# + sub up/#）
+export EMQX_PLATFORM_USER=$(grep MICRO_DEV_EMQX_PLATFORM_USER "$DEV_ENV" | cut -d= -f2)
+export EMQX_PLATFORM_PASS=$(grep MICRO_DEV_EMQX_PLATFORM_PW "$DEV_ENV" | cut -d= -f2)
+[ -n "$EMQX_PLATFORM_USER" ] || export EMQX_PLATFORM_USER="$EMQX_DEVICE_USER"
+[ -n "$EMQX_PLATFORM_PASS" ] || export EMQX_PLATFORM_PASS="$EMQX_DEVICE_PASS"
+export MICRO_DEV_TDENGINE_PW=$(grep MICRO_DEV_TDENGINE_PW "$DEV_ENV" | cut -d= -f2)
+export TDENGINE_REST="${TDENGINE_REST:-http://127.0.0.1:26041}"
+export TDENGINE_PASS="$MICRO_DEV_TDENGINE_PW"
+export OTA_PUBLIC_KEY="${OTA_PUBLIC_KEY:-D:/Personal code/micro-new/micro-deploy/deploy/conf/keys/ota_ed25519_public.pem}"
+export OTA_SIGN_KEY="${OTA_SIGN_KEY:-D:/Personal code/micro-new/micro-deploy/deploy/conf/keys/ota_ed25519_private.pem}"
+
 # 服务 DSN（参数：数据库名，如 micro_party）
 export DSN_DB="${1:-}"
 if [ -n "$DSN_DB" ]; then

@@ -11,19 +11,19 @@ import (
 	"github.com/zxiaosi-micro/micro-common/tenantx"
 )
 
-// SegSegFinance 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
+// SegFinance 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
 const SegFinance = errcode.SegFinance
 
 var (
 	errPaymentNotFound  = errcode.New(SegFinance, 1001, "支付单不存在")
-	errPaymentNoUsed    = errcode.New(SegFinance, 1002, "支付单号已存在")
+	_                   = errcode.New(SegFinance, 1002, "支付单号已存在") // 预留
 	errPaymentStatus    = errcode.New(SegFinance, 1003, "支付单状态不允许该操作")
 	errChannelBad       = errcode.New(SegFinance, 1004, "支付渠道不合法")
 	errChannelDisabled  = errcode.New(SegFinance, 1005, "支付渠道已关闭(降级只收对公)")
 	errAmountBad        = errcode.New(SegFinance, 1006, "金额不合法")
-	errAmountMismatch   = errcode.New(SegFinance, 1007, "实收金额与应收不符(已生成对账差异)")
+	_                   = errcode.New(SegFinance, 1007, "实收金额与应收不符(已生成对账差异)") // 预留
 	errSelfApproval     = errcode.New(SegFinance, 1008, "复核人不得与录入人相同(职责分离)")
-	errRefundNotFound   = errcode.New(SegFinance, 1009, "退款单不存在")
+	_                   = errcode.New(SegFinance, 1009, "退款单不存在") // 预留
 	errRefundNoOrigin   = errcode.New(SegFinance, 1010, "原支付单不可退款(未支付)")
 	errRefundOver       = errcode.New(SegFinance, 1011, "退款金额超过可退余额")
 	errInvoiceNotFound  = errcode.New(SegFinance, 1012, "发票不存在")
@@ -62,4 +62,3 @@ func clampPage(page, size int64) (int64, int64) {
 	}
 	return page, size
 }
-

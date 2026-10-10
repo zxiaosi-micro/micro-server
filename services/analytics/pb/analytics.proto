@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "./pb";
+
+// Analytics 分析域服务契约（S8，v4/03 阶段 8；CQRS 读模型 v4/02 §9.8）。
+//
+// 职责边界：只服务读模型（六大日聚合 + 指标字典 + 异步导出 + 日级对账）；
+// 报表不 JOIN 业务库（对账 recon 属管理面，直查业务库比对）。
+// 约定与全平台一致：ID 传输层 int64、对外 string（E8）；时间字段 UnixMilli 或 yyyy-MM-dd 日期串；
+// 枚举一律 string；金额 DECIMAL 以 string 传输防精度丢失。
+service Analytics {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // 报表查询（读模型服务面）
+  rpc GetReport(GetReportReq) returns (GetReportResp);
+  // 指标字典（口径正本）
+  rpc ListMetricDict(ListMetricDictReq) returns (ListMetricDictResp);
+  // 消费 watermark（运维/冒烟观测）
+  rpc ListWatermark(ListWatermarkReq) returns (ListWatermarkResp);
+
+  // 异步导出（S8-03：RequestExport 落任务 + export_requested 事件 → 消费渲染 → file 服务归档）
+  rpc RequestExport(RequestExportReq) returns (RequestExportResp);
+  rpc GetExportTask(GetExportTaskReq) returns (GetExportTaskResp);
+  rpc ListExportTask(ListExportTaskReq) returns (ListExportTaskResp);
+
+  // 日级对账（S8-04）：读模型 vs 业务库 → recon_diff + 差异站内信
+  rpc RunRecon(RunReconReq) returns (RunReconResp);
+  // 读模型全量重建：台账/聚合表清空 + 消费组版本号 +1（重启后新组从头回放）
+  rpc RebuildReadModel(RebuildReadModelReq) returns (RebuildReadModelResp);
+}
+
+message PingReq {}
+message PingResp {
+  string pong = 1;
+}
+
+// ---------- 报表查询 ----------
+
+message GetReportReq {
+  string report_type = 1;  // sales/inventory/warranty/sla/finance/station
+  string date_start = 2;   // yyyy-MM-dd（含）
+  string date_end = 3;     // yyyy-MM-dd（含）
+  int64 station_id = 4;    // 可选维度过滤（sla/station）
+  int64 warehouse_id = 5;  // 可选维度过滤（inventory）
+  string channel = 6;      // 可选维度过滤（finance）
+}
+
+// ReportRow 行数据：维度 + 指标键值（指标编码取 report_metric_dict，值为 string 防精度丢失）。
+message ReportRow {
+  string stat_date = 1;
+  int64 station_id = 2;
+  int64 warehouse_id = 3;
+  string channel = 4;
+  map<string, string> metrics = 5;
+}
+
+message GetReportResp {
+  repeated ReportRow rows = 1;
+  int64 total = 2;
+}
+
+// ---------- 指标字典 ----------
+
+message ListMetricDictReq {
+  string report_type = 1; // 空 = 全部
+}
+
+message MetricDictItem {
+  string metric_code = 1;
+  string name = 2;
+  string report_type = 3;
+  string unit = 4;
+  string caliber = 5;
+  string source_event = 6;
+  bool recon = 7;
+  int64 sort = 8;
+}
+
+message ListMetricDictResp {
+  repeated MetricDictItem list = 1;
+  int64 total = 2;
+}
+
+// ---------- watermark ----------
+
+message ListWatermarkReq {}
+
+message WatermarkItem {
+  string topic = 1;
+  string consumer_group = 2;
+  string last_event_id = 3;
+  string last_stat_date = 4;
+  int64 processed_count = 5;
+  string updated_at = 6; // UnixMilli
+}
+
+message ListWatermarkResp {
+  repeated WatermarkItem list = 1;
+  string rebuild_version = 2; // report_meta.rebuild_version
+}
+
+// ---------- 异步导出 ----------
+
+message RequestExportReq {
+  string report_type = 1; // 六大报表 + event_ledger（事件流水明细，供 10 万行级导出）
+  string format = 2;      // CSV/XLSX/PDF
+  string date_start = 3;
+  string date_end = 4;
+}
+
+message RequestExportResp {
+  string export_id = 1;
+}
+
+message GetExportTaskReq {
+  string export_id = 1;
+}
+
+message ExportTaskItem {
+  string export_id = 1;
+  string report_type = 2;
+  string format = 3;
+  string date_start = 4;
+  string date_end = 5;
+  string status = 6; // PENDING/RUNNING/DONE/FAILED
+  string file_id = 7;
+  string file_name = 8;
+  int64 row_count = 9;
+  int64 cost_ms = 10;
+  string error = 11;
+  string requested_by = 12;
+  int64 created_at = 13; // UnixMilli
+}
+
+message GetExportTaskResp {
+  ExportTaskItem task = 1;
+}
+
+message ListExportTaskReq {
+  string status = 1; // 空 = 全部
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message ListExportTaskResp {
+  repeated ExportTaskItem list = 1;
+  int64 total = 2;
+}
+
+// ---------- 对账与重建 ----------
+
+message RunReconReq {
+  string recon_date = 1; // yyyy-MM-dd；空 = 昨天（T-1 日结口径）
+}
+
+message RunReconResp {
+  int64 diff_total = 1; // OPEN 差异数
+}
+
+message RebuildReadModelReq {}
+
+message RebuildReadModelResp {
+  string rebuild_version = 1; // 递增后的版本号（重启后生效：新消费组从头回放）
+}

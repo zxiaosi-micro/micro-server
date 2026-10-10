@@ -549,6 +549,54 @@ type DeviceView struct {
 	CreatedAt   int64  `json:"created_at"`
 }
 
+type ExportCreateReq struct {
+	ReportType string `json:"report_type"`
+	Format     string `json:"format"`
+	DateStart  string `json:"date_start"`
+	DateEnd    string `json:"date_end"`
+}
+
+type ExportCreateResp struct {
+	ExportId string `json:"export_id"`
+}
+
+type ExportDownloadReq struct {
+	Id string `path:"id"`
+}
+
+type ExportDownloadResp struct {
+	FileId      string `json:"file_id"`
+	FileName    string `json:"file_name"`
+	ContentType string `json:"content_type"`
+	Data        string `json:"data"` // base64（BFF 走 Bearer 会话，前端解码为 Blob）
+}
+
+type ExportItem struct {
+	ExportId   string `json:"export_id"`
+	ReportType string `json:"report_type"`
+	Format     string `json:"format"`
+	DateStart  string `json:"date_start"`
+	DateEnd    string `json:"date_end"`
+	Status     string `json:"status"`
+	FileId     string `json:"file_id"`
+	FileName   string `json:"file_name"`
+	RowCount   int64  `json:"row_count"`
+	CostMs     int64  `json:"cost_ms"`
+	Error      string `json:"error"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ExportListReq struct {
+	Status string `form:"status,optional"`
+	Page   int    `form:"page,optional"`
+	Size   int    `form:"size,optional"`
+}
+
+type ExportListResp struct {
+	List  []ExportItem `json:"list"`
+	Total int64        `json:"total"`
+}
+
 type ExtensionNoPath struct {
 	ExtensionNo string `path:"no"`
 }
@@ -895,6 +943,26 @@ type MessageListReq struct {
 type MessageListResp struct {
 	List  []MessageItem `json:"list"`
 	Total int64         `json:"total"`
+}
+
+type MetricDictItem struct {
+	MetricCode  string `json:"metric_code"`
+	Name        string `json:"name"`
+	ReportType  string `json:"report_type"`
+	Unit        string `json:"unit"`
+	Caliber     string `json:"caliber"`
+	SourceEvent string `json:"source_event"`
+	Recon       bool   `json:"recon"`
+	Sort        int64  `json:"sort"`
+}
+
+type MetricDictReq struct {
+	ReportType string `form:"report_type,optional"`
+}
+
+type MetricDictResp struct {
+	List  []MetricDictItem `json:"list"`
+	Total int64            `json:"total"`
 }
 
 type NoArgsReq struct {
@@ -1296,6 +1364,18 @@ type ProductListResp struct {
 	Total int64         `json:"total"`
 }
 
+type RebuildResp struct {
+	RebuildVersion string `json:"rebuild_version"`
+}
+
+type ReconReq struct {
+	ReconDate string `json:"recon_date,optional"`
+}
+
+type ReconResp struct {
+	DiffTotal int64 `json:"diff_total"`
+}
+
 type ReconcileListReq struct {
 	Status string `json:"status,optional"`
 	Page   int    `json:"page,default=1"`
@@ -1369,6 +1449,42 @@ type RefundView struct {
 	ChannelRefundId string `json:"channel_refund_id"`
 	Reason          string `json:"reason"`
 	CreatedAt       int64  `json:"created_at"`
+}
+
+type ReportOverviewItem struct {
+	ReportType string            `json:"report_type"`
+	Name       string            `json:"name"`
+	Metrics    map[string]string `json:"metrics"`
+}
+
+type ReportOverviewReq struct {
+	Date string `form:"date,optional"`
+}
+
+type ReportOverviewResp struct {
+	Items []ReportOverviewItem `json:"items"`
+}
+
+type ReportQueryReq struct {
+	Type        string `path:"type"`
+	DateStart   string `form:"date_start,optional"`
+	DateEnd     string `form:"date_end,optional"`
+	StationId   string `form:"station_id,optional"`
+	WarehouseId string `form:"warehouse_id,optional"`
+	Channel     string `form:"channel,optional"`
+}
+
+type ReportResp struct {
+	Rows  []ReportRow `json:"rows"`
+	Total int64       `json:"total"`
+}
+
+type ReportRow struct {
+	StatDate    string            `json:"stat_date"`
+	StationId   string            `json:"station_id,optional"`
+	WarehouseId string            `json:"warehouse_id,optional"`
+	Channel     string            `json:"channel,optional"`
+	Metrics     map[string]string `json:"metrics"`
 }
 
 type ReturnApproveReq struct {

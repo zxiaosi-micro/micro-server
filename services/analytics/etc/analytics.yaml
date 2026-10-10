@@ -1,0 +1,40 @@
+Name: analytics.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8095}"
+Mode: dev
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: analytics.rpc
+Mysql:
+  DataSource: "${MICRO_DSN_ANALYTICS|}"
+# Kafka 读模型消费组（运行时版本号后缀：analytics-read-v{N}，重建 = 版本+1）
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: analytics-read
+  ExportGroup: analytics-export
+# 导出产物归档（file 服务；未配置 = 导出任务置 FAILED）
+FileRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: file.rpc
+  NonBlock: true
+  Timeout: 5000
+# 导出并发（threading.TaskRunner；confcenter 可热调 export_workers）
+ExportWorkers: 2
+# PDF 行数封顶（ADR-18 简单表格版式；confcenter 可热调 export_pdf_rows）
+ExportPdfRows: 2000
+# PDF 中文字体（ADR-18；缺字体时 PDF 导出报业务错误，CSV/XLSX 不受影响）
+PdfFont: "${PDF_FONT|C:/Windows/Fonts/simhei.ttf}"
+# 对账差异站内信收件人（0 = 平台管理员 seed uid）
+ReconTargetUID: 0
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9115
+Telemetry:
+  Name: analytics
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/analytics/main}   # configcenter（键位含文件名，ADR-10）

@@ -24,15 +24,15 @@ type ServiceContext struct {
 
 // Models model 聚合。
 type Models struct {
-	Template   model.ContractTemplateModel
-	Contract   model.ContractModel
-	Target     model.ContractTargetModel
-	File       model.ContractFileModel
-	Warranty   model.WarrantyModel
-	Extension  model.WarrantyExtensionModel
-	Sla        model.SlaStrategyModel
+	Template    model.ContractTemplateModel
+	Contract    model.ContractModel
+	Target      model.ContractTargetModel
+	File        model.ContractFileModel
+	Warranty    model.WarrantyModel
+	Extension   model.WarrantyExtensionModel
+	Sla         model.SlaStrategyModel
 	ContractSla model.ContractSlaModel
-	Claim      model.ClaimModel
+	Claim       model.ClaimModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {

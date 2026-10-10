@@ -1969,6 +1969,150 @@
         }
       }
     },
+    "/api/v1/exports": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "导出任务列表(下载中心, perm: analytics:export:list)",
+        "operationId": "analyticsListExports",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ExportListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "发起导出(异步事件管道, perm: analytics:export:create)",
+        "operationId": "analyticsCreateExport",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ExportCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ExportCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/download": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "导出产物下载(受控流式, perm: analytics:export:list)",
+        "operationId": "analyticsDownloadExport",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ExportDownloadResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/firmwares": {
       "get": {
         "produces": [
@@ -5392,6 +5536,248 @@
                 },
                 "data": {
                   "$ref": "#/definitions/RefundCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/metrics": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "指标字典(口径正本, perm: analytics:report:list)",
+        "operationId": "analyticsListMetricDict",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "report_type",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/MetricDictResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/overview": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "报表总览(六大报表并行扇出 mr.Finish, perm: analytics:report:list)",
+        "operationId": "analyticsGetReportOverview",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "date",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ReportOverviewResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/rebuild": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "读模型全量重建(版本号+1, perm: analytics:recon:rebuild)",
+        "operationId": "analyticsRebuildReadModel",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RebuildResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/recon": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "手动对账(perm: analytics:recon:run)",
+        "operationId": "analyticsRunRecon",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReconReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ReconResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{type}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "报表查询(perm: analytics:report:list)",
+        "operationId": "analyticsGetReport",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "date_start",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "date_end",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "warehouse_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "channel",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ReportResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -10960,6 +11346,143 @@
         }
       }
     },
+    "ExportCreateReq": {
+      "type": "object",
+      "required": [
+        "report_type",
+        "format",
+        "date_start",
+        "date_end"
+      ],
+      "properties": {
+        "date_end": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "report_type": {
+          "type": "string"
+        }
+      }
+    },
+    "ExportCreateResp": {
+      "type": "object",
+      "required": [
+        "export_id"
+      ],
+      "properties": {
+        "export_id": {
+          "type": "string"
+        }
+      }
+    },
+    "ExportDownloadReq": {
+      "type": "object"
+    },
+    "ExportDownloadResp": {
+      "type": "object",
+      "required": [
+        "file_id",
+        "file_name",
+        "content_type",
+        "data"
+      ],
+      "properties": {
+        "content_type": {
+          "type": "string"
+        },
+        "data": {
+          "description": "base64（BFF 走 Bearer 会话，前端解码为 Blob）",
+          "type": "string"
+        },
+        "file_id": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        }
+      }
+    },
+    "ExportItem": {
+      "type": "object",
+      "required": [
+        "export_id",
+        "report_type",
+        "format",
+        "date_start",
+        "date_end",
+        "status",
+        "file_id",
+        "file_name",
+        "row_count",
+        "cost_ms",
+        "error",
+        "created_at"
+      ],
+      "properties": {
+        "cost_ms": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "date_end": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "export_id": {
+          "type": "string"
+        },
+        "file_id": {
+          "type": "string"
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "report_type": {
+          "type": "string"
+        },
+        "row_count": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ExportListReq": {
+      "type": "object"
+    },
+    "ExportListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExportItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
     "ExtensionNoPath": {
       "type": "object"
     },
@@ -12053,6 +12576,66 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/MessageItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "MetricDictItem": {
+      "type": "object",
+      "required": [
+        "metric_code",
+        "name",
+        "report_type",
+        "unit",
+        "caliber",
+        "source_event",
+        "recon",
+        "sort"
+      ],
+      "properties": {
+        "caliber": {
+          "type": "string"
+        },
+        "metric_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "recon": {
+          "type": "boolean"
+        },
+        "report_type": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer"
+        },
+        "source_event": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "MetricDictReq": {
+      "type": "object"
+    },
+    "MetricDictResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetricDictItem"
           }
         },
         "total": {
@@ -13295,6 +13878,36 @@
         }
       }
     },
+    "RebuildResp": {
+      "type": "object",
+      "required": [
+        "rebuild_version"
+      ],
+      "properties": {
+        "rebuild_version": {
+          "type": "string"
+        }
+      }
+    },
+    "ReconReq": {
+      "type": "object",
+      "properties": {
+        "recon_date": {
+          "type": "string"
+        }
+      }
+    },
+    "ReconResp": {
+      "type": "object",
+      "required": [
+        "diff_total"
+      ],
+      "properties": {
+        "diff_total": {
+          "type": "integer"
+        }
+      }
+    },
     "ReconcileListReq": {
       "type": "object",
       "required": [
@@ -13565,6 +14178,93 @@
           "type": "string"
         },
         "status": {
+          "type": "string"
+        }
+      }
+    },
+    "ReportOverviewItem": {
+      "type": "object",
+      "required": [
+        "report_type",
+        "name",
+        "metrics"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "report_type": {
+          "type": "string"
+        }
+      }
+    },
+    "ReportOverviewReq": {
+      "type": "object"
+    },
+    "ReportOverviewResp": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReportOverviewItem"
+          }
+        }
+      }
+    },
+    "ReportQueryReq": {
+      "type": "object"
+    },
+    "ReportResp": {
+      "type": "object",
+      "required": [
+        "rows",
+        "total"
+      ],
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReportRow"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ReportRow": {
+      "type": "object",
+      "required": [
+        "stat_date",
+        "metrics"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "stat_date": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "warehouse_id": {
           "type": "string"
         }
       }
@@ -16776,7 +17476,7 @@
       "in": "header"
     }
   },
-  "x-date": "2026-10-11 01:28:41",
+  "x-date": "2026-10-11 05:32:03",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

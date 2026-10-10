@@ -3,6 +3,7 @@ go 1.26.5
 use (
 	.
 	./services/admin-bff
+	./services/analytics
 	./services/audit
 	./services/catalog
 	./services/contract

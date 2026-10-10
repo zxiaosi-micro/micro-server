@@ -22,10 +22,10 @@ import (
 func HandleOrderPaid(sc *svc.ServiceContext) eventbus.Handler {
 	return func(ctx context.Context, env *eventbus.Envelope) error {
 		var p struct {
-			OrderNo    string `json:"order_no"`
-			PaymentNo  string `json:"payment_no"`
-			Channel    string `json:"channel"`
-			PaidAtMilli int64 `json:"paid_at"`
+			OrderNo     string `json:"order_no"`
+			PaymentNo   string `json:"payment_no"`
+			Channel     string `json:"channel"`
+			PaidAtMilli int64  `json:"paid_at"`
 		}
 		if err := json.Unmarshal(env.Payload, &p); err != nil {
 			return fmt.Errorf("order_paid 载荷解析失败: %w", err)

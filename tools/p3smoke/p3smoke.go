@@ -6,7 +6,9 @@
 // station_created 建计划 → 巡检任务生成 → 异常项自动转工单；MOCKWX 通知 outbound_log 触达。
 //
 // 前置：compose core、mqinit、ops/party/station/notification/identity 进程运行中；
-//       通知模板/channel 由本工具幂等种子（micro_notification）。
+//
+//	通知模板/channel 由本工具幂等种子（micro_notification）。
+//
 // 纪律：严禁并发执行（E1）。
 //
 //	env:
@@ -181,7 +183,7 @@ func main() {
 	// ---- 4. SLA 到期分级升级（注入 0 分钟策略快照计时器）----
 	tk2, err := ops.CreateTicket(ctx, &oppb.CreateTicketReq{Type: "AFTER_SALE", Title: "p3smoke SLA 升级验证", Priority: "P1"})
 	must(err, "CreateTicket(sla)")
-	injectSlaTimer(db, tk2.TicketId)
+	injectSLATimer(db, tk2.TicketId)
 	waitFor(50*time.Second, 3*time.Second, "SLA 超时扫描（escalate_level≥1，≤50s）", func() (bool, error) {
 		var lvl int
 		if err := db.QueryRow("select escalate_level from sla_timer where ticket_id = ?", tk2.TicketId).Scan(&lvl); err != nil {
@@ -221,7 +223,7 @@ func main() {
 		fail("巡检异常项未转工单 anomaly=%d ids=%s", sub.AnomalyCount, sub.TicketIds)
 	}
 	var insTicketID int64
-	fmt.Sscanf(sub.TicketIds, "[%d]", &insTicketID)
+	_, _ = fmt.Sscanf(sub.TicketIds, "[%d]", &insTicketID)
 	g, err := ops.GetTicket(ctx, &oppb.GetTicketReq{TicketId: insTicketID})
 	must(err, "GetTicket(inspection)")
 	if g.Ticket.Type != "INSPECTION" {
@@ -265,8 +267,8 @@ func seedNotification(db *sql.DB) {
 	pass("通知模板/渠道种子就绪（alert_created/ticket_dispatched/...）")
 }
 
-// injectSlaTimer 注入 0 分钟策略快照计时器（到期即扫描升级；快照冻结口径演示）。
-func injectSlaTimer(db *sql.DB, ticketID int64) {
+// injectSLATimer 注入 0 分钟策略快照计时器（到期即扫描升级；快照冻结口径演示）。
+func injectSLATimer(db *sql.DB, ticketID int64) {
 	snap, _ := json.Marshal(map[string]any{
 		"strategy_id": 1, "code": "smoke", "name": "冒烟策略", "level": "P1",
 		"response_minutes": 0, "resolve_minutes": 0,

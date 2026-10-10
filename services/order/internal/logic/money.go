@@ -59,7 +59,7 @@ func centsToAmount(cents int64) string {
 		sign = "-"
 		cents = -cents
 	}
-	return sign + itoa(cents/100) + "." + pad2(cents % 100)
+	return sign + itoa(cents/100) + "." + pad2(cents%100)
 }
 
 func itoa(v int64) string {

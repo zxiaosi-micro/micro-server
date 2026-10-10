@@ -3,12 +3,9 @@
 package logic
 
 import (
-	"context"
 	"database/sql"
 	"math"
 	"time"
-
-	"github.com/zxiaosi-micro/micro-common/tenantx"
 )
 
 // sql.Null* 便捷构造。
@@ -37,6 +34,3 @@ func floatToCents(f float64) int64 {
 }
 
 // tenantSkip 后台作业显式豁免租户（tools/reconcile 日结）。
-func tenantSkip(ctx context.Context) context.Context {
-	return tenantx.Skip(ctx)
-}

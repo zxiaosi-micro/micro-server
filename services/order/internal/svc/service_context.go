@@ -9,9 +9,9 @@ import (
 
 	catclient "micro-server/services/catalog/catalog"
 	ctclient "micro-server/services/contract/contract"
-	stclient "micro-server/services/station/station"
 	finclient "micro-server/services/finance/finance"
 	invclient "micro-server/services/inventory/inventory"
+	stclient "micro-server/services/station/station"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"

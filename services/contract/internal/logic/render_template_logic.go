@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 
-	"micro-server/services/contract/internal/model"
 	"micro-server/services/contract/internal/confcenter"
+	"micro-server/services/contract/internal/model"
 	"micro-server/services/contract/internal/svc"
 	"micro-server/services/contract/pb"
 

@@ -13,15 +13,15 @@ import (
 func main() {
 	fmt.Println("带消费组读 order_paid（group=probe-saga, first offset）…")
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{"127.0.0.1:29092"},
-		GroupID: "probe-saga",
-		Topic:   "order_paid",
+		Brokers:  []string{"127.0.0.1:29092"},
+		GroupID:  "probe-saga",
+		Topic:    "order_paid",
 		MinBytes: 1,
 		MaxBytes: 10e6,
-		MaxWait: 500 * time.Millisecond,
+		MaxWait:  500 * time.Millisecond,
 	})
-	defer r.Close()
-	r.SetOffset(kafka.FirstOffset)
+	defer func() { _ = r.Close() }()
+	_ = r.SetOffset(kafka.FirstOffset)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()

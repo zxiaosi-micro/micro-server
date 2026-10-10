@@ -39,6 +39,8 @@ func main() {
 		}
 	})
 	s.AddUnaryInterceptors(authz.ServerInterceptor)
+	// 导出产物/合同归档走 RPC bytes（dev 规模）：消息上限放宽到 64MB（默认 4MB 不够 10 万行 CSV）
+	s.AddOptions(grpc.MaxRecvMsgSize(64<<20), grpc.MaxSendMsgSize(64<<20))
 	defer s.Stop()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)

@@ -3278,3 +3278,166 @@ service AdminBffApi {
 	get /station-web/me (NoArgsReq) returns (StationWebMeResp)
 }
 
+// ============================================================
+// 分析域（S8-05：报表/指标字典/异步导出/对账；转发 analytics RPC，E8 string ID）
+// ============================================================
+// ---- 报表查询 ----
+type ReportQueryReq {
+	Type        string `path:"type"`
+	DateStart   string `form:"date_start,optional"`
+	DateEnd     string `form:"date_end,optional"`
+	StationId   string `form:"station_id,optional"`
+	WarehouseId string `form:"warehouse_id,optional"`
+	Channel     string `form:"channel,optional"`
+}
+
+type ReportRow {
+	StatDate    string            `json:"stat_date"`
+	StationId   string            `json:"station_id,optional"`
+	WarehouseId string            `json:"warehouse_id,optional"`
+	Channel     string            `json:"channel,optional"`
+	Metrics     map[string]string `json:"metrics"`
+}
+
+type ReportResp {
+	Rows  []ReportRow `json:"rows"`
+	Total int64       `json:"total"`
+}
+
+// ---- 总览（BFF 并行扇出六大报表当日合计） ----
+type ReportOverviewReq {
+	Date string `form:"date,optional"`
+}
+
+type ReportOverviewItem {
+	ReportType string            `json:"report_type"`
+	Name       string            `json:"name"`
+	Metrics    map[string]string `json:"metrics"`
+}
+
+type ReportOverviewResp {
+	Items []ReportOverviewItem `json:"items"`
+}
+
+// ---- 指标字典 ----
+type MetricDictReq {
+	ReportType string `form:"report_type,optional"`
+}
+
+type MetricDictItem {
+	MetricCode  string `json:"metric_code"`
+	Name        string `json:"name"`
+	ReportType  string `json:"report_type"`
+	Unit        string `json:"unit"`
+	Caliber     string `json:"caliber"`
+	SourceEvent string `json:"source_event"`
+	Recon       bool   `json:"recon"`
+	Sort        int64  `json:"sort"`
+}
+
+type MetricDictResp {
+	List  []MetricDictItem `json:"list"`
+	Total int64            `json:"total"`
+}
+
+// ---- 异步导出（下载中心） ----
+type ExportCreateReq {
+	ReportType string `json:"report_type"`
+	Format     string `json:"format"`
+	DateStart  string `json:"date_start"`
+	DateEnd    string `json:"date_end"`
+}
+
+type ExportCreateResp {
+	ExportId string `json:"export_id"`
+}
+
+type ExportItem {
+	ExportId   string `json:"export_id"`
+	ReportType string `json:"report_type"`
+	Format     string `json:"format"`
+	DateStart  string `json:"date_start"`
+	DateEnd    string `json:"date_end"`
+	Status     string `json:"status"`
+	FileId     string `json:"file_id"`
+	FileName   string `json:"file_name"`
+	RowCount   int64  `json:"row_count"`
+	CostMs     int64  `json:"cost_ms"`
+	Error      string `json:"error"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ExportListReq {
+	Status string `form:"status,optional"`
+	Page   int    `form:"page,optional"`
+	Size   int    `form:"size,optional"`
+}
+
+type ExportListResp {
+	List  []ExportItem `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type ExportDownloadReq {
+	Id string `path:"id"`
+}
+
+type ExportDownloadResp {
+	FileId      string `json:"file_id"`
+	FileName    string `json:"file_name"`
+	ContentType string `json:"content_type"`
+	Data        string `json:"data"` // base64（BFF 走 Bearer 会话，前端解码为 Blob）
+}
+
+// ---- 对账 ----
+type ReconReq {
+	ReconDate string `json:"recon_date,optional"`
+}
+
+type ReconResp {
+	DiffTotal int64 `json:"diff_total"`
+}
+
+type RebuildResp {
+	RebuildVersion string `json:"rebuild_version"`
+}
+
+@server (
+	prefix:     /api/v1
+	group:      analytics
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "报表查询(perm: analytics:report:list)"
+	@handler getReport
+	get /reports/:type (ReportQueryReq) returns (ReportResp)
+
+	@doc "报表总览(六大报表并行扇出 mr.Finish, perm: analytics:report:list)"
+	@handler getReportOverview
+	get /reports/overview (ReportOverviewReq) returns (ReportOverviewResp)
+
+	@doc "指标字典(口径正本, perm: analytics:report:list)"
+	@handler listMetricDict
+	get /reports/metrics (MetricDictReq) returns (MetricDictResp)
+
+	@doc "手动对账(perm: analytics:recon:run)"
+	@handler runRecon
+	post /reports/recon (ReconReq) returns (ReconResp)
+
+	@doc "读模型全量重建(版本号+1, perm: analytics:recon:rebuild)"
+	@handler rebuildReadModel
+	post /reports/rebuild returns (RebuildResp)
+
+	@doc "发起导出(异步事件管道, perm: analytics:export:create)"
+	@handler createExport
+	post /exports (ExportCreateReq) returns (ExportCreateResp)
+
+	@doc "导出任务列表(下载中心, perm: analytics:export:list)"
+	@handler listExports
+	get /exports (ExportListReq) returns (ExportListResp)
+
+	@doc "导出产物下载(受控流式, perm: analytics:export:list)"
+	@handler downloadExport
+	get /exports/:id/download (ExportDownloadReq) returns (ExportDownloadResp)
+}
+

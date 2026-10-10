@@ -20,8 +20,8 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
-// maxFileSize 上传大小上限（RPC bytes 通道 dev 口径 16MB；大文件直传属 S9）。
-const maxFileSize = 16 << 20
+// maxFileSize 上传大小上限（RPC bytes 通道；S8 导出 10 万行产物 ~23MB → 64MB 对齐 gRPC 消息上限；分块直传属 S9）。
+const maxFileSize = 64 << 20
 
 // bucketFor biz_type 路由双桶：contract → 合同桶（版本控制），其余 → 普通桶。
 func bucketFor(sc *svc.ServiceContext, bizType string) string {

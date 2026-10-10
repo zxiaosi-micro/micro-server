@@ -56,7 +56,7 @@ func effectivePayTimeoutMin(sc *svc.ServiceContext) int {
 
 // ---- sql.Null* 便捷构造（Logic 层填模型用）----
 
-func sqlInt64(v int64) sql.NullInt64  { return sql.NullInt64{Int64: v, Valid: v != 0} }
+func sqlInt64(v int64) sql.NullInt64   { return sql.NullInt64{Int64: v, Valid: v != 0} }
 func sqlTime(t time.Time) sql.NullTime { return sql.NullTime{Time: t, Valid: !t.IsZero()} }
 func sqlString(s string) sql.NullString {
 	return sql.NullString{String: s, Valid: s != ""}

@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"micro-server/services/catalog/pb"
-	finpb "micro-server/services/finance/pb"
 	ctpb "micro-server/services/contract/pb"
+	finpb "micro-server/services/finance/pb"
 	invpb "micro-server/services/inventory/pb"
 	opb "micro-server/services/order/pb"
 
@@ -75,18 +75,18 @@ func main() {
 	if err != nil {
 		fail("建 SKU", err)
 	}
-	skuId := skr.SkuId
+	skuID := skr.SkuId
 	if _, err := catalog.SetPrice(ctx, &pb.SetPriceReq{
-		SkuId: skuId, PriceType: "RETAIL", Amount: "1299.00",
+		SkuId: skuID, PriceType: "RETAIL", Amount: "1299.00",
 	}); err != nil {
 		fail("设价格", err)
 	}
-	pass(fmt.Sprintf("商品/SKU/价格就绪 sku=%d", skuId))
+	pass(fmt.Sprintf("商品/SKU/价格就绪 sku=%d", skuID))
 
 	// 2. 仓库 + 入库 10 件（biz_no 唯一 → 幂等）
-	warehouseId := int64(101489551645622272) // dev seed 仓库
+	warehouseID := int64(101489551645622272) // dev seed 仓库
 	if _, err := inv.StockIn(ctx, &invpb.StockInReq{
-		WarehouseId: warehouseId, SkuId: skuId, Qty: 10,
+		WarehouseId: warehouseID, SkuId: skuID, Qty: 10,
 		BizType: "STOCK_IN", BizNo: biz + "-IN", Remark: "e2esmoke",
 	}); err != nil {
 		fail("入库", err)
@@ -96,7 +96,7 @@ func main() {
 	// 3. 下单（Saga 步骤1；事件异步推进）
 	co, err := order.CreateOrder(ctx, &opb.CreateOrderReq{
 		Type: "DEVICE", Remark: "e2esmoke",
-		Items: []*opb.OrderItemInput{{SkuId: skuId, WarehouseId: warehouseId, Qty: 1, Sn: sn}},
+		Items: []*opb.OrderItemInput{{SkuId: skuID, WarehouseId: warehouseID, Qty: 1, Sn: sn}},
 	})
 	if err != nil {
 		fail("下单", err)
@@ -136,8 +136,8 @@ func main() {
 
 	// 7. 发货单 + 轨迹 + 签收（shipment_signed 事件 → 质保起算）
 	sh, err := order.CreateShipment(ctx, &opb.CreateShipmentReq{
-		OrderNo: co.OrderNo, WarehouseId: warehouseId,
-		Items: []*opb.ShipmentItemInput{{SkuId: skuId, Qty: 1, Sn: sn}},
+		OrderNo: co.OrderNo, WarehouseId: warehouseID,
+		Items:   []*opb.ShipmentItemInput{{SkuId: skuID, Qty: 1, Sn: sn}},
 		Carrier: "冒烟物流",
 	})
 	if err != nil {
@@ -163,7 +163,7 @@ func main() {
 	pass("质保起算（warranty_started）sn=" + sn)
 
 	// 9. 出库核验：inventory available 较入库后减少 1（FR-INV-004 唯一写入方）
-	gi, err := inv.GetInventory(ctx, &invpb.GetInventoryReq{WarehouseId: warehouseId, SkuId: skuId})
+	gi, err := inv.GetInventory(ctx, &invpb.GetInventoryReq{WarehouseId: warehouseID, SkuId: skuID})
 	if err != nil {
 		fail("库存核验", err)
 	}
@@ -184,4 +184,3 @@ func waitFor(d time.Duration, what string, cond func() bool) {
 	fmt.Println("e2esmoke: FAIL")
 	os.Exit(1)
 }
-

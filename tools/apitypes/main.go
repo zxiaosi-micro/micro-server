@@ -34,7 +34,7 @@ type apiType struct {
 }
 
 var (
-	typeRe     = regexp.MustCompile(`^\s*([A-Z][A-Za-z0-9_]*)\s+(\[\])?([A-Za-z0-9_]+)\s+\x60(.*)\x60\s*(?://.*)?$`)
+	typeRe     = regexp.MustCompile(`^\s*([A-Z][A-Za-z0-9_]*)\s+(\[\])?((?:map\[[A-Za-z0-9_]+\])?[A-Za-z0-9_]+)\s+\x60(.*)\x60\s*(?://.*)?$`)
 	typeDeclRe = regexp.MustCompile(`^\s*type\s+([A-Z][A-Za-z0-9_]*)\s*\{\s*$`)
 )
 
@@ -135,10 +135,18 @@ func tsScalar(t string) string {
 	}
 }
 
-// tsTypeFull 展开 []T。
+// tsTypeFull 展开 []T 与 map[K]V（S8-05 起支持；map[string]string → Record<string, string>）。
 func tsTypeFull(t string) string {
 	if strings.HasPrefix(t, "[]") {
 		return tsTypeFull(strings.TrimPrefix(t, "[]")) + "[]"
+	}
+	if strings.HasPrefix(t, "map[") {
+		inner := strings.TrimPrefix(t, "map[")
+		// K]V 分割（本项目 K 恒为 string 标量）
+		if idx := strings.Index(inner, "]"); idx > 0 {
+			k, v := inner[:idx], inner[idx+1:]
+			return "Record<" + tsScalar(k) + ", " + tsTypeFull(v) + ">"
+		}
 	}
 	return tsScalar(t)
 }

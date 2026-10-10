@@ -11,7 +11,7 @@ import (
 	"github.com/zxiaosi-micro/micro-common/tenantx"
 )
 
-// SegSegContract 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
+// SegContract 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
 const SegContract = errcode.SegContract
 
 var (
@@ -24,7 +24,7 @@ var (
 	errFileRequired      = errcode.New(SegContract, 1007, "生效前须至少一份归档件")
 	errFileIdRequired    = errcode.New(SegContract, 1008, "归档件 file_id 必填(file 服务已上传)")
 	errWarrantyNotFound  = errcode.New(SegContract, 1009, "质保记录不存在")
-	errWarrantyStarted   = errcode.New(SegContract, 1010, "质保已起算(事件重复)")
+	_                    = errcode.New(SegContract, 1010, "质保已起算(事件重复)") // 预留：质保重复起算拦截
 	errOrderNoRequired   = errcode.New(SegContract, 1011, "来源订单号必填")
 	errTargetBad         = errcode.New(SegContract, 1012, "质保对象不合法")
 	errStrategyNotFound  = errcode.New(SegContract, 1013, "SLA 策略不存在")
@@ -67,4 +67,3 @@ func clampPage(page, size int64) (int64, int64) {
 	}
 	return page, size
 }
-

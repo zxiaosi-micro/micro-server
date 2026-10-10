@@ -4,6 +4,7 @@
 // 可重放事件重新入列），禁止裸删/直改业务数据。
 //
 // 用法：
+//
 //	go run ./tools/reconcile                     # 今日报告（stdout）
 //	go run ./tools/reconcile -date 2026-10-08    # 指定日
 //	go run ./tools/reconcile -fix                # 差异修复 = 补投递重放（重试事件提前到期 + 死信重新入列）
@@ -24,12 +25,12 @@ import (
 )
 
 type stockDiff struct {
-	TenantID   int64   `json:"tenant_id"`
-	Warehouse  int64   `json:"warehouse_id"`
-	SkuID      int64   `json:"sku_id"`
-	DbAvail    int64   `json:"db_available"`
-	DbLocked   int64   `json:"db_locked"`
-	ReplayAvail int64  `json:"replay_available"`
+	TenantID     int64 `json:"tenant_id"`
+	Warehouse    int64 `json:"warehouse_id"`
+	SkuID        int64 `json:"sku_id"`
+	DBAvail      int64 `json:"db_available"`
+	DBLocked     int64 `json:"db_locked"`
+	ReplayAvail  int64 `json:"replay_available"`
 	ReplayLocked int64 `json:"replay_locked"`
 }
 
@@ -141,7 +142,7 @@ func stockReconcile(ctx context.Context, conn sqlx.SqlConn) []stockDiff {
 		if ra != r.Avail || rl != r.Locked {
 			diffs = append(diffs, stockDiff{
 				TenantID: r.TenantID, Warehouse: r.Warehouse, SkuID: r.SkuID,
-				DbAvail: r.Avail, DbLocked: r.Locked, ReplayAvail: ra, ReplayLocked: rl,
+				DBAvail: r.Avail, DBLocked: r.Locked, ReplayAvail: ra, ReplayLocked: rl,
 			})
 		}
 	}

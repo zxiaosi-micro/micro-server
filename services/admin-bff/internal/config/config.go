@@ -26,6 +26,9 @@ type Config struct {
 	StationRpc zrpc.RpcClientConf `json:",optional"`
 	// S7 运维域
 	OpsRpc zrpc.RpcClientConf `json:",optional"`
+	// S8 分析域 + 文件（导出产物下载）
+	AnalyticsRpc zrpc.RpcClientConf `json:",optional"`
+	FileRpc      zrpc.RpcClientConf `json:",optional"`
 	// Jwt 公钥目录（与 identity 同源 keygen 产出；验签按 kid 选钥）。
 	Jwt struct {
 		KeysDir string `json:",optional"`

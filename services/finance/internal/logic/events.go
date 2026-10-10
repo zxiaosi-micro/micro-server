@@ -16,13 +16,13 @@ type orderPaidPayload struct {
 
 // paymentRefundedPayload payment_refunded 事件体（order 消费 → 退货单 REFUNDED 回写）。
 type paymentRefundedPayload struct {
-	TenantID int64  `json:"tenant_id"`
-	OrderNo  string `json:"order_no"`
+	TenantID  int64  `json:"tenant_id"`
+	OrderNo   string `json:"order_no"`
 	PaymentNo string `json:"payment_no"`
-	ReturnNo string `json:"return_no"` // 空=手工退款
-	RefundNo string `json:"refund_no"`
-	Amount   string `json:"amount"`
-	Channel  string `json:"channel"`
+	ReturnNo  string `json:"return_no"` // 空=手工退款
+	RefundNo  string `json:"refund_no"`
+	Amount    string `json:"amount"`
+	Channel   string `json:"channel"`
 }
 
 func orderPaidEvent(tid int64, orderNo, paymentNo, channel, paidAmount string, paidAtMilli int64) eventbus.EmitInput {

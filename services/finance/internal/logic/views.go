@@ -62,17 +62,17 @@ func HandleReturnApproved(sc *svc.ServiceContext) eventbus.Handler {
 
 func buildPaymentDetail(p *model.Payment) *finpb.PaymentDetail {
 	d := &finpb.PaymentDetail{
-		PaymentNo:     p.PaymentNo,
-		OrderNo:       p.OrderNo,
-		Channel:       p.Channel,
-		Status:        p.Status,
-		Amount:        centsToAmount(floatToCents(p.Amount)),
-		ChannelTxnId:  nullStr(p.ChannelTxnId),
-		PayerPartyId:  p.PayerPartyId.Int64,
-		CreatedBy:     p.CreatedBy.Int64,
-		ApprovedBy:    p.ApprovedBy.Int64,
-		Remark:        nullStr(p.Remark),
-		CreatedAt:     p.CreatedAt.UnixMilli(),
+		PaymentNo:    p.PaymentNo,
+		OrderNo:      p.OrderNo,
+		Channel:      p.Channel,
+		Status:       p.Status,
+		Amount:       centsToAmount(floatToCents(p.Amount)),
+		ChannelTxnId: nullStr(p.ChannelTxnId),
+		PayerPartyId: p.PayerPartyId.Int64,
+		CreatedBy:    p.CreatedBy.Int64,
+		ApprovedBy:   p.ApprovedBy.Int64,
+		Remark:       nullStr(p.Remark),
+		CreatedAt:    p.CreatedAt.UnixMilli(),
 	}
 	if p.PaidAmount.Valid {
 		d.PaidAmount = centsToAmount(floatToCents(p.PaidAmount.Float64))
@@ -101,15 +101,15 @@ func buildRefundDetail(r *model.Refund) *finpb.RefundDetail {
 
 func buildInvoiceDetail(inv *model.Invoice) *finpb.InvoiceDetail {
 	d := &finpb.InvoiceDetail{
-		InvoiceNo:    inv.InvoiceNo,
-		PaymentNo:    inv.PaymentNo,
-		OrderNo:      inv.OrderNo,
-		Title:        inv.Title,
-		TaxNo:        nullStr(inv.TaxNo),
-		Amount:       centsToAmount(floatToCents(inv.Amount)),
-		Status:       inv.Status,
+		InvoiceNo:     inv.InvoiceNo,
+		PaymentNo:     inv.PaymentNo,
+		OrderNo:       inv.OrderNo,
+		Title:         inv.Title,
+		TaxNo:         nullStr(inv.TaxNo),
+		Amount:        centsToAmount(floatToCents(inv.Amount)),
+		Status:        inv.Status,
 		ReverseReason: nullStr(inv.ReverseReason),
-		CreatedAt:    inv.CreatedAt.UnixMilli(),
+		CreatedAt:     inv.CreatedAt.UnixMilli(),
 	}
 	if inv.ReversedAt.Valid {
 		d.IssuedAt = inv.ReversedAt.Time.UnixMilli()

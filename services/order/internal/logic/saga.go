@@ -31,9 +31,9 @@ import (
 	"micro-server/services/order/internal/svc"
 
 	ctpb "micro-server/services/contract/pb"
-	stpb "micro-server/services/station/pb"
 	finpb "micro-server/services/finance/pb"
 	invpb "micro-server/services/inventory/pb"
+	stpb "micro-server/services/station/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -63,8 +63,8 @@ var stepIdemKey = map[int64]string{
 
 // SagaContext saga.context_json：补偿所需全部原始业务标识（补偿可能晚很久执行，02 §9.1）。
 type SagaContext struct {
-	LockKeys   []string `json:"lock_keys,omitempty"`   // 已 Reserve 成功的 ORDER_LOCK 幂等键（补偿释放依据）
-	PaymentNo  string   `json:"payment_no,omitempty"`  // 发起支付后的支付单号
+	LockKeys   []string `json:"lock_keys,omitempty"`  // 已 Reserve 成功的 ORDER_LOCK 幂等键（补偿释放依据）
+	PaymentNo  string   `json:"payment_no,omitempty"` // 发起支付后的支付单号
 	PayChannel string   `json:"pay_channel,omitempty"`
 	ContractID int64    `json:"contract_id,omitempty"` // 合同号（重试幂等比对）
 }

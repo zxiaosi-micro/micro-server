@@ -53,7 +53,7 @@ func CreateFromOrderInternal(ctx context.Context, sc *svc.ServiceContext, tid in
 			ContractId: contractId, ContractNo: contractNo,
 			Type: contractType, Status: "DRAFT", Name: name,
 			TemplateId: sqlInt64(templateId), Amount: float64(amountCents) / 100,
-			OrderNo: sqlString(orderNo),
+			OrderNo:  sqlString(orderNo),
 			TenantId: tid, CreatedBy: sqlInt64(uid), UpdatedBy: sqlInt64(uid),
 		}
 		if buyerPartyId > 0 {

@@ -38,7 +38,7 @@ func MustStart(ctx context.Context, c config.Config, sc *svc.ServiceContext) {
 			Brokers:    c.Kafka.Brokers,
 			Group:      c.Kafka.Group,
 			Topic:      t.topic,
-			Offset:     "first",  // 新组从头消费；event_dedup 同事务去重兜底重放（at-least-once 口径）
+			Offset:     "first", // 新组从头消费；event_dedup 同事务去重兜底重放（at-least-once 口径）
 			Conns:      1,
 			Consumers:  1,
 			Processors: 1,

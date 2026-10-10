@@ -89,3 +89,13 @@ OpsRpc:
     - ${OPS_RPC|127.0.0.1:8094}
   NonBlock: true
   Timeout: 5000
+AnalyticsRpc:
+  Endpoints:
+    - ${ANALYTICS_RPC|127.0.0.1:8095}
+  NonBlock: true
+  Timeout: 5000
+FileRpc:
+  Endpoints:
+    - ${FILE_RPC|127.0.0.1:8086}
+  NonBlock: true
+  Timeout: 5000

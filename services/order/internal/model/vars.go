@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrNotFound       = sqlx.ErrNotFound
+	ErrNotFound = sqlx.ErrNotFound
 	// ErrStatusConflict 状态 CAS 转移冲突（affected=0：状态已被并发转移或前置态不符）。
 	ErrStatusConflict = errors.New("model: 状态冲突(已被并发转移)")
 )

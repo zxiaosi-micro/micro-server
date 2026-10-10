@@ -62,9 +62,9 @@ func WechatCallback(ctx context.Context, sc *svc.ServiceContext, tid int64, head
 	}
 	// 3. 落账
 	var res struct {
-		OutTradeNo string `json:"out_trade_no"`
+		OutTradeNo    string `json:"out_trade_no"`
 		TransactionId string `json:"transaction_id"`
-		Amount     struct {
+		Amount        struct {
 			Total int64 `json:"total"` // 分
 		} `json:"amount"`
 	}

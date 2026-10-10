@@ -10,8 +10,8 @@ import (
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"github.com/zxiaosi-micro/micro-common/eventbus"
 	"github.com/zxiaosi-micro/micro-common/ctxkit"
+	"github.com/zxiaosi-micro/micro-common/eventbus"
 )
 
 type ConfirmShipmentSignedLogic struct {

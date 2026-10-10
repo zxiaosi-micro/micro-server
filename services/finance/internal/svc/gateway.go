@@ -93,12 +93,12 @@ func (g *Gateway) WechatNativeURL(ctx context.Context, paymentNo, amount string,
 		return "", fmt.Errorf("微信商户私钥解析失败: %w", err)
 	}
 	body := map[string]any{
-		"mchid":       c.MchID,
-		"appid":       c.AppID,
-		"description": description,
+		"mchid":        c.MchID,
+		"appid":        c.AppID,
+		"description":  description,
 		"out_trade_no": paymentNo,
-		"amount":      map[string]any{"total": yuanToFen(amount), "currency": "CNY"},
-		"notify_url":  "/api/v1/callback/wechat", // APISIX 边缘回填绝对地址
+		"amount":       map[string]any{"total": yuanToFen(amount), "currency": "CNY"},
+		"notify_url":   "/api/v1/callback/wechat", // APISIX 边缘回填绝对地址
 	}
 	raw, _ := json.Marshal(body)
 	ts := fmt.Sprint(time.Now().Unix())

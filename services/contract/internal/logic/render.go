@@ -132,14 +132,14 @@ func renderPDF(title, body string) []byte {
 	offsets := make([]int, len(objects))
 	for i, obj := range objects {
 		offsets[i] = pdf.Len()
-		pdf.WriteString(fmt.Sprintf("%d 0 obj\n%s\nendobj\n", i+1, obj))
+		fmt.Fprintf(&pdf, "%d 0 obj\n%s\nendobj\n", i+1, obj)
 	}
 	xref := pdf.Len()
-	pdf.WriteString(fmt.Sprintf("xref\n0 %d\n0000000000 65535 f \n", len(objects)+1))
+	fmt.Fprintf(&pdf, "xref\n0 %d\n0000000000 65535 f \n", len(objects)+1)
 	for _, off := range offsets {
-		pdf.WriteString(fmt.Sprintf("%010d 00000 n \n", off))
+		fmt.Fprintf(&pdf, "%010d 00000 n \n", off)
 	}
-	pdf.WriteString(fmt.Sprintf("trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(objects)+1, xref))
+	fmt.Fprintf(&pdf, "trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(objects)+1, xref)
 	return []byte(pdf.String())
 }
 

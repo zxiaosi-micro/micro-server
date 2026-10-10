@@ -198,6 +198,21 @@ var routePerms = map[string]string{
 	"POST /stations/:no/staff":   "asset:station:staff",
 	"DELETE /stations/:no/staff": "asset:station:staff",
 	"GET /device-station":        "asset:station:list",
+
+	// S8-05 分析域（analytics:report/export/recon）
+	"GET /reports/sales":        "analytics:report:list",
+	"GET /reports/inventory":    "analytics:report:list",
+	"GET /reports/warranty":     "analytics:report:list",
+	"GET /reports/sla":          "analytics:report:list",
+	"GET /reports/finance":      "analytics:report:list",
+	"GET /reports/station":      "analytics:report:list",
+	"GET /reports/overview":     "analytics:report:list",
+	"GET /reports/metrics":      "analytics:report:list",
+	"POST /reports/recon":       "analytics:recon:run",
+	"POST /reports/rebuild":     "analytics:recon:rebuild",
+	"POST /exports":             "analytics:export:create",
+	"GET /exports":              "analytics:export:list",
+	"GET /exports/:no/download": "analytics:export:list",
 }
 
 func splitPath(p string) []string {

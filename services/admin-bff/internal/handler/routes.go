@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	analytics "micro-server/services/admin-bff/internal/handler/analytics"
 	audit "micro-server/services/admin-bff/internal/handler/audit"
 	auth "micro-server/services/admin-bff/internal/handler/auth"
 	catalog "micro-server/services/admin-bff/internal/handler/catalog"
@@ -31,6 +32,63 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 发起导出(异步事件管道, perm: analytics:export:create)
+					Method:  http.MethodPost,
+					Path:    "/exports",
+					Handler: analytics.CreateExportHandler(serverCtx),
+				},
+				{
+					// 导出任务列表(下载中心, perm: analytics:export:list)
+					Method:  http.MethodGet,
+					Path:    "/exports",
+					Handler: analytics.ListExportsHandler(serverCtx),
+				},
+				{
+					// 导出产物下载(受控流式, perm: analytics:export:list)
+					Method:  http.MethodGet,
+					Path:    "/exports/:id/download",
+					Handler: analytics.DownloadExportHandler(serverCtx),
+				},
+				{
+					// 报表查询(perm: analytics:report:list)
+					Method:  http.MethodGet,
+					Path:    "/reports/:type",
+					Handler: analytics.GetReportHandler(serverCtx),
+				},
+				{
+					// 指标字典(口径正本, perm: analytics:report:list)
+					Method:  http.MethodGet,
+					Path:    "/reports/metrics",
+					Handler: analytics.ListMetricDictHandler(serverCtx),
+				},
+				{
+					// 报表总览(六大报表并行扇出 mr.Finish, perm: analytics:report:list)
+					Method:  http.MethodGet,
+					Path:    "/reports/overview",
+					Handler: analytics.GetReportOverviewHandler(serverCtx),
+				},
+				{
+					// 读模型全量重建(版本号+1, perm: analytics:recon:rebuild)
+					Method:  http.MethodPost,
+					Path:    "/reports/rebuild",
+					Handler: analytics.RebuildReadModelHandler(serverCtx),
+				},
+				{
+					// 手动对账(perm: analytics:recon:run)
+					Method:  http.MethodPost,
+					Path:    "/reports/recon",
+					Handler: analytics.RunReconHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
 	server.AddRoutes(
 		rest.WithMiddlewares(
 			[]rest.Middleware{serverCtx.Authz},

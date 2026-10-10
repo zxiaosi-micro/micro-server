@@ -27,8 +27,8 @@ import (
 
 // StartRule 起算规则快照（warranty.start_rule JSON）。
 type StartRule struct {
-	Event  string `json:"event"`           // shipment_signed / device_activated
-	Months int32  `json:"months"`          // 质保月数
+	Event  string `json:"event"`  // shipment_signed / device_activated
+	Months int32  `json:"months"` // 质保月数
 }
 
 // CreateWarrantiesFromOrder 随单建立质保计划（Saga 步骤5 CreateFromOrder 一部分）。
@@ -121,8 +121,8 @@ func HandleShipmentSigned(sc *svc.ServiceContext) eventbus.Handler {
 func HandleDeviceActivated(sc *svc.ServiceContext) eventbus.Handler {
 	return func(ctx context.Context, env *eventbus.Envelope) error {
 		var p struct {
-			Sn        string `json:"sn"`
-			ActivatedAt int64 `json:"activated_at"`
+			Sn          string `json:"sn"`
+			ActivatedAt int64  `json:"activated_at"`
 		}
 		if err := json.Unmarshal(env.Payload, &p); err != nil {
 			return fmt.Errorf("device_activated 载荷解析失败: %w", err)

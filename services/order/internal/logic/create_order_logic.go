@@ -95,9 +95,9 @@ func (l *CreateOrderLogic) CreateOrder(in *pb.CreateOrderReq) (*pb.CreateOrderRe
 				Amount:    float64(s.unitCents*int64(s.item.Qty)) / 100,
 				TenantId:  tid, CreatedBy: uidAsNull(uid), UpdatedBy: uidAsNull(uid),
 			}
-		if s.item.Sn != "" {
-			item.Sn = sqlString(s.item.Sn)
-		}
+			if s.item.Sn != "" {
+				item.Sn = sqlString(s.item.Sn)
+			}
 			if err := sc.Models.OrderItem.InsertTx(ctx, session, item); err != nil {
 				return err
 			}
@@ -129,9 +129,9 @@ func (l *CreateOrderLogic) CreateOrder(in *pb.CreateOrderReq) (*pb.CreateOrderRe
 
 	return &pb.CreateOrderResp{
 		OrderId: orderId, OrderNo: orderNo,
-		TotalAmount:  centsToAmount(totalCents),
-		PayExpireAt:  expireAt.UnixMilli(),
-		SagaId:       sagaId,
+		TotalAmount: centsToAmount(totalCents),
+		PayExpireAt: expireAt.UnixMilli(),
+		SagaId:      sagaId,
 	}, nil
 }
 

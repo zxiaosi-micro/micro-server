@@ -32,9 +32,9 @@ type orderCancelledPayload struct {
 
 // orderPayTimeoutPayload order_pay_timeout 事件体（ADR-09：pay_expire_at 扫描产生，无 MQ 延迟消息）。
 type orderPayTimeoutPayload struct {
-	TenantID  int64  `json:"tenant_id"`
-	OrderNo   string `json:"order_no"`
-	ExpireAt  int64  `json:"expire_at"` // UnixMilli
+	TenantID int64  `json:"tenant_id"`
+	OrderNo  string `json:"order_no"`
+	ExpireAt int64  `json:"expire_at"` // UnixMilli
 }
 
 // orderReturnApprovedPayload order_return_approved 事件体（finance 消费 → CreateRefund 原路退回）。
@@ -51,7 +51,7 @@ type shipmentSignedPayload struct {
 	TenantID   int64    `json:"tenant_id"`
 	OrderNo    string   `json:"order_no"`
 	ShipmentNo string   `json:"shipment_no"`
-	Sns        []string `json:"sns"`       // 签收设备 SN 清单（可空：无 SN 的普通货物）
+	Sns        []string `json:"sns"` // 签收设备 SN 清单（可空：无 SN 的普通货物）
 	SignedBy   string   `json:"signed_by"`
 	SignedAt   int64    `json:"signed_at"` // UnixMilli
 }

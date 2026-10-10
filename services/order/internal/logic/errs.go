@@ -11,26 +11,26 @@ import (
 	"github.com/zxiaosi-micro/micro-common/tenantx"
 )
 
-// SegSegOrder 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
+// SegOrder 段 = micro-common 预注册段（S5 交易域，勿再 Register）。
 const SegOrder = errcode.SegOrder
 
 var (
-	errOrderNotFound   = errcode.New(SegOrder, 1001, "订单不存在")
-	errOrderNoUsed     = errcode.New(SegOrder, 1002, "订单号已存在(重复请求)")
-	errOrderStatus     = errcode.New(SegOrder, 1003, "订单状态不允许该操作")
-	errOrderTypeBad    = errcode.New(SegOrder, 1004, "订单类型不合法")
-	errItemsRequired   = errcode.New(SegOrder, 1005, "订单明细不能为空")
-	errQtyBad          = errcode.New(SegOrder, 1006, "数量必须大于 0")
-	errAmountBad       = errcode.New(SegOrder, 1007, "金额快照解析失败")
-	errChannelBad      = errcode.New(SegOrder, 1008, "支付渠道不合法")
-	errReturnNotFound  = errcode.New(SegOrder, 1009, "退货单不存在")
-	errReturnStatus    = errcode.New(SegOrder, 1010, "退货单状态不允许该操作")
-	errShipmentBad     = errcode.New(SegOrder, 1011, "发货单不存在")
-	errShipmentStatus  = errcode.New(SegOrder, 1012, "发货单状态不允许该操作")
-	errSagaNotFound    = errcode.New(SegOrder, 1013, "Saga 不存在")
+	errOrderNotFound    = errcode.New(SegOrder, 1001, "订单不存在")
+	errOrderNoUsed      = errcode.New(SegOrder, 1002, "订单号已存在(重复请求)")
+	errOrderStatus      = errcode.New(SegOrder, 1003, "订单状态不允许该操作")
+	errOrderTypeBad     = errcode.New(SegOrder, 1004, "订单类型不合法")
+	errItemsRequired    = errcode.New(SegOrder, 1005, "订单明细不能为空")
+	errQtyBad           = errcode.New(SegOrder, 1006, "数量必须大于 0")
+	errAmountBad        = errcode.New(SegOrder, 1007, "金额快照解析失败")
+	errChannelBad       = errcode.New(SegOrder, 1008, "支付渠道不合法")
+	errReturnNotFound   = errcode.New(SegOrder, 1009, "退货单不存在")
+	errReturnStatus     = errcode.New(SegOrder, 1010, "退货单状态不允许该操作")
+	errShipmentBad      = errcode.New(SegOrder, 1011, "发货单不存在")
+	errShipmentStatus   = errcode.New(SegOrder, 1012, "发货单状态不允许该操作")
+	errSagaNotFound     = errcode.New(SegOrder, 1013, "Saga 不存在")
 	errSagaNotRetryable = errcode.New(SegOrder, 1014, "Saga 已终结(不可重推)")
-	errItemNotFound    = errcode.New(SegOrder, 1015, "退货明细与原单不符")
-	errDownstreamMiss  = errcode.New(SegOrder, 1016, "下游服务未配置")
+	errItemNotFound     = errcode.New(SegOrder, 1015, "退货明细与原单不符")
+	errDownstreamMiss   = errcode.New(SegOrder, 1016, "下游服务未配置")
 )
 
 // 下游业务错误码（跨服务判定用，与各服务 errs.go 对齐）。
@@ -77,4 +77,3 @@ func clampPage(page, size int64) (int64, int64) {
 	}
 	return page, size
 }
-

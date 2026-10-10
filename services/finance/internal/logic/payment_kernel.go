@@ -77,7 +77,7 @@ func CreatePayment(ctx context.Context, sc *svc.ServiceContext, tid int64,
 	p := &model.Payment{
 		PaymentId: sc.Snowflake.MustNextID(), PaymentNo: payNo,
 		OrderNo: orderNo, Channel: channel, Status: status,
-		Amount: float64(amountCents) / 100,
+		Amount:   float64(amountCents) / 100,
 		TenantId: tid, CreatedBy: sqlInt64(uid),
 	}
 	if payerPartyId > 0 {

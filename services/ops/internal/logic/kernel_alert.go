@@ -108,17 +108,17 @@ func ingestAlert(sc *svc.ServiceContext, in alertIngest) {
 			return err
 		}
 		// alert_created 事件（Outbox 同事务；分析域/订阅消息场景广播）
-		payload, _ := json.Marshal(map[string]any{
-			"alert_id": row.AlertId, "tenant_id": in.TenantId,
-			"station_id": stationId, "level": in.Level, "source": in.Source,
-			"metric": in.Metric, "title": in.Title, "first_seen_at": now.UnixMilli(),
-		})
+		// Payload 必须传 map（known-pit：预序列化 []byte 会被信封 base64 编码，消费方解析失败）
 		return eventbus.Emit(ctx, session, eventbus.EmitInput{
 			Topic:    eventbus.TopicAlertCreated,
 			Type:     eventbus.TypeAlertCreated,
 			Key:      in.Sn,
 			TenantID: in.TenantId,
-			Payload:  payload,
+			Payload: map[string]any{
+				"alert_id": row.AlertId, "tenant_id": in.TenantId,
+				"station_id": stationId, "level": in.Level, "source": in.Source,
+				"metric": in.Metric, "title": in.Title, "first_seen_at": now.UnixMilli(),
+			},
 		})
 	})
 	if err != nil {

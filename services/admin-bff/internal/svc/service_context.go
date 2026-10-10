@@ -6,16 +6,18 @@ import (
 	"os"
 
 	"micro-server/services/admin-bff/internal/config"
+	anpb "micro-server/services/analytics/pb"
 	apb "micro-server/services/audit/pb"
 	cpb "micro-server/services/catalog/pb"
 	ctpb "micro-server/services/contract/pb"
 	dpb "micro-server/services/device/pb"
+	filepb "micro-server/services/file/pb"
 	finpb "micro-server/services/finance/pb"
 	ipb "micro-server/services/identity/pb"
 	invpb "micro-server/services/inventory/pb"
 	npb "micro-server/services/notification/pb"
-	opb "micro-server/services/order/pb"
 	ospb "micro-server/services/ops/pb"
+	opb "micro-server/services/order/pb"
 	ppb "micro-server/services/party/pb"
 	spb "micro-server/services/station/pb"
 
@@ -44,12 +46,15 @@ type ServiceContext struct {
 	Finance  finpb.FinanceClient
 	Contract ctpb.ContractClient
 	// S6 资产域 RPC 客户端
-	Device   dpb.DeviceClient
-	Station  spb.StationClient
+	Device  dpb.DeviceClient
+	Station spb.StationClient
 	// S7 运维域 RPC 客户端
 	Ops ospb.OpsClient
-	Verifier *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
-	sessions *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
+	// S8 分析域 + 文件
+	Analytics anpb.AnalyticsClient
+	File      filepb.FileClient
+	Verifier  *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
+	sessions  *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -57,7 +62,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	// 用原生 gRPC dial option（go-zero 内置 client 中间件链不透传自定义拦截器）。
 	dial := func(conf zrpc.RpcClientConf) grpc.ClientConnInterface {
 		conn := zrpc.MustNewClient(conf,
-			zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor)))
+			zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor)),
+			// 下载中心大文件回源（file GetFileData bytes）：消息上限 64MB
+			zrpc.WithDialOption(grpc.WithDefaultCallOptions(
+				grpc.MaxCallRecvMsgSize(64<<20), grpc.MaxCallSendMsgSize(64<<20))))
 		return conn.Conn()
 	}
 
@@ -98,6 +106,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Device:       dpb.NewDeviceClient(dial(c.DeviceRpc)),
 		Station:      spb.NewStationClient(dial(c.StationRpc)),
 		Ops:          ospb.NewOpsClient(dial(c.OpsRpc)),
+		Analytics:    anpb.NewAnalyticsClient(dial(c.AnalyticsRpc)),
+		File:         filepb.NewFileClient(dial(c.FileRpc)),
 		Verifier:     verifier,
 		sessions:     store,
 	}

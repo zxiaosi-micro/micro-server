@@ -2091,3 +2091,558 @@ service AdminBffApi {
 	post /warranty-extensions/:no/refund (ExtensionRefundReq) returns (SimpleResp)
 }
 
+// ============================================================
+// S6-01 设备域（asset:device:*）
+// ============================================================
+type DeviceImportItem {
+	Sn         string `json:"sn"`
+	ProductKey string `json:"product_key"`
+	Model      string `json:"model,optional"`
+	BatchNo    string `json:"batch_no,optional"`
+}
+
+type DeviceImportReq {
+	Items     []DeviceImportItem `json:"items"`
+	Provision bool               `json:"provision,optional"`
+}
+
+type DeviceSecretRow {
+	Sn     string `json:"sn"`
+	Secret string `json:"secret"`
+}
+
+type DeviceImportResp {
+	Imported        int               `json:"imported"`
+	Secrets         []DeviceSecretRow `json:"secrets"`
+	ProvisionErrors []string          `json:"provision_errors"`
+}
+
+type DeviceView {
+	DeviceId    string `json:"device_id"`
+	Sn          string `json:"sn"`
+	ProductKey  string `json:"product_key"`
+	Model       string `json:"model"`
+	BatchNo     string `json:"batch_no"`
+	Status      string `json:"status"`
+	PartyId     string `json:"party_id"`
+	OrderNo     string `json:"order_no"`
+	ActivatedAt int64  `json:"activated_at"`
+	HasSecret   bool   `json:"has_secret"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type DeviceGetResp {
+	Device DeviceView `json:"device"`
+}
+
+type DeviceListReq {
+	Keyword    string `json:"keyword,optional"`
+	Status     string `json:"status,optional"`
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type DeviceListResp {
+	List  []DeviceView `json:"list"`
+	Total int          `json:"total"`
+}
+
+type DeviceNoPath {
+	DeviceId string `path:"id"`
+}
+
+type DeviceTransitionReq {
+	DeviceId string `path:"id"`
+	ToStatus string `json:"to_status,options=RETIRED|SCRAPPED"`
+	Reason   string `json:"reason,optional"`
+}
+
+type DeviceActivateReq {
+	DeviceId string `path:"id"`
+	PartyId  string `json:"party_id,optional"`
+}
+
+type DeviceProvisionResp {
+	Sn     string `json:"sn"`
+	Secret string `json:"secret"`
+}
+
+type DeviceShadowMetric {
+	Key   string  `json:"key"`
+	Value float64 `json:"value"`
+}
+
+type DeviceShadowResp {
+	Sn      string               `json:"sn"`
+	Ts      int64                `json:"ts"`
+	Metrics []DeviceShadowMetric `json:"metrics"`
+	Raw     string               `json:"raw"`
+}
+
+type CmdView {
+	CmdId      string `json:"cmd_id"`
+	DeviceId   string `json:"device_id"`
+	Sn         string `json:"sn"`
+	CmdType    string `json:"cmd_type"`
+	ParamsJson string `json:"params_json"`
+	Status     string `json:"status"`
+	RetryCount int    `json:"retry_count"`
+	AckedAt    int64  `json:"acked_at"`
+	FailReason string `json:"fail_reason"`
+	Operator   string `json:"operator"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type CmdListReq {
+	DeviceId string `json:"device_id,optional"`
+	Sn       string `json:"sn,optional"`
+	Status   string `json:"status,optional"`
+	Page     int    `json:"page,default=1"`
+	Size     int    `json:"size,default=20"`
+}
+
+type CmdListResp {
+	List  []CmdView `json:"list"`
+	Total int       `json:"total"`
+}
+
+type CmdSendReq {
+	DeviceId    string `json:"device_id,optional"`
+	Sn          string `json:"sn,optional"`
+	CmdType     string `json:"cmd_type,options=REBOOT|RELAY_SET|QUERY|SET_PARAM|PING"`
+	ParamsJson  string `json:"params_json,optional"`
+	ClientCmdId string `json:"client_cmd_id,optional"`
+}
+
+type CmdSendResp {
+	CmdId string `json:"cmd_id"`
+}
+
+type DeviceTopologyNode {
+	NodeId   string `json:"node_id"`
+	ParentId string `json:"parent_id"`
+	NodeType string `json:"node_type"`
+	NodeName string `json:"node_name"`
+	Sort     int    `json:"sort"`
+}
+
+type DeviceTopologyResp {
+	Nodes []DeviceTopologyNode `json:"nodes"`
+}
+
+type DeviceTopologySaveNode {
+	ParentRef int    `json:"parent_ref"`
+	NodeType  string `json:"node_type"`
+	NodeName  string `json:"node_name,optional"`
+	Sort      int    `json:"sort,optional"`
+}
+
+type DeviceTopologySaveReq {
+	DeviceId string                   `path:"id"`
+	Nodes    []DeviceTopologySaveNode `json:"nodes"`
+}
+
+type DeviceTopologySaveResp {
+	Saved int `json:"saved"`
+}
+
+type FirmwareView {
+	FirmwareId string `json:"firmware_id"`
+	ProductKey string `json:"product_key"`
+	Version    string `json:"version"`
+	FileUrl    string `json:"file_url"`
+	FileSize   int64  `json:"file_size"`
+	Sha256     string `json:"sha256"`
+	SignAlg    string `json:"sign_alg"`
+	Remark     string `json:"remark"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type FirmwareListReq {
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type FirmwareListResp {
+	List  []FirmwareView `json:"list"`
+	Total int            `json:"total"`
+}
+
+type FirmwareSaveReq {
+	ProductKey string `json:"product_key"`
+	Version    string `json:"version"`
+	FileUrl    string `json:"file_url"`
+	FileSize   int64  `json:"file_size,optional"`
+	Sha256     string `json:"sha256"`
+	Signature  string `json:"signature"`
+	Remark     string `json:"remark,optional"`
+}
+
+type FirmwareSaveResp {
+	FirmwareId string `json:"firmware_id"`
+}
+
+type OtaDeviceView {
+	Id           string `json:"id"`
+	DeviceId     string `json:"device_id"`
+	Sn           string `json:"sn"`
+	Status       string `json:"status"`
+	CmdId        string `json:"cmd_id"`
+	RetryCount   int    `json:"retry_count"`
+	Error        string `json:"error"`
+	DispatchedAt int64  `json:"dispatched_at"`
+	FinishedAt   int64  `json:"finished_at"`
+}
+
+type OtaTaskView {
+	TaskId             string          `json:"task_id"`
+	TaskNo             string          `json:"task_no"`
+	Name               string          `json:"name"`
+	ProductKey         string          `json:"product_key"`
+	FirmwareId         string          `json:"firmware_id"`
+	RollbackFirmwareId string          `json:"rollback_firmware_id"`
+	BatchSize          int             `json:"batch_size"`
+	FailThresholdPct   int             `json:"fail_threshold_pct"`
+	Status             string          `json:"status"`
+	Total              int             `json:"total"`
+	SuccessCount       int             `json:"success_count"`
+	FailCount          int             `json:"fail_count"`
+	FailReason         string          `json:"fail_reason"`
+	CreatedAt          int64           `json:"created_at"`
+	Devices            []OtaDeviceView `json:"devices"`
+}
+
+type OtaTaskListReq {
+	Status     string `json:"status,optional"`
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type OtaTaskListResp {
+	List  []OtaTaskView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type OtaTaskCreateReq {
+	Name               string   `json:"name"`
+	ProductKey         string   `json:"product_key"`
+	FirmwareId         string   `json:"firmware_id"`
+	RollbackFirmwareId string   `json:"rollback_firmware_id,optional"`
+	BatchSize          int      `json:"batch_size,optional"`
+	DeviceIds          []string `json:"device_ids"`
+}
+
+type OtaTaskCreateResp {
+	TaskId string `json:"task_id"`
+}
+
+type OtaTaskNoPath {
+	TaskId string `path:"id"`
+}
+
+type OtaTaskRollbackReq {
+	TaskId string `path:"id"`
+	Reason string `json:"reason,optional"`
+}
+
+type OtaTaskRollbackResp {
+	RolledBack int `json:"rolled_back"`
+}
+
+// ============================================================
+// S6-02 场站域（asset:station:*）
+// ============================================================
+type StationView {
+	StationId   string  `json:"station_id"`
+	StationNo   string  `json:"station_no"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
+	Status      string  `json:"status"`
+	Province    string  `json:"province"`
+	City        string  `json:"city"`
+	Address     string  `json:"address"`
+	Longitude   float64 `json:"longitude"`
+	Latitude    float64 `json:"latitude"`
+	CapacityKwh float64 `json:"capacity_kwh"`
+	PowerKw     float64 `json:"power_kw"`
+	GridStatus  string  `json:"grid_status"`
+	OrderNo     string  `json:"order_no"`
+	CreatedAt   int64   `json:"created_at"`
+}
+
+type StationGetResp {
+	Station StationView `json:"station"`
+}
+
+type StationListReq {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Type    string `json:"type,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type StationListResp {
+	List  []StationView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type StationBindItem {
+	DeviceId string `json:"device_id,optional"`
+	Sn       string `json:"sn,optional"`
+	Role     string `json:"role,optional"`
+}
+
+type StationCreateReq {
+	OrderNo     string            `json:"order_no,optional"`
+	StationNo   string            `json:"station_no,optional"`
+	Name        string            `json:"name"`
+	Type        string            `json:"type,options=ESS|CHARGING|HESS"`
+	Province    string            `json:"province,optional"`
+	City        string            `json:"city,optional"`
+	Address     string            `json:"address,optional"`
+	Longitude   float64           `json:"longitude,optional"`
+	Latitude    float64           `json:"latitude,optional"`
+	CapacityKwh float64           `json:"capacity_kwh,optional"`
+	PowerKw     float64           `json:"power_kw,optional"`
+	GridStatus  string            `json:"grid_status,optional"`
+	Devices     []StationBindItem `json:"devices,optional"`
+}
+
+type StationCreateResp {
+	StationId string `json:"station_id"`
+}
+
+type StationNoPath {
+	StationId string `path:"id"`
+}
+
+type StationDeviceView {
+	Id        string `json:"id"`
+	StationId string `json:"station_id"`
+	DeviceId  string `json:"device_id"`
+	Sn        string `json:"sn"`
+	Role      string `json:"role"`
+	BoundAt   int64  `json:"bound_at"`
+}
+
+type StationDeviceListResp {
+	List []StationDeviceView `json:"list"`
+}
+
+type StationBindReq {
+	StationId string            `path:"id"`
+	Devices   []StationBindItem `json:"devices"`
+	BoundBy   string            `json:"bound_by,optional"`
+}
+
+type StationBindResp {
+	Bound int `json:"bound"`
+}
+
+type StationTopologyView {
+	Version   int    `json:"version"`
+	NodesJson string `json:"nodes_json"`
+	EdgesJson string `json:"edges_json"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type StationTopologyResp {
+	Topology StationTopologyView `json:"topology"`
+}
+
+type StationTopologySaveReq {
+	StationId string `path:"id"`
+	NodesJson string `json:"nodes_json"`
+	EdgesJson string `json:"edges_json"`
+}
+
+type StationTopologySaveResp {
+	Version int `json:"version"`
+}
+
+type StationMonitorItem {
+	DeviceId    string  `json:"device_id"`
+	Sn          string  `json:"sn"`
+	Online      bool    `json:"online"`
+	Soc         float64 `json:"soc"`
+	Power       float64 `json:"power"`
+	Voltage     float64 `json:"voltage"`
+	Temperature float64 `json:"temperature"`
+	Ts          int64   `json:"ts"`
+}
+
+type StationMonitorResp {
+	StationId   string               `json:"station_id"`
+	DeviceCount int                  `json:"device_count"`
+	OnlineCount int                  `json:"online_count"`
+	AvgSoc      float64              `json:"avg_soc"`
+	TotalPower  float64              `json:"total_power"`
+	Items       []StationMonitorItem `json:"items"`
+}
+
+type StationStaffView {
+	Id        string `json:"id"`
+	StationId string `json:"station_id"`
+	UserId    string `json:"user_id"`
+	StaffType string `json:"staff_type"`
+	Shift     string `json:"shift"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type StationStaffListResp {
+	List []StationStaffView `json:"list"`
+}
+
+type StationStaffAddReq {
+	StationId string `path:"id"`
+	UserId    string `json:"user_id"`
+	StaffType string `json:"staff_type,options=RESIDENT|INSPECTOR|MANAGER"`
+	Shift     string `json:"shift,optional"`
+}
+
+type StationStaffRemoveReq {
+	StationId string `path:"id"`
+	UserId    string `json:"user_id"`
+}
+
+type DeviceStationResp {
+	StationId   string `json:"station_id"`
+	StationNo   string `json:"station_no"`
+	StationName string `json:"station_name"`
+	Role        string `json:"role"`
+}
+
+@server (
+	prefix:     /api/v1
+	group:      device
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "设备导入（一机一密自动开通, perm: asset:device:create)"
+	@handler importDevices
+	post /devices/import (DeviceImportReq) returns (DeviceImportResp)
+
+	@doc "设备列表(perm: asset:device:list)"
+	@handler listDevices
+	get /devices (DeviceListReq) returns (DeviceListResp)
+
+	@doc "设备详情(perm: asset:device:list)"
+	@handler getDevice
+	get /devices/:id (DeviceNoPath) returns (DeviceGetResp)
+
+	@doc "状态迁移(退役/报废白名单, perm: asset:device:transition)"
+	@handler transitionDevice
+	post /devices/:id/transition (DeviceTransitionReq) returns (SimpleResp)
+
+	@doc "设备激活(绑定客户+质保起算事件, perm: asset:device:activate)"
+	@handler activateDevice
+	post /devices/:id/activate (DeviceActivateReq) returns (SimpleResp)
+
+	@doc "凭证补发(明文一次, perm: asset:device:credential)"
+	@handler provisionDevice
+	post /devices/:id/credential (DeviceNoPath) returns (DeviceProvisionResp)
+
+	@doc "设备影子(最近遥测, perm: asset:device:list)"
+	@handler getDeviceShadow
+	get /devices/:id/shadow (DeviceNoPath) returns (DeviceShadowResp)
+
+	@doc "指令下发(控制类 step-up 强制, perm: asset:device:cmd)"
+	@handler sendDeviceCmd
+	post /devices/commands (CmdSendReq) returns (CmdSendResp)
+
+	@doc "指令列表(perm: asset:device:cmd)"
+	@handler listDeviceCmds
+	get /device-cmds (CmdListReq) returns (CmdListResp)
+
+	@doc "设备拓扑查询(perm: asset:device:list)"
+	@handler getDeviceTopology
+	get /devices/:id/topology (DeviceNoPath) returns (DeviceTopologyResp)
+
+	@doc "设备拓扑保存(全量替换, perm: asset:device:topology)"
+	@handler saveDeviceTopology
+	put /devices/:id/topology (DeviceTopologySaveReq) returns (DeviceTopologySaveResp)
+
+	@doc "固件列表(perm: asset:ota:firmware)"
+	@handler listFirmwares
+	get /firmwares (FirmwareListReq) returns (FirmwareListResp)
+
+	@doc "固件登记(Ed25519 验签, perm: asset:ota:firmware)"
+	@handler saveFirmware
+	post /firmwares (FirmwareSaveReq) returns (FirmwareSaveResp)
+
+	@doc "OTA 任务列表(perm: asset:ota:task)"
+	@handler listOtaTasks
+	get /ota-tasks (OtaTaskListReq) returns (OtaTaskListResp)
+
+	@doc "OTA 任务详情(含设备明细, perm: asset:ota:task)"
+	@handler getOtaTask
+	get /ota-tasks/:id (OtaTaskNoPath) returns (OtaTaskView)
+
+	@doc "OTA 任务创建(灰度分批, perm: asset:ota:task)"
+	@handler createOtaTask
+	post /ota-tasks (OtaTaskCreateReq) returns (OtaTaskCreateResp)
+
+	@doc "OTA 任务回滚(perm: asset:ota:rollback)"
+	@handler rollbackOtaTask
+	post /ota-tasks/:id/rollback (OtaTaskRollbackReq) returns (OtaTaskRollbackResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      station
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "场站列表(perm: asset:station:list)"
+	@handler listStations
+	get /stations (StationListReq) returns (StationListResp)
+
+	@doc "场站详情(perm: asset:station:list)"
+	@handler getStation
+	get /stations/:id (StationNoPath) returns (StationGetResp)
+
+	@doc "场站创建(Saga 步骤6 手工兜底, perm: asset:station:create)"
+	@handler createStation
+	post /stations (StationCreateReq) returns (StationCreateResp)
+
+	@doc "场站设备绑定(perm: asset:station:bind)"
+	@handler bindStationDevices
+	post /stations/:id/devices (StationBindReq) returns (StationBindResp)
+
+	@doc "场站设备清单(perm: asset:station:list)"
+	@handler listStationDevices
+	get /stations/:id/devices (StationNoPath) returns (StationDeviceListResp)
+
+	@doc "场站拓扑查询(React Flow, perm: asset:station:list)"
+	@handler getStationTopology
+	get /stations/:id/topology (StationNoPath) returns (StationTopologyResp)
+
+	@doc "场站拓扑保存(版本化, perm: asset:station:topology)"
+	@handler saveStationTopology
+	put /stations/:id/topology (StationTopologySaveReq) returns (StationTopologySaveResp)
+
+	@doc "场站聚合监控(影子只读, perm: asset:station:list)"
+	@handler getStationMonitor
+	get /stations/:id/monitor (StationNoPath) returns (StationMonitorResp)
+
+	@doc "驻场人员列表(perm: asset:station:staff)"
+	@handler listStationStaff
+	get /stations/:id/staff (StationNoPath) returns (StationStaffListResp)
+
+	@doc "添加驻场人员(perm: asset:station:staff)"
+	@handler addStationStaff
+	post /stations/:id/staff (StationStaffAddReq) returns (SimpleResp)
+
+	@doc "移除驻场人员(perm: asset:station:staff)"
+	@handler removeStationStaff
+	delete /stations/:id/staff (StationStaffRemoveReq) returns (SimpleResp)
+
+	@doc "设备反查场站(perm: asset:station:list)"
+	@handler getDeviceStation
+	get /device-station (DeviceNoPath) returns (DeviceStationResp)
+}
+

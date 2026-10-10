@@ -9,6 +9,7 @@ import (
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zxiaosi-micro/micro-common/eventbus"
 )
 
 type StockInLogic struct {
@@ -37,6 +38,9 @@ func (l *StockInLogic) StockIn(in *pb.StockInReq) (*pb.StockInResp, error) {
 	}
 	if in.BizNo == "" {
 		return nil, errBizNoBad
+	}
+	if len(in.Sns) > 0 && len(in.Sns) != int(in.Qty) {
+		return nil, errSnQtyMismatch
 	}
 	if err := warehouseExists(l.ctx, l.svcCtx, tid, in.WarehouseId); err != nil {
 		return nil, err
@@ -84,6 +88,10 @@ func (l *StockInLogic) StockIn(in *pb.StockInReq) (*pb.StockInResp, error) {
 			if isDupKey(err) {
 				return ErrTxnReplay
 			}
+			return err
+		}
+		// stock_in 事件（S6-01：device 消费驱动设备状态机 IN_STOCK；与流水同事务 Outbox）
+		if err := eventbus.Emit(ctx, session, stockInEvent(tid, in.WarehouseId, in.SkuId, int64(in.Qty), in.BizNo, in.Sns)); err != nil {
 			return err
 		}
 		return nil

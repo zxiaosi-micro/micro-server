@@ -1,0 +1,48 @@
+Name: device.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8085}"
+Mode: dev
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: device.rpc
+Mysql:
+  DataSource: "${MICRO_DSN_DEVICE|}"
+Cache:
+  - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+    Pass: "${REDIS_PASS|}"
+    Type: node
+ShadowRedis:
+  Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+  Pass: "${REDIS_PASS|}"
+  Type: node
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: device-asset-d6
+Emqx:
+  Broker: "${EMQX_BROKER|tcp://127.0.0.1:21883}"
+  PlatformUser: "${EMQX_PLATFORM_USER|}"
+  PlatformPass: "${EMQX_PLATFORM_PASS|}"
+  ApiBase: "${EMQX_API_BASE|http://127.0.0.1:38083}"
+  DashboardUser: "${EMQX_DASHBOARD_USER|}"
+  DashboardPass: "${EMQX_DASHBOARD_PASS|}"
+OtaPublicKeyPath: "${OTA_PUBLIC_KEY|}"
+AuditRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: audit.rpc
+  NonBlock: true
+  Timeout: 5000
+CmdAckTimeoutMs: 3000      # FR-IOT-006：ACK 3s（TimingWheel 内存加速）
+CmdRetryBackoffSec: 60     # cron 兜底重试退避
+OtaDispatchIntervalSec: 30
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9105
+Telemetry:
+  Name: device
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/device/main}   # configcenter（键位含文件名，ADR-10）

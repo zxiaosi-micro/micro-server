@@ -835,6 +835,631 @@
         }
       }
     },
+    "/api/v1/device-cmds": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "指令列表(perm: asset:device:cmd)",
+        "operationId": "deviceListDeviceCmds",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CmdListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/device-station": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备反查场站(perm: asset:station:list)",
+        "operationId": "stationGetDeviceStation",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceStationResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备列表(perm: asset:device:list)",
+        "operationId": "deviceListDevices",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/commands": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "指令下发(控制类 step-up 强制, perm: asset:device:cmd)",
+        "operationId": "deviceSendDeviceCmd",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CmdSendReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CmdSendResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备导入（一机一密自动开通, perm: asset:device:create)",
+        "operationId": "deviceImportDevices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeviceImportReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceImportResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备详情(perm: asset:device:list)",
+        "operationId": "deviceGetDevice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceGetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/activate": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备激活(绑定客户+质保起算事件, perm: asset:device:activate)",
+        "operationId": "deviceActivateDevice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeviceActivateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/credential": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "凭证补发(明文一次, perm: asset:device:credential)",
+        "operationId": "deviceProvisionDevice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceProvisionResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/shadow": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备影子(最近遥测, perm: asset:device:list)",
+        "operationId": "deviceGetDeviceShadow",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceShadowResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/topology": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备拓扑查询(perm: asset:device:list)",
+        "operationId": "deviceGetDeviceTopology",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceTopologyResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备拓扑保存(全量替换, perm: asset:device:topology)",
+        "operationId": "deviceSaveDeviceTopology",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeviceTopologySaveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DeviceTopologySaveResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/transition": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "状态迁移(退役/报废白名单, perm: asset:device:transition)",
+        "operationId": "deviceTransitionDevice",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeviceTransitionReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/firmwares": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "固件列表(perm: asset:ota:firmware)",
+        "operationId": "deviceListFirmwares",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/FirmwareListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "固件登记(Ed25519 验签, perm: asset:ota:firmware)",
+        "operationId": "deviceSaveFirmware",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FirmwareSaveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/FirmwareSaveResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/inventory": {
       "get": {
         "produces": [
@@ -2524,6 +3149,184 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ota-tasks": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "OTA 任务列表(perm: asset:ota:task)",
+        "operationId": "deviceListOtaTasks",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OtaTaskListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "OTA 任务创建(灰度分批, perm: asset:ota:task)",
+        "operationId": "deviceCreateOtaTask",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OtaTaskCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OtaTaskCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ota-tasks/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "OTA 任务详情(含设备明细, perm: asset:ota:task)",
+        "operationId": "deviceGetOtaTask",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OtaTaskView"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ota-tasks/{id}/rollback": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "OTA 任务回滚(perm: asset:ota:rollback)",
+        "operationId": "deviceRollbackOtaTask",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OtaTaskRollbackReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/OtaTaskRollbackResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -4788,6 +5591,510 @@
         }
       }
     },
+    "/api/v1/stations": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站列表(perm: asset:station:list)",
+        "operationId": "stationListStations",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站创建(Saga 步骤6 手工兜底, perm: asset:station:create)",
+        "operationId": "stationCreateStation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站详情(perm: asset:station:list)",
+        "operationId": "stationGetStation",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationGetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}/devices": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站设备清单(perm: asset:station:list)",
+        "operationId": "stationListStationDevices",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationDeviceListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站设备绑定(perm: asset:station:bind)",
+        "operationId": "stationBindStationDevices",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationBindReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationBindResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}/monitor": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站聚合监控(影子只读, perm: asset:station:list)",
+        "operationId": "stationGetStationMonitor",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationMonitorResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}/staff": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "驻场人员列表(perm: asset:station:staff)",
+        "operationId": "stationListStationStaff",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationStaffListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "添加驻场人员(perm: asset:station:staff)",
+        "operationId": "stationAddStationStaff",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationStaffAddReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "移除驻场人员(perm: asset:station:staff)",
+        "operationId": "stationRemoveStationStaff",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationStaffRemoveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{id}/topology": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站拓扑查询(React Flow, perm: asset:station:list)",
+        "operationId": "stationGetStationTopology",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationTopologyResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站拓扑保存(版本化, perm: asset:station:topology)",
+        "operationId": "stationSaveStationTopology",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/StationTopologySaveReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationTopologySaveResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/stocktakes": {
       "get": {
         "produces": [
@@ -6321,6 +7628,144 @@
         }
       }
     },
+    "CmdListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "CmdListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CmdView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "CmdSendReq": {
+      "type": "object",
+      "required": [
+        "cmd_type"
+      ],
+      "properties": {
+        "client_cmd_id": {
+          "type": "string"
+        },
+        "cmd_type": {
+          "type": "string",
+          "enum": [
+            "REBOOT",
+            "RELAY_SET",
+            "QUERY",
+            "SET_PARAM",
+            "PING"
+          ]
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "params_json": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "CmdSendResp": {
+      "type": "object",
+      "required": [
+        "cmd_id"
+      ],
+      "properties": {
+        "cmd_id": {
+          "type": "string"
+        }
+      }
+    },
+    "CmdView": {
+      "type": "object",
+      "required": [
+        "cmd_id",
+        "device_id",
+        "sn",
+        "cmd_type",
+        "params_json",
+        "status",
+        "retry_count",
+        "acked_at",
+        "fail_reason",
+        "operator",
+        "created_at"
+      ],
+      "properties": {
+        "acked_at": {
+          "type": "integer"
+        },
+        "cmd_id": {
+          "type": "string"
+        },
+        "cmd_type": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "fail_reason": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "params_json": {
+          "type": "string"
+        },
+        "retry_count": {
+          "type": "integer"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
     "ContactCreateReq": {
       "type": "object",
       "required": [
@@ -6749,6 +8194,436 @@
         }
       }
     },
+    "DeviceActivateReq": {
+      "type": "object",
+      "properties": {
+        "party_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceGetResp": {
+      "type": "object",
+      "required": [
+        "device"
+      ],
+      "properties": {
+        "device": {
+          "type": "object",
+          "required": [
+            "device_id",
+            "sn",
+            "product_key",
+            "model",
+            "batch_no",
+            "status",
+            "party_id",
+            "order_no",
+            "activated_at",
+            "has_secret",
+            "created_at"
+          ],
+          "properties": {
+            "activated_at": {
+              "type": "integer"
+            },
+            "batch_no": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "device_id": {
+              "type": "string"
+            },
+            "has_secret": {
+              "type": "boolean"
+            },
+            "model": {
+              "type": "string"
+            },
+            "order_no": {
+              "type": "string"
+            },
+            "party_id": {
+              "type": "string"
+            },
+            "product_key": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/DeviceView"
+        }
+      }
+    },
+    "DeviceImportItem": {
+      "type": "object",
+      "required": [
+        "sn",
+        "product_key"
+      ],
+      "properties": {
+        "batch_no": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceImportReq": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceImportItem"
+          }
+        },
+        "provision": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DeviceImportResp": {
+      "type": "object",
+      "required": [
+        "imported",
+        "secrets",
+        "provision_errors"
+      ],
+      "properties": {
+        "imported": {
+          "type": "integer"
+        },
+        "provision_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceSecretRow"
+          }
+        }
+      }
+    },
+    "DeviceListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeviceNoPath": {
+      "type": "object"
+    },
+    "DeviceProvisionResp": {
+      "type": "object",
+      "required": [
+        "sn",
+        "secret"
+      ],
+      "properties": {
+        "secret": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceSecretRow": {
+      "type": "object",
+      "required": [
+        "sn",
+        "secret"
+      ],
+      "properties": {
+        "secret": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceShadowMetric": {
+      "type": "object",
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      }
+    },
+    "DeviceShadowResp": {
+      "type": "object",
+      "required": [
+        "sn",
+        "ts",
+        "metrics",
+        "raw"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceShadowMetric"
+          }
+        },
+        "raw": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeviceStationResp": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "station_no",
+        "station_name",
+        "role"
+      ],
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        }
+      }
+    },
+    "DeviceTopologyNode": {
+      "type": "object",
+      "required": [
+        "node_id",
+        "parent_id",
+        "node_type",
+        "node_name",
+        "sort"
+      ],
+      "properties": {
+        "node_id": {
+          "type": "string"
+        },
+        "node_name": {
+          "type": "string"
+        },
+        "node_type": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeviceTopologyResp": {
+      "type": "object",
+      "required": [
+        "nodes"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceTopologyNode"
+          }
+        }
+      }
+    },
+    "DeviceTopologySaveNode": {
+      "type": "object",
+      "required": [
+        "parent_ref",
+        "node_type"
+      ],
+      "properties": {
+        "node_name": {
+          "type": "string"
+        },
+        "node_type": {
+          "type": "string"
+        },
+        "parent_ref": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeviceTopologySaveReq": {
+      "type": "object",
+      "required": [
+        "nodes"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DeviceTopologySaveNode"
+          }
+        }
+      }
+    },
+    "DeviceTopologySaveResp": {
+      "type": "object",
+      "required": [
+        "saved"
+      ],
+      "properties": {
+        "saved": {
+          "type": "integer"
+        }
+      }
+    },
+    "DeviceTransitionReq": {
+      "type": "object",
+      "required": [
+        "to_status"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "to_status": {
+          "type": "string",
+          "enum": [
+            "RETIRED",
+            "SCRAPPED"
+          ]
+        }
+      }
+    },
+    "DeviceView": {
+      "type": "object",
+      "required": [
+        "device_id",
+        "sn",
+        "product_key",
+        "model",
+        "batch_no",
+        "status",
+        "party_id",
+        "order_no",
+        "activated_at",
+        "has_secret",
+        "created_at"
+      ],
+      "properties": {
+        "activated_at": {
+          "type": "integer"
+        },
+        "batch_no": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "has_secret": {
+          "type": "boolean"
+        },
+        "model": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
     "ExtensionNoPath": {
       "type": "object"
     },
@@ -6814,6 +8689,133 @@
             "DEVICE",
             "STATION"
           ]
+        }
+      }
+    },
+    "FirmwareListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        }
+      }
+    },
+    "FirmwareListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FirmwareView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "FirmwareSaveReq": {
+      "type": "object",
+      "required": [
+        "product_key",
+        "version",
+        "file_url",
+        "sha256",
+        "signature"
+      ],
+      "properties": {
+        "file_size": {
+          "type": "integer"
+        },
+        "file_url": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "FirmwareSaveResp": {
+      "type": "object",
+      "required": [
+        "firmware_id"
+      ],
+      "properties": {
+        "firmware_id": {
+          "type": "string"
+        }
+      }
+    },
+    "FirmwareView": {
+      "type": "object",
+      "required": [
+        "firmware_id",
+        "product_key",
+        "version",
+        "file_url",
+        "file_size",
+        "sha256",
+        "sign_alg",
+        "remark",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "file_size": {
+          "type": "integer"
+        },
+        "file_url": {
+          "type": "string"
+        },
+        "firmware_id": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "sign_alg": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
         }
       }
     },
@@ -7822,6 +9824,227 @@
           "type": "string"
         },
         "sort": {
+          "type": "integer"
+        }
+      }
+    },
+    "OtaDeviceView": {
+      "type": "object",
+      "required": [
+        "id",
+        "device_id",
+        "sn",
+        "status",
+        "cmd_id",
+        "retry_count",
+        "error",
+        "dispatched_at",
+        "finished_at"
+      ],
+      "properties": {
+        "cmd_id": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "dispatched_at": {
+          "type": "integer"
+        },
+        "error": {
+          "type": "string"
+        },
+        "finished_at": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "retry_count": {
+          "type": "integer"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "OtaTaskCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "product_key",
+        "firmware_id",
+        "device_ids"
+      ],
+      "properties": {
+        "batch_size": {
+          "type": "integer"
+        },
+        "device_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "firmware_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "rollback_firmware_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OtaTaskCreateResp": {
+      "type": "object",
+      "required": [
+        "task_id"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string"
+        }
+      }
+    },
+    "OtaTaskListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "OtaTaskListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OtaTaskView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "OtaTaskNoPath": {
+      "type": "object"
+    },
+    "OtaTaskRollbackReq": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "OtaTaskRollbackResp": {
+      "type": "object",
+      "required": [
+        "rolled_back"
+      ],
+      "properties": {
+        "rolled_back": {
+          "type": "integer"
+        }
+      }
+    },
+    "OtaTaskView": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "task_no",
+        "name",
+        "product_key",
+        "firmware_id",
+        "rollback_firmware_id",
+        "batch_size",
+        "fail_threshold_pct",
+        "status",
+        "total",
+        "success_count",
+        "fail_count",
+        "fail_reason",
+        "created_at",
+        "devices"
+      ],
+      "properties": {
+        "batch_size": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OtaDeviceView"
+          }
+        },
+        "fail_count": {
+          "type": "integer"
+        },
+        "fail_reason": {
+          "type": "string"
+        },
+        "fail_threshold_pct": {
+          "type": "integer"
+        },
+        "firmware_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "rollback_firmware_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "success_count": {
+          "type": "integer"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "task_no": {
+          "type": "string"
+        },
+        "total": {
           "type": "integer"
         }
       }
@@ -9410,6 +11633,358 @@
         }
       }
     },
+    "StationBindItem": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        }
+      }
+    },
+    "StationBindReq": {
+      "type": "object",
+      "required": [
+        "devices"
+      ],
+      "properties": {
+        "bound_by": {
+          "type": "string"
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationBindItem"
+          }
+        }
+      }
+    },
+    "StationBindResp": {
+      "type": "object",
+      "required": [
+        "bound"
+      ],
+      "properties": {
+        "bound": {
+          "type": "integer"
+        }
+      }
+    },
+    "StationCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "capacity_kwh": {
+          "type": "number"
+        },
+        "city": {
+          "type": "string"
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationBindItem"
+          }
+        },
+        "grid_status": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "power_kw": {
+          "type": "number"
+        },
+        "province": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ESS",
+            "CHARGING",
+            "HESS"
+          ]
+        }
+      }
+    },
+    "StationCreateResp": {
+      "type": "object",
+      "required": [
+        "station_id"
+      ],
+      "properties": {
+        "station_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationDeviceListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationDeviceView"
+          }
+        }
+      }
+    },
+    "StationDeviceView": {
+      "type": "object",
+      "required": [
+        "id",
+        "station_id",
+        "device_id",
+        "sn",
+        "role",
+        "bound_at"
+      ],
+      "properties": {
+        "bound_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationGetResp": {
+      "type": "object",
+      "required": [
+        "station"
+      ],
+      "properties": {
+        "station": {
+          "type": "object",
+          "required": [
+            "station_id",
+            "station_no",
+            "name",
+            "type",
+            "status",
+            "province",
+            "city",
+            "address",
+            "longitude",
+            "latitude",
+            "capacity_kwh",
+            "power_kw",
+            "grid_status",
+            "order_no",
+            "created_at"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "capacity_kwh": {
+              "type": "number"
+            },
+            "city": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "grid_status": {
+              "type": "string"
+            },
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "order_no": {
+              "type": "string"
+            },
+            "power_kw": {
+              "type": "number"
+            },
+            "province": {
+              "type": "string"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_no": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/StationView"
+        }
+      }
+    },
+    "StationListReq": {
+      "type": "object",
+      "required": [
+        "page",
+        "size"
+      ],
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1,
+          "example": 1
+        },
+        "size": {
+          "type": "integer",
+          "default": 20,
+          "example": 20
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "StationListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "StationMonitorItem": {
+      "type": "object",
+      "required": [
+        "device_id",
+        "sn",
+        "online",
+        "soc",
+        "power",
+        "voltage",
+        "temperature",
+        "ts"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "online": {
+          "type": "boolean"
+        },
+        "power": {
+          "type": "number"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "soc": {
+          "type": "number"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "ts": {
+          "type": "integer"
+        },
+        "voltage": {
+          "type": "number"
+        }
+      }
+    },
+    "StationMonitorResp": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "device_count",
+        "online_count",
+        "avg_soc",
+        "total_power",
+        "items"
+      ],
+      "properties": {
+        "avg_soc": {
+          "type": "number"
+        },
+        "device_count": {
+          "type": "integer"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationMonitorItem"
+          }
+        },
+        "online_count": {
+          "type": "integer"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "total_power": {
+          "type": "number"
+        }
+      }
+    },
+    "StationNoPath": {
+      "type": "object"
+    },
     "StationProductCreateReq": {
       "type": "object",
       "required": [
@@ -9516,6 +12091,233 @@
         },
         "total": {
           "type": "integer"
+        }
+      }
+    },
+    "StationStaffAddReq": {
+      "type": "object",
+      "required": [
+        "user_id",
+        "staff_type"
+      ],
+      "properties": {
+        "shift": {
+          "type": "string"
+        },
+        "staff_type": {
+          "type": "string",
+          "enum": [
+            "RESIDENT",
+            "INSPECTOR",
+            "MANAGER"
+          ]
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationStaffListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StationStaffView"
+          }
+        }
+      }
+    },
+    "StationStaffRemoveReq": {
+      "type": "object",
+      "required": [
+        "user_id"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationStaffView": {
+      "type": "object",
+      "required": [
+        "id",
+        "station_id",
+        "user_id",
+        "staff_type",
+        "shift",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "shift": {
+          "type": "string"
+        },
+        "staff_type": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StationTopologyResp": {
+      "type": "object",
+      "required": [
+        "topology"
+      ],
+      "properties": {
+        "topology": {
+          "type": "object",
+          "required": [
+            "version",
+            "nodes_json",
+            "edges_json",
+            "updated_at"
+          ],
+          "properties": {
+            "edges_json": {
+              "type": "string"
+            },
+            "nodes_json": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "integer"
+            },
+            "version": {
+              "type": "integer"
+            }
+          },
+          "$ref": "#/definitions/StationTopologyView"
+        }
+      }
+    },
+    "StationTopologySaveReq": {
+      "type": "object",
+      "required": [
+        "nodes_json",
+        "edges_json"
+      ],
+      "properties": {
+        "edges_json": {
+          "type": "string"
+        },
+        "nodes_json": {
+          "type": "string"
+        }
+      }
+    },
+    "StationTopologySaveResp": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "StationTopologyView": {
+      "type": "object",
+      "required": [
+        "version",
+        "nodes_json",
+        "edges_json",
+        "updated_at"
+      ],
+      "properties": {
+        "edges_json": {
+          "type": "string"
+        },
+        "nodes_json": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        },
+        "version": {
+          "type": "integer"
+        }
+      }
+    },
+    "StationView": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "station_no",
+        "name",
+        "type",
+        "status",
+        "province",
+        "city",
+        "address",
+        "longitude",
+        "latitude",
+        "capacity_kwh",
+        "power_kw",
+        "grid_status",
+        "order_no",
+        "created_at"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "capacity_kwh": {
+          "type": "number"
+        },
+        "city": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "grid_status": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "power_kw": {
+          "type": "number"
+        },
+        "province": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },
@@ -10499,7 +13301,7 @@
       "in": "header"
     }
   },
-  "x-date": "2026-10-09 00:56:20",
+  "x-date": "2026-10-10 21:28:59",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

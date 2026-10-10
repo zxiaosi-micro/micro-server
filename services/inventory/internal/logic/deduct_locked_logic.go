@@ -50,7 +50,7 @@ func (l *DeductLockedLogic) DeductLocked(in *pb.DeductLockedReq) (*pb.DeductLock
 			return int64(in.Qty), nil
 		},
 		func(before, after *model.Inventory) []eventbus.EmitInput {
-			return []eventbus.EmitInput{stockOutEvent(tid, in.WarehouseId, in.SkuId, int64(in.Qty), in.BizNo)}
+			return []eventbus.EmitInput{stockOutEvent(tid, in.WarehouseId, in.SkuId, int64(in.Qty), in.BizNo, in.Sns)}
 		})
 	if err != nil {
 		return nil, mapTxErr(err)

@@ -9,6 +9,7 @@ import (
 
 	catclient "micro-server/services/catalog/catalog"
 	ctclient "micro-server/services/contract/contract"
+	stclient "micro-server/services/station/station"
 	finclient "micro-server/services/finance/finance"
 	invclient "micro-server/services/inventory/inventory"
 
@@ -33,6 +34,7 @@ type ServiceContext struct {
 	Inventory invclient.Inventory
 	Finance   finclient.Finance
 	Contract  ctclient.Contract
+	Station   stclient.Station
 	Catalog   catclient.Catalog
 }
 

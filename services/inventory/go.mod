@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/zeromicro/go-zero v1.10.3
-	github.com/zxiaosi-micro/micro-common v0.1.4
+	github.com/zxiaosi-micro/micro-common v0.1.6
 	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12
 )

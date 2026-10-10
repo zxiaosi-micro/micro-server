@@ -409,6 +409,7 @@ type StockInReq struct {
 	BizType       string                 `protobuf:"bytes,4,opt,name=biz_type,json=bizType,proto3" json:"biz_type,omitempty"` // STOCK_IN 采购/RETURN_IN 退货/TRANSFER_IN 调拨
 	BizNo         string                 `protobuf:"bytes,5,opt,name=biz_no,json=bizNo,proto3" json:"biz_no,omitempty"`       // 业务单号（幂等键）
 	Remark        string                 `protobuf:"bytes,6,opt,name=remark,proto3" json:"remark,omitempty"`
+	Sns           []string               `protobuf:"bytes,7,rep,name=sns,proto3" json:"sns,omitempty"` // 设备类 SKU 的 SN 明细（S6：device 消费 stock_in 驱动状态机 IN_STOCK）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -483,6 +484,13 @@ func (x *StockInReq) GetRemark() string {
 		return x.Remark
 	}
 	return ""
+}
+
+func (x *StockInReq) GetSns() []string {
+	if x != nil {
+		return x.Sns
+	}
+	return nil
 }
 
 type StockInResp struct {
@@ -777,6 +785,7 @@ type DeductLockedReq struct {
 	BizType       string                 `protobuf:"bytes,4,opt,name=biz_type,json=bizType,proto3" json:"biz_type,omitempty"` // 调用方域
 	BizNo         string                 `protobuf:"bytes,5,opt,name=biz_no,json=bizNo,proto3" json:"biz_no,omitempty"`       // 出库单号（幂等键）
 	Remark        string                 `protobuf:"bytes,6,opt,name=remark,proto3" json:"remark,omitempty"`
+	Sns           []string               `protobuf:"bytes,7,rep,name=sns,proto3" json:"sns,omitempty"` // 出库设备 SN 明细（S6：device 消费 stock_out 驱动状态机 OUT）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -851,6 +860,13 @@ func (x *DeductLockedReq) GetRemark() string {
 		return x.Remark
 	}
 	return ""
+}
+
+func (x *DeductLockedReq) GetSns() []string {
+	if x != nil {
+		return x.Sns
+	}
+	return nil
 }
 
 type DeductLockedResp struct {
@@ -2465,7 +2481,7 @@ const file_pb_inventory_proto_rawDesc = "" +
 	"\x04size\x18\x03 \x01(\x03R\x04size\"W\n" +
 	"\x11ListWarehouseResp\x12,\n" +
 	"\x04list\x18\x01 \x03(\v2\x18.inventory.WarehouseItemR\x04list\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x03R\x05total\"\xa2\x01\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xb4\x01\n" +
 	"\n" +
 	"StockInReq\x12!\n" +
 	"\fwarehouse_id\x18\x01 \x01(\x03R\vwarehouseId\x12\x15\n" +
@@ -2473,7 +2489,8 @@ const file_pb_inventory_proto_rawDesc = "" +
 	"\x03qty\x18\x03 \x01(\x05R\x03qty\x12\x19\n" +
 	"\bbiz_type\x18\x04 \x01(\tR\abizType\x12\x15\n" +
 	"\x06biz_no\x18\x05 \x01(\tR\x05bizNo\x12\x16\n" +
-	"\x06remark\x18\x06 \x01(\tR\x06remark\"*\n" +
+	"\x06remark\x18\x06 \x01(\tR\x06remark\x12\x10\n" +
+	"\x03sns\x18\a \x03(\tR\x03sns\"*\n" +
 	"\vStockInResp\x12\x1b\n" +
 	"\trecord_id\x18\x01 \x01(\x03R\brecordId\"\x8a\x01\n" +
 	"\n" +
@@ -2493,14 +2510,15 @@ const file_pb_inventory_proto_rawDesc = "" +
 	"\bbiz_type\x18\x04 \x01(\tR\abizType\x12\x15\n" +
 	"\x06biz_no\x18\x05 \x01(\tR\x05bizNo\"*\n" +
 	"\vReleaseResp\x12\x1b\n" +
-	"\trecord_id\x18\x01 \x01(\x03R\brecordId\"\xa7\x01\n" +
+	"\trecord_id\x18\x01 \x01(\x03R\brecordId\"\xb9\x01\n" +
 	"\x0fDeductLockedReq\x12!\n" +
 	"\fwarehouse_id\x18\x01 \x01(\x03R\vwarehouseId\x12\x15\n" +
 	"\x06sku_id\x18\x02 \x01(\x03R\x05skuId\x12\x10\n" +
 	"\x03qty\x18\x03 \x01(\x05R\x03qty\x12\x19\n" +
 	"\bbiz_type\x18\x04 \x01(\tR\abizType\x12\x15\n" +
 	"\x06biz_no\x18\x05 \x01(\tR\x05bizNo\x12\x16\n" +
-	"\x06remark\x18\x06 \x01(\tR\x06remark\"/\n" +
+	"\x06remark\x18\x06 \x01(\tR\x06remark\x12\x10\n" +
+	"\x03sns\x18\a \x03(\tR\x03sns\"/\n" +
 	"\x10DeductLockedResp\x12\x1b\n" +
 	"\trecord_id\x18\x01 \x01(\x03R\brecordId\"\x95\x01\n" +
 	"\vSpareOutReq\x12!\n" +

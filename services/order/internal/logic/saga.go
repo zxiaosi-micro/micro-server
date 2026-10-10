@@ -31,6 +31,7 @@ import (
 	"micro-server/services/order/internal/svc"
 
 	ctpb "micro-server/services/contract/pb"
+	stpb "micro-server/services/station/pb"
 	finpb "micro-server/services/finance/pb"
 	invpb "micro-server/services/inventory/pb"
 
@@ -321,10 +322,15 @@ func doOutStep(ctx context.Context, sc *svc.ServiceContext, tid int64, saga *mod
 			continue // 已确认（RPC/事件双路回写，幂等）
 		}
 		pending := it.Qty - it.OutQty
+		// SN 明细随出库事件下发（S6-01：device 消费 stock_out 驱动状态机 OUT；DEVICE 单每行一 SN）
+		var sns []string
+		if it.Sn.Valid && it.Sn.String != "" {
+			sns = []string{it.Sn.String}
+		}
 		err := rpcCall(ctx, func(ctx context.Context) error {
 			_, e := sc.Inventory.DeductLocked(ctx, &invpb.DeductLockedReq{
 				WarehouseId: it.WarehouseId, SkuId: it.SkuId, Qty: int32(pending),
-				BizType: bizTypeOut, BizNo: lockBizNo(saga.OrderNo, it.SkuId),
+				BizType: bizTypeOut, BizNo: lockBizNo(saga.OrderNo, it.SkuId), Sns: sns,
 			})
 			return e
 		})
@@ -420,10 +426,43 @@ func doContractStep(ctx context.Context, sc *svc.ServiceContext, tid int64, saga
 		})
 }
 
-// doStationStep 步骤6：建站+绑设备（场站单；station 服务 S6 落地前恒为可重试失败）。
-// 补偿口径（02 §9.1）：重试 + 人工队列——退避耗尽进 MANUAL，station 落地后人工重推即可续推。
+// doStationStep 步骤6：建站+绑设备（场站单；station.CreateStation 幂等键=order_no，
+// 重放直接返回已有场站；补偿口径 02 §9.1：重试 + 人工队列）。
 func doStationStep(ctx context.Context, sc *svc.ServiceContext, tid int64, saga *model.Saga) *stepFailure {
-	return &stepFailure{kind: failRetryable, reason: "station 服务未接入(S6)，建站步骤待人工或后续自动"}
+	if sc.Station == nil {
+		return &stepFailure{kind: failRetryable, reason: "station RPC 未配置"}
+	}
+	items, err := sc.Models.OrderItem.FindByOrder(ctx, tid, saga.OrderId)
+	if err != nil {
+		return &stepFailure{kind: failRetryable, reason: truncateErr(err)}
+	}
+	binds := make([]*stpb.StationDeviceBind, 0, len(items))
+	for _, it := range items {
+		if it.Sn.Valid && it.Sn.String != "" {
+			binds = append(binds, &stpb.StationDeviceBind{Sn: it.Sn.String, Role: "PACK"})
+		}
+	}
+	var res *stpb.CreateStationResp
+	err = rpcCall(ctx, func(ctx context.Context) error {
+		var e error
+		res, e = sc.Station.CreateStation(ctx, &stpb.CreateStationReq{
+			OrderNo: saga.OrderNo,
+			Name:    "场站-" + saga.OrderNo,
+			Type:    "ESS",
+			Devices: binds,
+		})
+		return e
+	})
+	_, failure := classifyStepErr(err)
+	if failure != nil {
+		if failure.kind == failCancel {
+			failure.kind = failRetryable // 建站无"不足"类失败：一律重试至成功
+		}
+		return failure
+	}
+	logx.WithContext(ctx).Infof("saga 步骤6 建站完成 order_no=%s station_id=%d devices=%d",
+		saga.OrderNo, res.StationId, len(binds))
+	return nil
 }
 
 // bookFailure 失败登记：退避重试 / 人工队列 / 快速失败补偿取消。

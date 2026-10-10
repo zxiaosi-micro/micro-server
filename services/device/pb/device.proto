@@ -1,0 +1,301 @@
+syntax = "proto3";
+
+package device;
+
+option go_package = "./pb";
+
+// Device 设备服务契约（S6-01，v4/03 阶段 6 任务正本）。
+//
+// 职责边界（02 §2.3 唯一写入方）：
+//   - device_db 全部表归本服务；状态机只由事件驱动（stock_in/stock_out/device.activated），
+//     Transition 仅限退役/报废白名单对（FR-DEV-003 禁止人工直改其它状态）。
+//   - 遥测数据面不经本服务（iotingest→Kafka→TDengine，02 §9.6）；本服务只读设备影子（Redis）。
+//   - 指令审计 cmd_audit 归 audit 服务（WriteCmdLog）；本服务只写 cmd 表状态机。
+//   - 固件验签：Ed25519 验签失败拒绝入库（FR-IOT-007 未签名不可下发）。
+//
+// 约定：ID 传输层 int64、对外 string（E8）；时间 UnixMilli；枚举一律 string。
+service Device {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 设备档案 ----
+  // 批量导入 SN（产线口径）：SN 全局唯一校验 + 自动 ProvisionCredential（写 EMQX 一机一密），
+  // 返回 secrets CSV 行（明文仅此一次，产线安全保存）。
+  rpc ImportSN(ImportSNReq) returns (ImportSNResp);
+  rpc GetDevice(GetDeviceReq) returns (GetDeviceResp);
+  rpc GetDeviceBySn(GetDeviceBySnReq) returns (GetDeviceResp);
+  rpc ListDevice(ListDeviceReq) returns (ListDeviceResp);
+  rpc ListByOrderNo(ListByOrderNoReq) returns (ListByOrderNoResp);
+  // 状态迁移（白名单对：ACTIVATED→RETIRED、RETIRED→SCRAPPED、IN_STOCK|OUT|ACTIVATED→SCRAPPED）。
+  rpc Transition(TransitionReq) returns (TransitionResp);
+  // 激活（OUT→ACTIVATED）：绑定客户 + device_activated 事件（contract 兜底起算质保）。
+  rpc Activate(ActivateReq) returns (ActivateResp);
+  // 补发/重建设备凭证：生成新 secret + 写 EMQX（bootstrap 丢失后重放，E6）。
+  rpc ProvisionCredential(ProvisionCredentialReq) returns (ProvisionCredentialResp);
+
+  // ---- 设备影子 ----
+  // 最近遥测影子（Redis，iotingest writer 写入本键；Lua 时间戳比较防乱序）。
+  rpc GetDeviceShadow(GetDeviceShadowReq) returns (GetDeviceShadowResp);
+
+  // ---- 指令下行（FR-IOT-006：下发→ACK 3s→超时重试≤3→FAILED；控制类 BFF 侧 step-up）----
+  rpc SendCommand(SendCommandReq) returns (SendCommandResp);
+  rpc ListCmd(ListCmdReq) returns (ListCmdResp);
+
+  // ---- 设备拓扑（FR-DEV-004：电芯→模组→电池包→充电桩）----
+  rpc GetDeviceTopology(GetDeviceTopologyReq) returns (GetDeviceTopologyResp);
+  rpc SaveDeviceTopology(SaveDeviceTopologyReq) returns (SaveDeviceTopologyResp);
+
+  // ---- OTA（FR-IOT-007：签名/灰度/暂停/回滚；断点续传按 ota_device 行状态续推）----
+  rpc SaveFirmware(SaveFirmwareReq) returns (SaveFirmwareResp);
+  rpc ListFirmware(ListFirmwareReq) returns (ListFirmwareResp);
+  rpc CreateOtaTask(CreateOtaTaskReq) returns (CreateOtaTaskResp);
+  rpc GetOtaTask(GetOtaTaskReq) returns (GetOtaTaskResp);
+  rpc ListOtaTask(ListOtaTaskReq) returns (ListOtaTaskResp);
+  rpc RollbackOtaTask(RollbackOtaTaskReq) returns (RollbackOtaTaskResp);
+}
+
+message PingReq {}
+message PingResp { string pong = 1; }
+
+// ---------- 设备档案 ----------
+
+message ImportDeviceItem {
+  string sn = 1;
+  string product_key = 2;
+  string model = 3;
+  string batch_no = 4;
+}
+
+message ImportSNReq {
+  repeated ImportDeviceItem items = 1;
+  bool provision = 2; // 是否自动写 EMQX 凭证（默认 true；false 仅建档）
+}
+
+message SecretRow {
+  string sn = 1;
+  string secret = 2; // 32B base64url 明文（产线一次，落库为密文）
+}
+
+message ImportSNResp {
+  int64 imported = 1;
+  repeated SecretRow secrets = 2;   // 产线 CSV 数据源（明文仅此一次）
+  repeated string provision_errors = 3; // EMQX 写入失败清单（可用 ProvisionCredential 补发）
+}
+
+message GetDeviceReq { int64 device_id = 1; }
+message GetDeviceBySnReq { string sn = 1; }
+message DeviceView {
+  int64 device_id = 1;
+  string sn = 2;
+  string product_key = 3;
+  string model = 4;
+  string batch_no = 5;
+  string status = 6;
+  int64 party_id = 7;
+  string order_no = 8;
+  int64 activated_at = 9;
+  bool has_secret = 10; // 凭证是否就绪（明文不出库）
+  int64 created_at = 11;
+}
+message GetDeviceResp { DeviceView device = 1; }
+
+message ListDeviceReq {
+  string keyword = 1; // SN/型号模糊
+  string status = 2;  // 空=全部
+  string product_key = 3;
+  int32 page = 4;
+  int32 size = 5;
+}
+message ListDeviceResp {
+  repeated DeviceView list = 1;
+  int64 total = 2;
+}
+
+message ListByOrderNoReq { string order_no = 1; }
+message ListByOrderNoResp { repeated DeviceView list = 1; }
+
+message TransitionReq {
+  int64 device_id = 1;
+  string to_status = 2; // RETIRED/SCRAPPED
+  string reason = 3;
+}
+message TransitionResp {}
+
+message ActivateReq {
+  int64 device_id = 1;
+  string sn = 2;      // device_id 与 sn 二选一
+  int64 party_id = 3; // 绑定客户（可空）
+}
+message ActivateResp {}
+
+message ProvisionCredentialReq { string sn = 1; }
+message ProvisionCredentialResp { string secret = 2; }
+
+// ---------- 设备影子 ----------
+
+message GetDeviceShadowReq { string sn = 1; }
+message ShadowMetric {
+  string key = 1;
+  double value = 2;
+}
+message GetDeviceShadowResp {
+  string sn = 1;
+  int64 ts = 2;                      // 影子时间戳（毫秒）
+  repeated ShadowMetric metrics = 3; // 热点五指标（soc/voltage/current/temperature/power）
+  string raw = 4;                    // 最近原始报文
+}
+
+// ---------- 指令下行 ----------
+
+message SendCommandReq {
+  int64 device_id = 1;
+  string sn = 2;            // device_id 与 sn 二选一
+  string cmd_type = 3;      // REBOOT/RELAY_SET/QUERY/OTA_UPGRADE/…
+  string params_json = 4;   // 指令参数 JSON
+  string client_cmd_id = 5; // 调用方幂等键（可空）
+}
+message SendCommandResp { int64 cmd_id = 1; }
+
+message CmdView {
+  int64 cmd_id = 1;
+  int64 device_id = 2;
+  string sn = 3;
+  string cmd_type = 4;
+  string params_json = 5;
+  string status = 6;
+  int32 retry_count = 7;
+  int64 acked_at = 8;
+  string fail_reason = 9;
+  int64 operator = 10;
+  int64 created_at = 11;
+}
+message ListCmdReq {
+  int64 device_id = 1;
+  string sn = 2;
+  string status = 3;
+  int32 page = 4;
+  int32 size = 5;
+}
+message ListCmdResp {
+  repeated CmdView list = 1;
+  int64 total = 2;
+}
+
+// ---------- 设备拓扑 ----------
+
+message TopologyNode {
+  int64 node_id = 1;
+  int64 parent_id = 2;
+  string node_type = 3; // CELL/MODULE/PACK/CHARGER
+  string node_name = 4;
+  int32 sort = 5;
+}
+message GetDeviceTopologyReq { int64 device_id = 1; }
+message GetDeviceTopologyResp { repeated TopologyNode nodes = 1; }
+
+message SaveTopologyNode {
+  int64 parent_ref = 1; // 相对引用：req.nodes 内的临时序号（0=根）
+  string node_type = 2;
+  string node_name = 3;
+  int32 sort = 4;
+}
+message SaveDeviceTopologyReq {
+  int64 device_id = 1;
+  repeated SaveTopologyNode nodes = 2; // 全量替换（tx 内先软删后插）
+}
+message SaveDeviceTopologyResp {}
+
+// ---------- OTA ----------
+
+message SaveFirmwareReq {
+  string product_key = 1;
+  string version = 2;
+  string file_url = 3;
+  int64 file_size = 4;
+  string sha256 = 5;    // 固件包 SHA-256 hex
+  string signature = 6; // Ed25519 签名 base64（对 sha256 hex 串）
+  string remark = 7;
+}
+message SaveFirmwareResp { int64 firmware_id = 1; }
+
+message FirmwareView {
+  int64 firmware_id = 1;
+  string product_key = 2;
+  string version = 3;
+  string file_url = 4;
+  int64 file_size = 5;
+  string sha256 = 6;
+  string sign_alg = 7;
+  string remark = 8;
+  int64 created_at = 9;
+}
+message ListFirmwareReq {
+  string product_key = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+message ListFirmwareResp {
+  repeated FirmwareView list = 1;
+  int64 total = 2;
+}
+
+message CreateOtaTaskReq {
+  string name = 1;
+  string product_key = 2;
+  int64 firmware_id = 3;
+  int64 rollback_firmware_id = 4; // 可空
+  int32 batch_size = 5;           // 灰度批次（默认 50）
+  repeated int64 device_ids = 6;  // 目标设备（灰度清单；空=该产品全部 ACTIVATED 设备）
+}
+message CreateOtaTaskResp { int64 task_id = 1; }
+
+message OtaDeviceView {
+  int64 id = 1;
+  int64 device_id = 2;
+  string sn = 3;
+  string status = 4;
+  int64 cmd_id = 5;
+  int32 retry_count = 6;
+  string error = 7;
+  int64 dispatched_at = 8;
+  int64 finished_at = 9;
+}
+message OtaTaskView {
+  int64 task_id = 1;
+  string task_no = 2;
+  string name = 3;
+  string product_key = 4;
+  int64 firmware_id = 5;
+  int64 rollback_firmware_id = 6;
+  int32 batch_size = 7;
+  int32 fail_threshold_pct = 8;
+  string status = 9;
+  int32 total = 10;
+  int32 success_count = 11;
+  int32 fail_count = 12;
+  string fail_reason = 13;
+  int64 created_at = 14;
+}
+message GetOtaTaskReq {
+  int64 task_id = 1;
+  bool with_devices = 2;
+}
+message GetOtaTaskResp {
+  OtaTaskView task = 1;
+  repeated OtaDeviceView devices = 2;
+}
+message ListOtaTaskReq {
+  string status = 1;
+  string product_key = 2;
+  int32 page = 3;
+  int32 size = 4;
+}
+message ListOtaTaskResp {
+  repeated OtaTaskView list = 1;
+  int64 total = 2;
+}
+
+message RollbackOtaTaskReq {
+  int64 task_id = 1;
+  string reason = 2;
+}
+message RollbackOtaTaskResp { int64 rolled_back = 1; }

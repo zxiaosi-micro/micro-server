@@ -10,6 +10,7 @@ import (
 	auth "micro-server/services/admin-bff/internal/handler/auth"
 	catalog "micro-server/services/admin-bff/internal/handler/catalog"
 	contract "micro-server/services/admin-bff/internal/handler/contract"
+	device "micro-server/services/admin-bff/internal/handler/device"
 	finance "micro-server/services/admin-bff/internal/handler/finance"
 	inventory "micro-server/services/admin-bff/internal/handler/inventory"
 	menu "micro-server/services/admin-bff/internal/handler/menu"
@@ -19,6 +20,7 @@ import (
 	party "micro-server/services/admin-bff/internal/handler/party"
 	role "micro-server/services/admin-bff/internal/handler/role"
 	session "micro-server/services/admin-bff/internal/handler/session"
+	station "micro-server/services/admin-bff/internal/handler/station"
 	tenant "micro-server/services/admin-bff/internal/handler/tenant"
 	user "micro-server/services/admin-bff/internal/handler/user"
 	"micro-server/services/admin-bff/internal/svc"
@@ -267,6 +269,117 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/warranty-extensions/:no/transfer",
 					Handler: contract.TransferExtensionHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 指令列表(perm: asset:device:cmd)
+					Method:  http.MethodGet,
+					Path:    "/device-cmds",
+					Handler: device.ListDeviceCmdsHandler(serverCtx),
+				},
+				{
+					// 设备列表(perm: asset:device:list)
+					Method:  http.MethodGet,
+					Path:    "/devices",
+					Handler: device.ListDevicesHandler(serverCtx),
+				},
+				{
+					// 设备详情(perm: asset:device:list)
+					Method:  http.MethodGet,
+					Path:    "/devices/:id",
+					Handler: device.GetDeviceHandler(serverCtx),
+				},
+				{
+					// 设备激活(绑定客户+质保起算事件, perm: asset:device:activate)
+					Method:  http.MethodPost,
+					Path:    "/devices/:id/activate",
+					Handler: device.ActivateDeviceHandler(serverCtx),
+				},
+				{
+					// 凭证补发(明文一次, perm: asset:device:credential)
+					Method:  http.MethodPost,
+					Path:    "/devices/:id/credential",
+					Handler: device.ProvisionDeviceHandler(serverCtx),
+				},
+				{
+					// 设备影子(最近遥测, perm: asset:device:list)
+					Method:  http.MethodGet,
+					Path:    "/devices/:id/shadow",
+					Handler: device.GetDeviceShadowHandler(serverCtx),
+				},
+				{
+					// 设备拓扑查询(perm: asset:device:list)
+					Method:  http.MethodGet,
+					Path:    "/devices/:id/topology",
+					Handler: device.GetDeviceTopologyHandler(serverCtx),
+				},
+				{
+					// 设备拓扑保存(全量替换, perm: asset:device:topology)
+					Method:  http.MethodPut,
+					Path:    "/devices/:id/topology",
+					Handler: device.SaveDeviceTopologyHandler(serverCtx),
+				},
+				{
+					// 状态迁移(退役/报废白名单, perm: asset:device:transition)
+					Method:  http.MethodPost,
+					Path:    "/devices/:id/transition",
+					Handler: device.TransitionDeviceHandler(serverCtx),
+				},
+				{
+					// 指令下发(控制类 step-up 强制, perm: asset:device:cmd)
+					Method:  http.MethodPost,
+					Path:    "/devices/commands",
+					Handler: device.SendDeviceCmdHandler(serverCtx),
+				},
+				{
+					// 设备导入（一机一密自动开通, perm: asset:device:create)
+					Method:  http.MethodPost,
+					Path:    "/devices/import",
+					Handler: device.ImportDevicesHandler(serverCtx),
+				},
+				{
+					// 固件列表(perm: asset:ota:firmware)
+					Method:  http.MethodGet,
+					Path:    "/firmwares",
+					Handler: device.ListFirmwaresHandler(serverCtx),
+				},
+				{
+					// 固件登记(Ed25519 验签, perm: asset:ota:firmware)
+					Method:  http.MethodPost,
+					Path:    "/firmwares",
+					Handler: device.SaveFirmwareHandler(serverCtx),
+				},
+				{
+					// OTA 任务列表(perm: asset:ota:task)
+					Method:  http.MethodGet,
+					Path:    "/ota-tasks",
+					Handler: device.ListOtaTasksHandler(serverCtx),
+				},
+				{
+					// OTA 任务创建(灰度分批, perm: asset:ota:task)
+					Method:  http.MethodPost,
+					Path:    "/ota-tasks",
+					Handler: device.CreateOtaTaskHandler(serverCtx),
+				},
+				{
+					// OTA 任务详情(含设备明细, perm: asset:ota:task)
+					Method:  http.MethodGet,
+					Path:    "/ota-tasks/:id",
+					Handler: device.GetOtaTaskHandler(serverCtx),
+				},
+				{
+					// OTA 任务回滚(perm: asset:ota:rollback)
+					Method:  http.MethodPost,
+					Path:    "/ota-tasks/:id/rollback",
+					Handler: device.RollbackOtaTaskHandler(serverCtx),
 				},
 			}...,
 		),
@@ -813,6 +926,87 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/sessions/kick",
 					Handler: session.KickSessionsHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 设备反查场站(perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/device-station",
+					Handler: station.GetDeviceStationHandler(serverCtx),
+				},
+				{
+					// 场站列表(perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/stations",
+					Handler: station.ListStationsHandler(serverCtx),
+				},
+				{
+					// 场站创建(Saga 步骤6 手工兜底, perm: asset:station:create)
+					Method:  http.MethodPost,
+					Path:    "/stations",
+					Handler: station.CreateStationHandler(serverCtx),
+				},
+				{
+					// 场站详情(perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/stations/:id",
+					Handler: station.GetStationHandler(serverCtx),
+				},
+				{
+					// 场站设备绑定(perm: asset:station:bind)
+					Method:  http.MethodPost,
+					Path:    "/stations/:id/devices",
+					Handler: station.BindStationDevicesHandler(serverCtx),
+				},
+				{
+					// 场站设备清单(perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/stations/:id/devices",
+					Handler: station.ListStationDevicesHandler(serverCtx),
+				},
+				{
+					// 场站聚合监控(影子只读, perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/stations/:id/monitor",
+					Handler: station.GetStationMonitorHandler(serverCtx),
+				},
+				{
+					// 驻场人员列表(perm: asset:station:staff)
+					Method:  http.MethodGet,
+					Path:    "/stations/:id/staff",
+					Handler: station.ListStationStaffHandler(serverCtx),
+				},
+				{
+					// 添加驻场人员(perm: asset:station:staff)
+					Method:  http.MethodPost,
+					Path:    "/stations/:id/staff",
+					Handler: station.AddStationStaffHandler(serverCtx),
+				},
+				{
+					// 移除驻场人员(perm: asset:station:staff)
+					Method:  http.MethodDelete,
+					Path:    "/stations/:id/staff",
+					Handler: station.RemoveStationStaffHandler(serverCtx),
+				},
+				{
+					// 场站拓扑查询(React Flow, perm: asset:station:list)
+					Method:  http.MethodGet,
+					Path:    "/stations/:id/topology",
+					Handler: station.GetStationTopologyHandler(serverCtx),
+				},
+				{
+					// 场站拓扑保存(版本化, perm: asset:station:topology)
+					Method:  http.MethodPut,
+					Path:    "/stations/:id/topology",
+					Handler: station.SaveStationTopologyHandler(serverCtx),
 				},
 			}...,
 		),

@@ -18,6 +18,7 @@ var (
 	errWorkOrderRequired  = errcode.New(errcode.SegInventory, 1009, "备件领用必须关联工单号")
 	errQtyBad             = errcode.New(errcode.SegInventory, 1010, "数量必须大于 0")
 	errBizNoBad           = errcode.New(errcode.SegInventory, 1011, "业务单号不能为空")
+	errSnQtyMismatch      = errcode.New(errcode.SegInventory, 1017, "SN 明细数量与入库数量不一致")
 	errBizTypeBad         = errcode.New(errcode.SegInventory, 1012, "业务类型不合法")
 	errCountedBad         = errcode.New(errcode.SegInventory, 1013, "实盘数不能为负")
 )

@@ -6,13 +6,16 @@ use (
 	./services/audit
 	./services/catalog
 	./services/contract
+	./services/device
 	./services/file
 	./services/finance
 	./services/hello
 	./services/identity
 	./services/inventory
+	./services/iotingest
 	./services/notification
 	./services/order
 	./services/party
+	./services/station
 	./tools
 )

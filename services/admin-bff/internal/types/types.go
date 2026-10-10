@@ -113,6 +113,45 @@ type CmdAuditListResp struct {
 	Total int64          `json:"total"`
 }
 
+type CmdListReq struct {
+	DeviceId string `json:"device_id,optional"`
+	Sn       string `json:"sn,optional"`
+	Status   string `json:"status,optional"`
+	Page     int    `json:"page,default=1"`
+	Size     int    `json:"size,default=20"`
+}
+
+type CmdListResp struct {
+	List  []CmdView `json:"list"`
+	Total int       `json:"total"`
+}
+
+type CmdSendReq struct {
+	DeviceId    string `json:"device_id,optional"`
+	Sn          string `json:"sn,optional"`
+	CmdType     string `json:"cmd_type,options=REBOOT|RELAY_SET|QUERY|SET_PARAM|PING"`
+	ParamsJson  string `json:"params_json,optional"`
+	ClientCmdId string `json:"client_cmd_id,optional"`
+}
+
+type CmdSendResp struct {
+	CmdId string `json:"cmd_id"`
+}
+
+type CmdView struct {
+	CmdId      string `json:"cmd_id"`
+	DeviceId   string `json:"device_id"`
+	Sn         string `json:"sn"`
+	CmdType    string `json:"cmd_type"`
+	ParamsJson string `json:"params_json"`
+	Status     string `json:"status"`
+	RetryCount int    `json:"retry_count"`
+	AckedAt    int64  `json:"acked_at"`
+	FailReason string `json:"fail_reason"`
+	Operator   string `json:"operator"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
 type ContactCreateReq struct {
 	Id         string `path:"id"`
 	Name       string `json:"name"`
@@ -241,6 +280,127 @@ type DealerExtUpsertReq struct {
 	RebateRule       string `json:"rebate_rule,optional"`
 }
 
+type DeviceActivateReq struct {
+	DeviceId string `path:"id"`
+	PartyId  string `json:"party_id,optional"`
+}
+
+type DeviceGetResp struct {
+	Device DeviceView `json:"device"`
+}
+
+type DeviceImportItem struct {
+	Sn         string `json:"sn"`
+	ProductKey string `json:"product_key"`
+	Model      string `json:"model,optional"`
+	BatchNo    string `json:"batch_no,optional"`
+}
+
+type DeviceImportReq struct {
+	Items     []DeviceImportItem `json:"items"`
+	Provision bool               `json:"provision,optional"`
+}
+
+type DeviceImportResp struct {
+	Imported        int               `json:"imported"`
+	Secrets         []DeviceSecretRow `json:"secrets"`
+	ProvisionErrors []string          `json:"provision_errors"`
+}
+
+type DeviceListReq struct {
+	Keyword    string `json:"keyword,optional"`
+	Status     string `json:"status,optional"`
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type DeviceListResp struct {
+	List  []DeviceView `json:"list"`
+	Total int          `json:"total"`
+}
+
+type DeviceNoPath struct {
+	DeviceId string `path:"id"`
+}
+
+type DeviceProvisionResp struct {
+	Sn     string `json:"sn"`
+	Secret string `json:"secret"`
+}
+
+type DeviceSecretRow struct {
+	Sn     string `json:"sn"`
+	Secret string `json:"secret"`
+}
+
+type DeviceShadowMetric struct {
+	Key   string  `json:"key"`
+	Value float64 `json:"value"`
+}
+
+type DeviceShadowResp struct {
+	Sn      string               `json:"sn"`
+	Ts      int64                `json:"ts"`
+	Metrics []DeviceShadowMetric `json:"metrics"`
+	Raw     string               `json:"raw"`
+}
+
+type DeviceStationResp struct {
+	StationId   string `json:"station_id"`
+	StationNo   string `json:"station_no"`
+	StationName string `json:"station_name"`
+	Role        string `json:"role"`
+}
+
+type DeviceTopologyNode struct {
+	NodeId   string `json:"node_id"`
+	ParentId string `json:"parent_id"`
+	NodeType string `json:"node_type"`
+	NodeName string `json:"node_name"`
+	Sort     int    `json:"sort"`
+}
+
+type DeviceTopologyResp struct {
+	Nodes []DeviceTopologyNode `json:"nodes"`
+}
+
+type DeviceTopologySaveNode struct {
+	ParentRef int    `json:"parent_ref"`
+	NodeType  string `json:"node_type"`
+	NodeName  string `json:"node_name,optional"`
+	Sort      int    `json:"sort,optional"`
+}
+
+type DeviceTopologySaveReq struct {
+	DeviceId string                   `path:"id"`
+	Nodes    []DeviceTopologySaveNode `json:"nodes"`
+}
+
+type DeviceTopologySaveResp struct {
+	Saved int `json:"saved"`
+}
+
+type DeviceTransitionReq struct {
+	DeviceId string `path:"id"`
+	ToStatus string `json:"to_status,options=RETIRED|SCRAPPED"`
+	Reason   string `json:"reason,optional"`
+}
+
+type DeviceView struct {
+	DeviceId    string `json:"device_id"`
+	Sn          string `json:"sn"`
+	ProductKey  string `json:"product_key"`
+	Model       string `json:"model"`
+	BatchNo     string `json:"batch_no"`
+	Status      string `json:"status"`
+	PartyId     string `json:"party_id"`
+	OrderNo     string `json:"order_no"`
+	ActivatedAt int64  `json:"activated_at"`
+	HasSecret   bool   `json:"has_secret"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
 type ExtensionNoPath struct {
 	ExtensionNo string `path:"no"`
 }
@@ -267,6 +427,43 @@ type ExtensionTransferReq struct {
 	ToTargetType string `json:"to_target_type,options=DEVICE|STATION"`
 	ToTargetId   string `json:"to_target_id,optional"`
 	ToTargetKey  string `json:"to_target_key,optional"`
+}
+
+type FirmwareListReq struct {
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type FirmwareListResp struct {
+	List  []FirmwareView `json:"list"`
+	Total int            `json:"total"`
+}
+
+type FirmwareSaveReq struct {
+	ProductKey string `json:"product_key"`
+	Version    string `json:"version"`
+	FileUrl    string `json:"file_url"`
+	FileSize   int64  `json:"file_size,optional"`
+	Sha256     string `json:"sha256"`
+	Signature  string `json:"signature"`
+	Remark     string `json:"remark,optional"`
+}
+
+type FirmwareSaveResp struct {
+	FirmwareId string `json:"firmware_id"`
+}
+
+type FirmwareView struct {
+	FirmwareId string `json:"firmware_id"`
+	ProductKey string `json:"product_key"`
+	Version    string `json:"version"`
+	FileUrl    string `json:"file_url"`
+	FileSize   int64  `json:"file_size"`
+	Sha256     string `json:"sha256"`
+	SignAlg    string `json:"sign_alg"`
+	Remark     string `json:"remark"`
+	CreatedAt  int64  `json:"created_at"`
 }
 
 type IDPath struct {
@@ -597,6 +794,74 @@ type OrgUpdateReq struct {
 	ParentID string `json:"parent_id,optional"`
 	Name     string `json:"name,optional"`
 	Sort     int    `json:"sort,optional"`
+}
+
+type OtaDeviceView struct {
+	Id           string `json:"id"`
+	DeviceId     string `json:"device_id"`
+	Sn           string `json:"sn"`
+	Status       string `json:"status"`
+	CmdId        string `json:"cmd_id"`
+	RetryCount   int    `json:"retry_count"`
+	Error        string `json:"error"`
+	DispatchedAt int64  `json:"dispatched_at"`
+	FinishedAt   int64  `json:"finished_at"`
+}
+
+type OtaTaskCreateReq struct {
+	Name               string   `json:"name"`
+	ProductKey         string   `json:"product_key"`
+	FirmwareId         string   `json:"firmware_id"`
+	RollbackFirmwareId string   `json:"rollback_firmware_id,optional"`
+	BatchSize          int      `json:"batch_size,optional"`
+	DeviceIds          []string `json:"device_ids"`
+}
+
+type OtaTaskCreateResp struct {
+	TaskId string `json:"task_id"`
+}
+
+type OtaTaskListReq struct {
+	Status     string `json:"status,optional"`
+	ProductKey string `json:"product_key,optional"`
+	Page       int    `json:"page,default=1"`
+	Size       int    `json:"size,default=20"`
+}
+
+type OtaTaskListResp struct {
+	List  []OtaTaskView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type OtaTaskNoPath struct {
+	TaskId string `path:"id"`
+}
+
+type OtaTaskRollbackReq struct {
+	TaskId string `path:"id"`
+	Reason string `json:"reason,optional"`
+}
+
+type OtaTaskRollbackResp struct {
+	RolledBack int `json:"rolled_back"`
+}
+
+type OtaTaskView struct {
+	TaskId             string          `json:"task_id"`
+	TaskNo             string          `json:"task_no"`
+	Name               string          `json:"name"`
+	ProductKey         string          `json:"product_key"`
+	FirmwareId         string          `json:"firmware_id"`
+	RollbackFirmwareId string          `json:"rollback_firmware_id"`
+	BatchSize          int             `json:"batch_size"`
+	FailThresholdPct   int             `json:"fail_threshold_pct"`
+	Status             string          `json:"status"`
+	Total              int             `json:"total"`
+	SuccessCount       int             `json:"success_count"`
+	FailCount          int             `json:"fail_count"`
+	FailReason         string          `json:"fail_reason"`
+	CreatedAt          int64           `json:"created_at"`
+	Devices            []OtaDeviceView `json:"devices"`
 }
 
 type PartyCreateReq struct {
@@ -1086,6 +1351,96 @@ type StaffListResp struct {
 	Total int64       `json:"total"`
 }
 
+type StationBindItem struct {
+	DeviceId string `json:"device_id,optional"`
+	Sn       string `json:"sn,optional"`
+	Role     string `json:"role,optional"`
+}
+
+type StationBindReq struct {
+	StationId string            `path:"id"`
+	Devices   []StationBindItem `json:"devices"`
+	BoundBy   string            `json:"bound_by,optional"`
+}
+
+type StationBindResp struct {
+	Bound int `json:"bound"`
+}
+
+type StationCreateReq struct {
+	OrderNo     string            `json:"order_no,optional"`
+	StationNo   string            `json:"station_no,optional"`
+	Name        string            `json:"name"`
+	Type        string            `json:"type,options=ESS|CHARGING|HESS"`
+	Province    string            `json:"province,optional"`
+	City        string            `json:"city,optional"`
+	Address     string            `json:"address,optional"`
+	Longitude   float64           `json:"longitude,optional"`
+	Latitude    float64           `json:"latitude,optional"`
+	CapacityKwh float64           `json:"capacity_kwh,optional"`
+	PowerKw     float64           `json:"power_kw,optional"`
+	GridStatus  string            `json:"grid_status,optional"`
+	Devices     []StationBindItem `json:"devices,optional"`
+}
+
+type StationCreateResp struct {
+	StationId string `json:"station_id"`
+}
+
+type StationDeviceListResp struct {
+	List []StationDeviceView `json:"list"`
+}
+
+type StationDeviceView struct {
+	Id        string `json:"id"`
+	StationId string `json:"station_id"`
+	DeviceId  string `json:"device_id"`
+	Sn        string `json:"sn"`
+	Role      string `json:"role"`
+	BoundAt   int64  `json:"bound_at"`
+}
+
+type StationGetResp struct {
+	Station StationView `json:"station"`
+}
+
+type StationListReq struct {
+	Keyword string `json:"keyword,optional"`
+	Status  string `json:"status,optional"`
+	Type    string `json:"type,optional"`
+	Page    int    `json:"page,default=1"`
+	Size    int    `json:"size,default=20"`
+}
+
+type StationListResp struct {
+	List  []StationView `json:"list"`
+	Total int           `json:"total"`
+}
+
+type StationMonitorItem struct {
+	DeviceId    string  `json:"device_id"`
+	Sn          string  `json:"sn"`
+	Online      bool    `json:"online"`
+	Soc         float64 `json:"soc"`
+	Power       float64 `json:"power"`
+	Voltage     float64 `json:"voltage"`
+	Temperature float64 `json:"temperature"`
+	Ts          int64   `json:"ts"`
+}
+
+type StationMonitorResp struct {
+	StationId   string               `json:"station_id"`
+	DeviceCount int                  `json:"device_count"`
+	OnlineCount int                  `json:"online_count"`
+	AvgSoc      float64              `json:"avg_soc"`
+	TotalPower  float64              `json:"total_power"`
+	Items       []StationMonitorItem `json:"items"`
+}
+
+type StationNoPath struct {
+	StationId string `path:"id"`
+}
+
 type StationProductCreateReq struct {
 	Name   string    `json:"name"`
 	Remark string    `json:"remark,optional"`
@@ -1113,6 +1468,70 @@ type StationProductListReq struct {
 type StationProductListResp struct {
 	List  []StationProductItem `json:"list"`
 	Total int64                `json:"total"`
+}
+
+type StationStaffAddReq struct {
+	StationId string `path:"id"`
+	UserId    string `json:"user_id"`
+	StaffType string `json:"staff_type,options=RESIDENT|INSPECTOR|MANAGER"`
+	Shift     string `json:"shift,optional"`
+}
+
+type StationStaffListResp struct {
+	List []StationStaffView `json:"list"`
+}
+
+type StationStaffRemoveReq struct {
+	StationId string `path:"id"`
+	UserId    string `json:"user_id"`
+}
+
+type StationStaffView struct {
+	Id        string `json:"id"`
+	StationId string `json:"station_id"`
+	UserId    string `json:"user_id"`
+	StaffType string `json:"staff_type"`
+	Shift     string `json:"shift"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type StationTopologyResp struct {
+	Topology StationTopologyView `json:"topology"`
+}
+
+type StationTopologySaveReq struct {
+	StationId string `path:"id"`
+	NodesJson string `json:"nodes_json"`
+	EdgesJson string `json:"edges_json"`
+}
+
+type StationTopologySaveResp struct {
+	Version int `json:"version"`
+}
+
+type StationTopologyView struct {
+	Version   int    `json:"version"`
+	NodesJson string `json:"nodes_json"`
+	EdgesJson string `json:"edges_json"`
+	UpdatedAt int64  `json:"updated_at"`
+}
+
+type StationView struct {
+	StationId   string  `json:"station_id"`
+	StationNo   string  `json:"station_no"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
+	Status      string  `json:"status"`
+	Province    string  `json:"province"`
+	City        string  `json:"city"`
+	Address     string  `json:"address"`
+	Longitude   float64 `json:"longitude"`
+	Latitude    float64 `json:"latitude"`
+	CapacityKwh float64 `json:"capacity_kwh"`
+	PowerKw     float64 `json:"power_kw"`
+	GridStatus  string  `json:"grid_status"`
+	OrderNo     string  `json:"order_no"`
+	CreatedAt   int64   `json:"created_at"`
 }
 
 type StepUpReq struct {

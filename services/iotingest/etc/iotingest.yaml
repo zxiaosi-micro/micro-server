@@ -1,0 +1,37 @@
+Name: iotingest
+Mqtt:
+  Broker: "${EMQX_BROKER|tcp://127.0.0.1:21883}"
+  PlatformUser: "${EMQX_PLATFORM_USER|}"
+  PlatformPass: "${EMQX_PLATFORM_PASS|}"
+  ClientId: iotingest-forwarder
+  TopicFilter: "$share/ingest/up/+/+/+/telemetry"   # 02 §9.6 共享订阅（多实例消费不丢）
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: iotingest-writer-d6
+  Topic: iot_telemetry_raw
+Tdengine:
+  RestUrl: "${TDENGINE_REST|http://127.0.0.1:26041}"
+  User: root
+  Pass: "${TDENGINE_PASS|}"
+  Db: micro_iot
+ShadowRedis:
+  Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+  Pass: "${REDIS_PASS|}"
+  Type: node
+Rules:
+  TtlSec: 30
+  DefaultRules:   # 告警规则参数兜底值（configcenter 正本推送后覆盖，02 §7.4）
+    - {metric: "temperature", comparator: "gt", threshold: 55, level: "warning"}
+    - {metric: "soc", comparator: "lt", threshold: 10, level: "warning"}
+    - {metric: "voltage", comparator: "gt", threshold: 500, level: "critical"}
+AlertTopic: alert_candidate
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9120
+Telemetry:
+  Name: iotingest
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18
+ConfigKey: ${CONFIG_KEY|/micro/config/iotingest/main}   # configcenter（键位含文件名，ADR-10）

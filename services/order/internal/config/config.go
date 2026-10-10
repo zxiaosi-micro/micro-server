@@ -24,6 +24,7 @@ type Config struct {
 	InventoryRpc zrpc.RpcClientConf `json:",optional"`
 	FinanceRpc   zrpc.RpcClientConf `json:",optional"`
 	ContractRpc  zrpc.RpcClientConf `json:",optional"`
+	StationRpc   zrpc.RpcClientConf `json:",optional"`
 	CatalogRpc   zrpc.RpcClientConf `json:",optional"`
 	// PayTimeoutMinutes 支付超时分钟数（FR-ORD-006：30 分钟自动取消，pay_expire_at 扫描）。
 	PayTimeoutMinutes int `json:",default=30"`

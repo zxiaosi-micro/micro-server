@@ -87,6 +87,7 @@ message StockInReq {
   string biz_type = 4;  // STOCK_IN 采购/RETURN_IN 退货/TRANSFER_IN 调拨
   string biz_no = 5;    // 业务单号（幂等键）
   string remark = 6;
+  repeated string sns = 7; // 设备类 SKU 的 SN 明细（S6：device 消费 stock_in 驱动状态机 IN_STOCK）
 }
 
 message StockInResp {
@@ -124,6 +125,7 @@ message DeductLockedReq {
   string biz_type = 4; // 调用方域
   string biz_no = 5;   // 出库单号（幂等键）
   string remark = 6;
+  repeated string sns = 7; // 出库设备 SN 明细（S6：device 消费 stock_out 驱动状态机 OUT）
 }
 
 message DeductLockedResp {

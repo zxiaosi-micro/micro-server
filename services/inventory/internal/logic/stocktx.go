@@ -193,8 +193,11 @@ func stockLowEvents(tid, wid, skuId int64, before, after *model.Inventory) []eve
 	return nil
 }
 
-// stockOutEvent 出库事件（DeductLocked 提交时发出，01 §7.3）。
-func stockOutEvent(tid, wid, skuId int64, qty int64, bizNo string) eventbus.EmitInput {
+// stockOutEvent 出库事件（DeductLocked 提交时发出，01 §7.3；S6 起 sns 供 device 状态机驱动 OUT）。
+func stockOutEvent(tid, wid, skuId int64, qty int64, bizNo string, sns []string) eventbus.EmitInput {
+	if sns == nil {
+		sns = []string{}
+	}
 	return eventbus.EmitInput{
 		Topic:    eventbus.TopicStockOut,
 		Type:     eventbus.TypeStockOut,
@@ -202,7 +205,24 @@ func stockOutEvent(tid, wid, skuId int64, qty int64, bizNo string) eventbus.Emit
 		TenantID: tid,
 		Payload: map[string]any{
 			"tenant_id": tid, "warehouse_id": wid, "sku_id": skuId,
-			"qty": qty, "biz_no": bizNo,
+			"qty": qty, "biz_no": bizNo, "sns": sns,
+		},
+	}
+}
+
+// stockInEvent 入库事件（StockIn 提交时发出，S6-01：device 消费驱动状态机 IN_STOCK）。
+func stockInEvent(tid, wid, skuId int64, qty int64, bizNo string, sns []string) eventbus.EmitInput {
+	if sns == nil {
+		sns = []string{}
+	}
+	return eventbus.EmitInput{
+		Topic:    eventbus.TopicStockIn,
+		Type:     eventbus.TypeStockIn,
+		Key:      itoa(wid) + ":" + itoa(skuId),
+		TenantID: tid,
+		Payload: map[string]any{
+			"tenant_id": tid, "warehouse_id": wid, "sku_id": skuId,
+			"qty": qty, "biz_no": bizNo, "sns": sns,
 		},
 	}
 }

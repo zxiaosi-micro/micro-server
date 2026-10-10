@@ -59,6 +59,11 @@ Authz:
     - /api/v1/payments                 # 对公复核（ApprovePayment 职责分离）
     - /api/v1/contracts                # 合同归档上传（FR-CTR-003）
     - /api/v1/sagas                    # Saga 人工重推
+    # S6 IoT 指令面（FR-IOT-006 控制类 step-up 强制 + OTA 变更）
+    - /api/v1/devices/commands         # 指令下发
+    - /api/v1/devices/import           # 设备导入（一机一密产线凭证）
+    - /api/v1/ota-tasks                # OTA 任务创建/回滚
+    - /api/v1/firmwares                # 固件登记
   AllowedClients:
     - ADMIN_WEB                        # admin-bff 仅服务管理后台端
 Prometheus:
@@ -69,3 +74,13 @@ Telemetry:
   Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
   Sampler: 1.0
   Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+DeviceRpc:
+  Endpoints:
+    - ${DEVICE_RPC|127.0.0.1:8085}
+  NonBlock: true
+  Timeout: 5000
+StationRpc:
+  Endpoints:
+    - ${STATION_RPC|127.0.0.1:8091}
+  NonBlock: true
+  Timeout: 5000

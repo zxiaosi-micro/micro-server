@@ -185,4 +185,3 @@ func waitFor(d time.Duration, what string, cond func() bool) {
 	os.Exit(1)
 }
 
-func strconvI64(v int64) string { return fmt.Sprintf("%d", v) }

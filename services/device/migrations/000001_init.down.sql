@@ -1,0 +1,9 @@
+-- device_db 000001 回滚：按建表逆序 drop。
+DROP TABLE IF EXISTS `event_outbox`;
+DROP TABLE IF EXISTS `cmd`;
+DROP TABLE IF EXISTS `ota_device`;
+DROP TABLE IF EXISTS `ota_task`;
+DROP TABLE IF EXISTS `firmware`;
+DROP TABLE IF EXISTS `device_topology`;
+DROP TABLE IF EXISTS `device_lifecycle_log`;
+DROP TABLE IF EXISTS `device`;

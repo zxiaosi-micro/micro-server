@@ -1,0 +1,37 @@
+Name: station.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8091}"
+Mode: dev
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: station.rpc
+Mysql:
+  DataSource: "${MICRO_DSN_STATION|}"
+Cache:
+  - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+    Pass: "${REDIS_PASS|}"
+    Type: node
+ShadowRedis:
+  Host: "${REDIS_HOSTS|127.0.0.1:26379}"
+  Pass: "${REDIS_PASS|}"
+  Type: node
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+DeviceRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: device.rpc
+  NonBlock: true
+  Timeout: 5000
+MonitorStaleSec: 300
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9111
+Telemetry:
+  Name: station
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/station/main}   # configcenter（键位含文件名，ADR-10）

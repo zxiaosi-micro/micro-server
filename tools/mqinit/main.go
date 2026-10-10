@@ -20,12 +20,14 @@ import (
 var topics = []string{
 	// 订单/交易域
 	"order_created", "order_paid", "order_cancelled", "order_pay_timeout",
-	"stock_out", "stock_low", "payment_refunded", "order_return_approved", "warranty_started",
+	"stock_in", "stock_out", "stock_low", "payment_refunded", "order_return_approved", "warranty_started",
 	// 基础三件套
 	"notification_request", "audit_event", "export_requested",
 	// IoT/资产域
 	"iot_telemetry_raw", "alert_candidate", "device_activated", "shipment_signed",
 	"cmd_ack", "cmd_failed", "ota_paused", "device_anomaly",
+	// 场站域（S6-02：ops 消费建巡检计划）
+	"station_created",
 }
 
 func main() {

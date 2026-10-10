@@ -166,6 +166,38 @@ var routePerms = map[string]string{
 	"POST /warranty-extensions":              "contract:extension:sell",
 	"POST /warranty-extensions/:no/transfer": "contract:extension:transfer",
 	"POST /warranty-extensions/:no/refund":   "contract:extension:refund",
+
+	// S6-01 设备域（asset:device/ota）
+	"POST /devices/import":         "asset:device:create",
+	"GET /devices":                 "asset:device:list",
+	"GET /devices/:no":             "asset:device:list",
+	"POST /devices/:no/transition": "asset:device:transition",
+	"POST /devices/:no/activate":   "asset:device:activate",
+	"POST /devices/:no/credential": "asset:device:credential",
+	"GET /devices/:no/shadow":      "asset:device:list",
+	"POST /devices/commands":       "asset:device:cmd",
+	"GET /device-cmds":             "asset:device:cmd",
+	"GET /devices/:no/topology":    "asset:device:list",
+	"PUT /devices/:no/topology":    "asset:device:topology",
+	"GET /firmwares":               "asset:ota:firmware",
+	"POST /firmwares":              "asset:ota:firmware",
+	"GET /ota-tasks":               "asset:ota:task",
+	"GET /ota-tasks/:no":           "asset:ota:task",
+	"POST /ota-tasks":              "asset:ota:task",
+	"POST /ota-tasks/:no/rollback": "asset:ota:rollback",
+	// S6-02 场站域（asset:station）
+	"GET /stations":              "asset:station:list",
+	"GET /stations/:no":          "asset:station:list",
+	"POST /stations":             "asset:station:create",
+	"POST /stations/:no/devices": "asset:station:bind",
+	"GET /stations/:no/devices":  "asset:station:list",
+	"GET /stations/:no/topology": "asset:station:list",
+	"PUT /stations/:no/topology": "asset:station:topology",
+	"GET /stations/:no/monitor":  "asset:station:list",
+	"GET /stations/:no/staff":    "asset:station:staff",
+	"POST /stations/:no/staff":   "asset:station:staff",
+	"DELETE /stations/:no/staff": "asset:station:staff",
+	"GET /device-station":        "asset:station:list",
 }
 
 func splitPath(p string) []string {

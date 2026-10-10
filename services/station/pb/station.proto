@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+package station;
+
+option go_package = "./pb";
+
+// Station 场站服务契约（S6-02，v4/03 阶段 6 任务正本）。
+//
+// 职责边界（02 §2.3 唯一写入方）：
+//   - station_db 全部表归本服务；CreateStation 是 Saga 步骤 6 的对端（幂等键 = tenant_id+order_no），
+//     建站 + 绑定设备清单同事务，station_created 事件（ops 消费建巡检计划，S7）。
+//   - 设备归属变更走 device 服务生命周期（本服务只写绑定关系，不写 device_db）。
+//   - GetStationMonitor 聚合读设备影子（Redis 共享键 micro:iot:shadow:{sn}，只读）。
+//
+// 约定：ID 传输层 int64、对外 string（E8）；时间 UnixMilli；枚举一律 string。
+service Station {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 场站 ----
+  // 建站 + 绑定设备清单（Saga 步骤 6；同 order_no 重放返回已有场站——幂等）。
+  rpc CreateStation(CreateStationReq) returns (CreateStationResp);
+  rpc GetStation(GetStationReq) returns (GetStationResp);
+  rpc ListStation(ListStationReq) returns (ListStationResp);
+
+  // ---- 场站设备 ----
+  rpc BindDevices(BindDevicesReq) returns (BindDevicesResp);
+  rpc ListStationDevices(ListStationDevicesReq) returns (ListStationDevicesResp);
+
+  // ---- 场站拓扑（版本化，React Flow）----
+  rpc SaveTopology(SaveTopologyReq) returns (SaveTopologyResp);
+  rpc GetTopology(GetTopologyReq) returns (GetTopologyResp);
+
+  // ---- 聚合监控（影子只读；功率/SOC 均值 + 在线状态，FR-STN-005）----
+  rpc GetStationMonitor(GetStationMonitorReq) returns (GetStationMonitorResp);
+
+  // ---- 场站人员（驻场 + 排班，FR-STN-006）----
+  rpc AddStationStaff(AddStationStaffReq) returns (AddStationStaffResp);
+  rpc RemoveStationStaff(RemoveStationStaffReq) returns (RemoveStationStaffResp);
+  rpc ListStationStaff(ListStationStaffReq) returns (ListStationStaffResp);
+
+  // ---- 反查（设备 → 场站）----
+  rpc GetDeviceStation(GetDeviceStationReq) returns (GetDeviceStationResp);
+}
+
+message PingReq {}
+message PingResp { string pong = 1; }
+
+// ---------- 场站 ----------
+
+message StationDeviceBind {
+  int64 device_id = 1;
+  string sn = 2; // device_id 与 sn 二选一（sn 优先——Saga 传 SN 清单）
+  string role = 3; // PACK/CHARGER/METER
+}
+
+message CreateStationReq {
+  string order_no = 1;   // 来源订单（Saga 幂等键；手工建站可空）
+  string station_no = 2; // 场站编号（空则自动生成 STN{id}）
+  string name = 3;
+  string type = 4;       // ESS/CHARGING/HESS
+  string province = 5;
+  string city = 6;
+  string address = 7;
+  double longitude = 8;
+  double latitude = 9;
+  double capacity_kwh = 10;
+  double power_kw = 11;
+  string grid_status = 12;
+  repeated StationDeviceBind devices = 13; // 绑定清单（可空——建站后补绑）
+}
+
+message CreateStationResp { int64 station_id = 1; }
+
+message StationView {
+  int64 station_id = 1;
+  string station_no = 2;
+  string name = 3;
+  string type = 4;
+  string status = 5;
+  string province = 6;
+  string city = 7;
+  string address = 8;
+  double longitude = 9;
+  double latitude = 10;
+  double capacity_kwh = 11;
+  double power_kw = 12;
+  string grid_status = 13;
+  string order_no = 14;
+  int64 created_at = 15;
+}
+message GetStationReq { int64 station_id = 1; }
+message GetStationResp { StationView station = 1; }
+
+message ListStationReq {
+  string keyword = 1; // 名称/编号模糊
+  string status = 2;
+  string type = 3;
+  int32 page = 4;
+  int32 size = 5;
+}
+message ListStationResp {
+  repeated StationView list = 1;
+  int64 total = 2;
+}
+
+// ---------- 场站设备 ----------
+
+message BindDevicesReq {
+  int64 station_id = 1;
+  repeated StationDeviceBind devices = 2;
+  string bound_by = 3; // 来源（order_no/manual）
+}
+message BindDevicesResp { int64 bound = 1; }
+
+message StationDeviceView {
+  int64 id = 1;
+  int64 station_id = 2;
+  int64 device_id = 3;
+  string sn = 4;
+  string role = 5;
+  int64 bound_at = 6;
+}
+message ListStationDevicesReq { int64 station_id = 1; }
+message ListStationDevicesResp { repeated StationDeviceView list = 1; }
+
+// ---------- 拓扑 ----------
+
+message SaveTopologyReq {
+  int64 station_id = 1;
+  string nodes_json = 2; // React Flow nodes
+  string edges_json = 3; // React Flow edges
+}
+message SaveTopologyResp { int64 version = 1; }
+
+message GetTopologyReq { int64 station_id = 1; }
+message TopologyView {
+  int64 version = 1;
+  string nodes_json = 2;
+  string edges_json = 3;
+  int64 updated_at = 4;
+}
+message GetTopologyResp { TopologyView topology = 1; }
+
+// ---------- 聚合监控 ----------
+
+message StationMonitorItem {
+  int64 device_id = 1;
+  string sn = 2;
+  bool online = 3;   // 影子 5 分钟内有更新
+  double soc = 4;
+  double power = 5;
+  double voltage = 6;
+  double temperature = 7;
+  int64 ts = 8;
+}
+message GetStationMonitorReq { int64 station_id = 1; }
+message GetStationMonitorResp {
+  int64 station_id = 1;
+  int32 device_count = 2;
+  int32 online_count = 3;
+  double avg_soc = 4;
+  double total_power = 5;
+  repeated StationMonitorItem items = 6;
+}
+
+// ---------- 场站人员 ----------
+
+message StationStaffView {
+  int64 id = 1;
+  int64 station_id = 2;
+  int64 user_id = 3;
+  string staff_type = 4;
+  string shift = 5;
+  int64 created_at = 6;
+}
+message AddStationStaffReq {
+  int64 station_id = 1;
+  int64 user_id = 2;
+  string staff_type = 3; // RESIDENT/INSPECTOR/MANAGER
+  string shift = 4;
+}
+message AddStationStaffResp {}
+message RemoveStationStaffReq {
+  int64 station_id = 1;
+  int64 user_id = 2;
+}
+message RemoveStationStaffResp {}
+message ListStationStaffReq { int64 station_id = 1; }
+message ListStationStaffResp { repeated StationStaffView list = 1; }
+
+// ---------- 反查 ----------
+
+message DeviceStationView {
+  int64 station_id = 1;
+  string station_no = 2;
+  string station_name = 3;
+  string role = 4;
+}
+message GetDeviceStationReq {
+  int64 device_id = 1;
+  string sn = 2; // device_id 与 sn 二选一
+}
+message GetDeviceStationResp { DeviceStationView station = 1; }

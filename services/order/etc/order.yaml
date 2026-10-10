@@ -38,6 +38,11 @@ ContractRpc:
     - ${CONTRACT_RPC|127.0.0.1:8093}
   NonBlock: true
   Timeout: 5000
+StationRpc:
+  Endpoints:
+    - ${STATION_RPC|127.0.0.1:8091}
+  NonBlock: true
+  Timeout: 5000
 
 CatalogRpc:
   Endpoints:

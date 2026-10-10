@@ -92,6 +92,12 @@ func (s *ContractServer) ListSlaStrategy(ctx context.Context, in *pb.ListSlaStra
 	return l.ListSlaStrategy(in)
 }
 
+// GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+func (s *ContractServer) GetContractSlaByOrderNo(ctx context.Context, in *pb.GetContractSlaByOrderNoReq) (*pb.GetContractSlaByOrderNoResp, error) {
+	l := logic.NewGetContractSlaByOrderNoLogic(ctx, s.svcCtx)
+	return l.GetContractSlaByOrderNo(in)
+}
+
 // ---- 索赔（FR-CTR-008）----
 func (s *ContractServer) CreateClaim(ctx context.Context, in *pb.CreateClaimReq) (*pb.CreateClaimResp, error) {
 	l := logic.NewCreateClaimLogic(ctx, s.svcCtx)

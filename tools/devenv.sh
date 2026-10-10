@@ -42,4 +42,7 @@ export OTA_SIGN_KEY="${OTA_SIGN_KEY:-D:/Personal code/micro-new/micro-deploy/dep
 export DSN_DB="${1:-}"
 if [ -n "$DSN_DB" ]; then
   export DSN="micro_app:$(grep MICRO_DEV_MYSQL_APP_PW "$DEV_ENV" | cut -d= -f2)@tcp(127.0.0.1:23306)/${DSN_DB}?charset=utf8mb4&parseTime=true&loc=Local"
+  # 同步导出 MICRO_DSN_<DB>（服务 yaml 占位符口径：MICRO_DSN_STATION/MICRO_DSN_OPS/...）
+  var="MICRO_DSN_$(echo "$DSN_DB" | sed 's/^micro_//' | tr '[:lower:]' '[:upper:]')"
+  export "$var=$DSN"
 fi

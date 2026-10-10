@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v3.19.4
-// source: services/contract/pb/contract.proto
+// source: pb/contract.proto
 
 package pb
 
@@ -19,26 +19,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Contract_Ping_FullMethodName                = "/contract.Contract/Ping"
-	Contract_CreateTemplate_FullMethodName      = "/contract.Contract/CreateTemplate"
-	Contract_RenderTemplate_FullMethodName      = "/contract.Contract/RenderTemplate"
-	Contract_CreateFromOrder_FullMethodName     = "/contract.Contract/CreateFromOrder"
-	Contract_GetContract_FullMethodName         = "/contract.Contract/GetContract"
-	Contract_ListContract_FullMethodName        = "/contract.Contract/ListContract"
-	Contract_UploadContractFile_FullMethodName  = "/contract.Contract/UploadContractFile"
-	Contract_ArchiveContract_FullMethodName     = "/contract.Contract/ArchiveContract"
-	Contract_ListWarranty_FullMethodName        = "/contract.Contract/ListWarranty"
-	Contract_GetWarrantyByTarget_FullMethodName = "/contract.Contract/GetWarrantyByTarget"
-	Contract_CreateSlaStrategy_FullMethodName   = "/contract.Contract/CreateSlaStrategy"
-	Contract_BindContractSla_FullMethodName     = "/contract.Contract/BindContractSla"
-	Contract_ListSlaStrategy_FullMethodName     = "/contract.Contract/ListSlaStrategy"
-	Contract_CreateClaim_FullMethodName         = "/contract.Contract/CreateClaim"
-	Contract_ApproveClaim_FullMethodName        = "/contract.Contract/ApproveClaim"
-	Contract_SettleClaim_FullMethodName         = "/contract.Contract/SettleClaim"
-	Contract_ListClaim_FullMethodName           = "/contract.Contract/ListClaim"
-	Contract_SellExtension_FullMethodName       = "/contract.Contract/SellExtension"
-	Contract_TransferExtension_FullMethodName   = "/contract.Contract/TransferExtension"
-	Contract_RefundExtension_FullMethodName     = "/contract.Contract/RefundExtension"
+	Contract_Ping_FullMethodName                    = "/contract.Contract/Ping"
+	Contract_CreateTemplate_FullMethodName          = "/contract.Contract/CreateTemplate"
+	Contract_RenderTemplate_FullMethodName          = "/contract.Contract/RenderTemplate"
+	Contract_CreateFromOrder_FullMethodName         = "/contract.Contract/CreateFromOrder"
+	Contract_GetContract_FullMethodName             = "/contract.Contract/GetContract"
+	Contract_ListContract_FullMethodName            = "/contract.Contract/ListContract"
+	Contract_UploadContractFile_FullMethodName      = "/contract.Contract/UploadContractFile"
+	Contract_ArchiveContract_FullMethodName         = "/contract.Contract/ArchiveContract"
+	Contract_ListWarranty_FullMethodName            = "/contract.Contract/ListWarranty"
+	Contract_GetWarrantyByTarget_FullMethodName     = "/contract.Contract/GetWarrantyByTarget"
+	Contract_CreateSlaStrategy_FullMethodName       = "/contract.Contract/CreateSlaStrategy"
+	Contract_BindContractSla_FullMethodName         = "/contract.Contract/BindContractSla"
+	Contract_ListSlaStrategy_FullMethodName         = "/contract.Contract/ListSlaStrategy"
+	Contract_GetContractSlaByOrderNo_FullMethodName = "/contract.Contract/GetContractSlaByOrderNo"
+	Contract_CreateClaim_FullMethodName             = "/contract.Contract/CreateClaim"
+	Contract_ApproveClaim_FullMethodName            = "/contract.Contract/ApproveClaim"
+	Contract_SettleClaim_FullMethodName             = "/contract.Contract/SettleClaim"
+	Contract_ListClaim_FullMethodName               = "/contract.Contract/ListClaim"
+	Contract_SellExtension_FullMethodName           = "/contract.Contract/SellExtension"
+	Contract_TransferExtension_FullMethodName       = "/contract.Contract/TransferExtension"
+	Contract_RefundExtension_FullMethodName         = "/contract.Contract/RefundExtension"
 )
 
 // ContractClient is the client API for Contract service.
@@ -78,6 +79,9 @@ type ContractClient interface {
 	CreateSlaStrategy(ctx context.Context, in *CreateSlaStrategyReq, opts ...grpc.CallOption) (*CreateSlaStrategyResp, error)
 	BindContractSla(ctx context.Context, in *BindContractSlaReq, opts ...grpc.CallOption) (*BindContractSlaResp, error)
 	ListSlaStrategy(ctx context.Context, in *ListSlaStrategyReq, opts ...grpc.CallOption) (*ListSlaStrategyResp, error)
+	// GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+	// station.order_no → contract → contract_sla；无绑定返回 strategy=null，不计时）。
+	GetContractSlaByOrderNo(ctx context.Context, in *GetContractSlaByOrderNoReq, opts ...grpc.CallOption) (*GetContractSlaByOrderNoResp, error)
 	// ---- 索赔（FR-CTR-008）----
 	CreateClaim(ctx context.Context, in *CreateClaimReq, opts ...grpc.CallOption) (*CreateClaimResp, error)
 	ApproveClaim(ctx context.Context, in *ApproveClaimReq, opts ...grpc.CallOption) (*ApproveClaimResp, error)
@@ -227,6 +231,16 @@ func (c *contractClient) ListSlaStrategy(ctx context.Context, in *ListSlaStrateg
 	return out, nil
 }
 
+func (c *contractClient) GetContractSlaByOrderNo(ctx context.Context, in *GetContractSlaByOrderNoReq, opts ...grpc.CallOption) (*GetContractSlaByOrderNoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetContractSlaByOrderNoResp)
+	err := c.cc.Invoke(ctx, Contract_GetContractSlaByOrderNo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contractClient) CreateClaim(ctx context.Context, in *CreateClaimReq, opts ...grpc.CallOption) (*CreateClaimResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateClaimResp)
@@ -334,6 +348,9 @@ type ContractServer interface {
 	CreateSlaStrategy(context.Context, *CreateSlaStrategyReq) (*CreateSlaStrategyResp, error)
 	BindContractSla(context.Context, *BindContractSlaReq) (*BindContractSlaResp, error)
 	ListSlaStrategy(context.Context, *ListSlaStrategyReq) (*ListSlaStrategyResp, error)
+	// GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+	// station.order_no → contract → contract_sla；无绑定返回 strategy=null，不计时）。
+	GetContractSlaByOrderNo(context.Context, *GetContractSlaByOrderNoReq) (*GetContractSlaByOrderNoResp, error)
 	// ---- 索赔（FR-CTR-008）----
 	CreateClaim(context.Context, *CreateClaimReq) (*CreateClaimResp, error)
 	ApproveClaim(context.Context, *ApproveClaimReq) (*ApproveClaimResp, error)
@@ -391,6 +408,9 @@ func (UnimplementedContractServer) BindContractSla(context.Context, *BindContrac
 }
 func (UnimplementedContractServer) ListSlaStrategy(context.Context, *ListSlaStrategyReq) (*ListSlaStrategyResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSlaStrategy not implemented")
+}
+func (UnimplementedContractServer) GetContractSlaByOrderNo(context.Context, *GetContractSlaByOrderNoReq) (*GetContractSlaByOrderNoResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetContractSlaByOrderNo not implemented")
 }
 func (UnimplementedContractServer) CreateClaim(context.Context, *CreateClaimReq) (*CreateClaimResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateClaim not implemented")
@@ -668,6 +688,24 @@ func _Contract_ListSlaStrategy_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Contract_GetContractSlaByOrderNo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContractSlaByOrderNoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContractServer).GetContractSlaByOrderNo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Contract_GetContractSlaByOrderNo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContractServer).GetContractSlaByOrderNo(ctx, req.(*GetContractSlaByOrderNoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Contract_CreateClaim_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateClaimReq)
 	if err := dec(in); err != nil {
@@ -854,6 +892,10 @@ var Contract_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Contract_ListSlaStrategy_Handler,
 		},
 		{
+			MethodName: "GetContractSlaByOrderNo",
+			Handler:    _Contract_GetContractSlaByOrderNo_Handler,
+		},
+		{
 			MethodName: "CreateClaim",
 			Handler:    _Contract_CreateClaim_Handler,
 		},
@@ -883,5 +925,5 @@ var Contract_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "services/contract/pb/contract.proto",
+	Metadata: "pb/contract.proto",
 }

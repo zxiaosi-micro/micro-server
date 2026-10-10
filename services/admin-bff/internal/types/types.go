@@ -3,6 +3,154 @@
 
 package types
 
+type AlertAckReq struct {
+	AlertId string `path:"id"`
+	Note    string `json:"note,optional"`
+}
+
+type AlertBriefView struct {
+	AlertId        string `json:"alert_id"`
+	Level          string `json:"level"`
+	Source         string `json:"source"`
+	Metric         string `json:"metric"`
+	Title          string `json:"title"`
+	StationId      string `json:"station_id"`
+	StationName    string `json:"station_name"`
+	AggregateCount int32  `json:"aggregate_count"`
+	Status         string `json:"status"`
+	FirstSeenAt    int64  `json:"first_seen_at"`
+}
+
+type AlertCloseReq struct {
+	AlertId  string `path:"id"`
+	TicketId string `json:"ticket_id,optional"`
+	Reason   string `json:"reason,optional"`
+}
+
+type AlertGetResp struct {
+	Alert AlertView `json:"alert"`
+}
+
+type AlertListReq struct {
+	Status    string `form:"status,optional"`
+	Level     string `form:"level,optional"`
+	Source    string `form:"source,optional"`
+	StationId string `form:"station_id,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type AlertListResp struct {
+	Total int64       `json:"total"`
+	List  []AlertView `json:"list"`
+}
+
+type AlertNoPath struct {
+	AlertId string `path:"id"`
+}
+
+type AlertPendingReq struct {
+	StationId string `form:"station_id,optional"`
+	SinceId   string `form:"since_id,optional"`
+	Limit     int32  `form:"limit,optional"`
+}
+
+type AlertPendingResp struct {
+	UnreadCount int64            `json:"unread_count"`
+	MaxId       string           `json:"max_id"`
+	Items       []AlertBriefView `json:"items"`
+}
+
+type AlertRuleCreateReq struct {
+	Code              string  `json:"code"`
+	Name              string  `json:"name"`
+	Metric            string  `json:"metric"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec,optional"`
+	Level             string  `json:"level,optional"`
+	SuppressWindowSec int32   `json:"suppress_window_sec,optional"`
+	Scope             string  `json:"scope,optional"`
+}
+
+type AlertRuleListReq struct {
+	Metric  string `form:"metric,optional"`
+	Level   string `form:"level,optional"`
+	Enabled int64  `form:"enabled,optional"`
+	Page    int64  `form:"page,optional"`
+	Size    int64  `form:"size,optional"`
+}
+
+type AlertRuleListResp struct {
+	Total int64           `json:"total"`
+	List  []AlertRuleView `json:"list"`
+}
+
+type AlertRuleUpdateReq struct {
+	RuleId            string  `path:"id"`
+	Name              string  `json:"name"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec,optional"`
+	Level             string  `json:"level,optional"`
+	SuppressWindowSec int32   `json:"suppress_window_sec,optional"`
+	Scope             string  `json:"scope,optional"`
+	Enabled           bool    `json:"enabled"`
+}
+
+type AlertRuleView struct {
+	RuleId            string  `json:"rule_id"`
+	Code              string  `json:"code"`
+	Name              string  `json:"name"`
+	Metric            string  `json:"metric"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec"`
+	Level             string  `json:"level"`
+	SuppressWindowSec int32   `json:"suppress_window_sec"`
+	Scope             string  `json:"scope"`
+	Enabled           bool    `json:"enabled"`
+	CreatedAt         int64   `json:"created_at"`
+}
+
+type AlertTransferReq struct {
+	AlertId        string `path:"id"`
+	RequiredSkills string `json:"required_skills,optional"`
+	AutoDispatch   bool   `json:"auto_dispatch,optional"`
+	Remark         string `json:"remark,optional"`
+}
+
+type AlertTransferResp struct {
+	TicketId     string `json:"ticket_id"`
+	TicketNo     string `json:"ticket_no"`
+	AssigneeUid  string `json:"assignee_uid"`
+	AssigneeName string `json:"assignee_name"`
+}
+
+type AlertView struct {
+	AlertId        string  `json:"alert_id"`
+	Level          string  `json:"level"`
+	Source         string  `json:"source"`
+	Metric         string  `json:"metric"`
+	LastValue      float64 `json:"last_value"`
+	Comparator     string  `json:"comparator"`
+	Threshold      float64 `json:"threshold"`
+	StationId      string  `json:"station_id"`
+	StationName    string  `json:"station_name"`
+	DeviceId       string  `json:"device_id"`
+	Sn             string  `json:"sn"`
+	Title          string  `json:"title"`
+	Content        string  `json:"content"`
+	Status         string  `json:"status"`
+	AggregateCount int32   `json:"aggregate_count"`
+	Devices        string  `json:"devices"`
+	FirstSeenAt    int64   `json:"first_seen_at"`
+	LastSeenAt     int64   `json:"last_seen_at"`
+	AckedBy        string  `json:"acked_by"`
+	ClosedTicketId string  `json:"closed_ticket_id"`
+	ClosedReason   string  `json:"closed_reason"`
+}
+
 type AuditLogItem struct {
 	LogID      string `json:"log_id"`
 	TraceID    string `json:"trace_id"`
@@ -470,6 +618,128 @@ type IDPath struct {
 	ID string `path:"id"`
 }
 
+type InspectionItemView struct {
+	ItemId    string `json:"item_id"`
+	TaskId    string `json:"task_id"`
+	Name      string `json:"name"`
+	Result    string `json:"result"`
+	Anomalous bool   `json:"anomalous"`
+	TicketId  string `json:"ticket_id"`
+}
+
+type InspectionPlanCreateReq struct {
+	StationId  string `json:"station_id"`
+	Name       string `json:"name"`
+	TemplateId string `json:"template_id,optional"`
+	CronExpr   string `json:"cron_expr"`
+}
+
+type InspectionPlanListReq struct {
+	StationId string `form:"station_id,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type InspectionPlanListResp struct {
+	Total int64                `json:"total"`
+	List  []InspectionPlanView `json:"list"`
+}
+
+type InspectionPlanUpdateReq struct {
+	PlanId     string `path:"id"`
+	Name       string `json:"name,optional"`
+	CronExpr   string `json:"cron_expr,optional"`
+	TemplateId string `json:"template_id,optional"`
+	Enabled    int64  `json:"enabled,optional"`
+}
+
+type InspectionPlanView struct {
+	PlanId      string `json:"plan_id"`
+	StationId   string `json:"station_id"`
+	StationName string `json:"station_name"`
+	Name        string `json:"name"`
+	TemplateId  string `json:"template_id"`
+	CronExpr    string `json:"cron_expr"`
+	Enabled     bool   `json:"enabled"`
+	NextExecAt  int64  `json:"next_exec_at"`
+	LastExecAt  int64  `json:"last_exec_at"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type InspectionSubmitItem struct {
+	Name      string `json:"name"`
+	Result    string `json:"result,optional"`
+	Anomalous bool   `json:"anomalous"`
+}
+
+type InspectionSubmitReq struct {
+	TaskId   string                 `path:"id"`
+	Items    []InspectionSubmitItem `json:"items"`
+	Location string                 `json:"location,optional"`
+	Photos   string                 `json:"photos,optional"`
+	Remark   string                 `json:"remark,optional"`
+}
+
+type InspectionSubmitResp struct {
+	AnomalyCount int32  `json:"anomaly_count"`
+	TicketIds    string `json:"ticket_ids"`
+}
+
+type InspectionTaskGetResp struct {
+	Task  InspectionTaskView   `json:"task"`
+	Items []InspectionItemView `json:"items"`
+}
+
+type InspectionTaskListReq struct {
+	StationId string `form:"station_id,optional"`
+	Status    string `form:"status,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type InspectionTaskListResp struct {
+	Total int64                `json:"total"`
+	List  []InspectionTaskView `json:"list"`
+}
+
+type InspectionTaskView struct {
+	TaskId       string `json:"task_id"`
+	PlanId       string `json:"plan_id"`
+	TemplateId   string `json:"template_id"`
+	StationId    string `json:"station_id"`
+	StationName  string `json:"station_name"`
+	Title        string `json:"title"`
+	ScheduledFor int64  `json:"scheduled_for"`
+	Status       string `json:"status"`
+	SubmittedBy  string `json:"submitted_by"`
+	SubmittedAt  int64  `json:"submitted_at"`
+	AnomalyCount int32  `json:"anomaly_count"`
+	TicketIds    string `json:"ticket_ids"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
+type InspectionTemplateCreateReq struct {
+	Name        string `json:"name"`
+	ItemsSchema string `json:"items_schema"`
+}
+
+type InspectionTemplateListReq struct {
+	Page int64 `form:"page,optional"`
+	Size int64 `form:"size,optional"`
+}
+
+type InspectionTemplateListResp struct {
+	Total int64                    `json:"total"`
+	List  []InspectionTemplateView `json:"list"`
+}
+
+type InspectionTemplateView struct {
+	TemplateId  string `json:"template_id"`
+	Name        string `json:"name"`
+	ItemsSchema string `json:"items_schema"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
 type InventoryItem struct {
 	InventoryID       string `json:"inventory_id"`
 	WarehouseID       string `json:"warehouse_id"`
@@ -625,6 +895,9 @@ type MessageListReq struct {
 type MessageListResp struct {
 	List  []MessageItem `json:"list"`
 	Total int64         `json:"total"`
+}
+
+type NoArgsReq struct {
 }
 
 type NotifySettingItem struct {
@@ -1315,6 +1588,15 @@ type SlaListResp struct {
 	List []SlaStrategyView `json:"list"`
 }
 
+type SlaPauseReq struct {
+	TicketId string `path:"id"`
+	Reason   string `json:"reason"`
+}
+
+type SlaStrategyListResp struct {
+	List []SlaStrategyView `json:"list"`
+}
+
 type SlaStrategyView struct {
 	StrategyId      string `json:"strategy_id"`
 	Code            string `json:"code"`
@@ -1323,6 +1605,36 @@ type SlaStrategyView struct {
 	ResponseMinutes int    `json:"response_minutes"`
 	ResolveMinutes  int    `json:"resolve_minutes"`
 	CreatedAt       int64  `json:"created_at"`
+}
+
+type SlaTimerResp struct {
+	Timer SlaTimerView `json:"timer"`
+}
+
+type SlaTimerView struct {
+	TimerId          string `json:"timer_id"`
+	TicketId         string `json:"ticket_id"`
+	StrategyId       string `json:"strategy_id"`
+	StrategySnapshot string `json:"strategy_snapshot"`
+	ResponseDueAt    int64  `json:"response_due_at"`
+	ResolveDueAt     int64  `json:"resolve_due_at"`
+	PausedAt         int64  `json:"paused_at"`
+	PauseReason      string `json:"pause_reason"`
+	PauseTotalMin    int32  `json:"pause_total_min"`
+	EscalateLevel    int32  `json:"escalate_level"`
+	RespondedAt      int64  `json:"responded_at"`
+	ResolvedAt       int64  `json:"resolved_at"`
+	ResponseBreachAt int64  `json:"response_breach_at"`
+	ResolveBreachAt  int64  `json:"resolve_breach_at"`
+}
+
+type StaffCandidateView struct {
+	StaffId    string `json:"staff_id"`
+	UserId     string `json:"user_id"`
+	Name       string `json:"name"`
+	StaffType  string `json:"staff_type"`
+	SkillTags  string `json:"skill_tags"`
+	WorkRegion string `json:"work_region"`
 }
 
 type StaffCreateReq struct {
@@ -1534,6 +1846,16 @@ type StationView struct {
 	CreatedAt   int64   `json:"created_at"`
 }
 
+type StationWebMeResp struct {
+	UID         string   `json:"uid"`
+	Nickname    string   `json:"nickname"`
+	Roles       []string `json:"roles"`
+	DataScope   string   `json:"data_scope"`
+	StationId   string   `json:"station_id"`
+	StationName string   `json:"station_name"`
+	StationNo   string   `json:"station_no"`
+}
+
 type StepUpReq struct {
 	Password string `json:"password"`
 }
@@ -1705,6 +2027,153 @@ type TenantUpdateReq struct {
 	Name     string `json:"name,optional"`
 	Plan     string `json:"plan,optional"`
 	Status   int    `json:"status,optional"`
+}
+
+type TicketActionReq struct {
+	TicketId string `path:"id"`
+}
+
+type TicketBriefView struct {
+	TicketId      string `json:"ticket_id"`
+	TicketNo      string `json:"ticket_no"`
+	Type          string `json:"type"`
+	Title         string `json:"title"`
+	Priority      string `json:"priority"`
+	StationId     string `json:"station_id"`
+	StationName   string `json:"station_name"`
+	Status        string `json:"status"`
+	EscalateLevel int32  `json:"escalate_level"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
+type TicketCancelReq struct {
+	TicketId string `path:"id"`
+	Reason   string `json:"reason"`
+}
+
+type TicketCreateReq struct {
+	Type           string `json:"type"`
+	Title          string `json:"title"`
+	Content        string `json:"content,optional"`
+	Priority       string `json:"priority,optional"`
+	StationId      string `json:"station_id,optional"`
+	DeviceId       string `json:"device_id,optional"`
+	Sn             string `json:"sn,optional"`
+	AlertId        string `json:"alert_id,optional"`
+	ClientActionId string `json:"client_action_id,optional"`
+}
+
+type TicketCreateResp struct {
+	TicketId string `json:"ticket_id"`
+	TicketNo string `json:"ticket_no"`
+}
+
+type TicketDispatchReq struct {
+	TicketId         string `path:"id"`
+	AssigneeUid      string `json:"assignee_uid,optional"`
+	AcceptTimeoutMin int32  `json:"accept_timeout_min,optional"`
+}
+
+type TicketDispatchResp struct {
+	AssigneeUid    string `json:"assignee_uid"`
+	AssigneeName   string `json:"assignee_name"`
+	AcceptDeadline int64  `json:"accept_deadline"`
+}
+
+type TicketGetResp struct {
+	Ticket TicketView      `json:"ticket"`
+	Logs   []TicketLogView `json:"logs"`
+}
+
+type TicketListReq struct {
+	Status      string `form:"status,optional"`
+	Type        string `form:"type,optional"`
+	StationId   string `form:"station_id,optional"`
+	AssigneeUid string `form:"assignee_uid,optional"`
+	Page        int64  `form:"page,optional"`
+	Size        int64  `form:"size,optional"`
+}
+
+type TicketListResp struct {
+	Total int64        `json:"total"`
+	List  []TicketView `json:"list"`
+}
+
+type TicketLogView struct {
+	LogId       string `json:"log_id"`
+	TicketId    string `json:"ticket_id"`
+	Action      string `json:"action"`
+	FromStatus  string `json:"from_status"`
+	ToStatus    string `json:"to_status"`
+	OperatorUid string `json:"operator_uid"`
+	Note        string `json:"note"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type TicketMatchStaffReq struct {
+	StationId      string `form:"station_id"`
+	RequiredSkills string `form:"required_skills,optional"`
+}
+
+type TicketMatchStaffResp struct {
+	List []StaffCandidateView `json:"list"`
+}
+
+type TicketNoPath struct {
+	TicketId string `path:"id"`
+}
+
+type TicketPendingReq struct {
+	StationId   string `form:"station_id,optional"`
+	AssigneeUid string `form:"assignee_uid,optional"`
+	Status      string `form:"status,optional"`
+	SinceId     string `form:"since_id,optional"`
+	Limit       int32  `form:"limit,optional"`
+}
+
+type TicketPendingResp struct {
+	UnreadCount int64             `json:"unread_count"`
+	MaxId       string            `json:"max_id"`
+	Items       []TicketBriefView `json:"items"`
+}
+
+type TicketSubmitReq struct {
+	TicketId string `path:"id"`
+	Result   string `json:"result,optional"`
+}
+
+type TicketVerifyReq struct {
+	TicketId string `path:"id"`
+	Pass     bool   `json:"pass"`
+	Remark   string `json:"remark,optional"`
+}
+
+type TicketView struct {
+	TicketId         string `json:"ticket_id"`
+	TicketNo         string `json:"ticket_no"`
+	Type             string `json:"type"`
+	Title            string `json:"title"`
+	Content          string `json:"content"`
+	Priority         string `json:"priority"`
+	StationId        string `json:"station_id"`
+	StationName      string `json:"station_name"`
+	DeviceId         string `json:"device_id"`
+	Sn               string `json:"sn"`
+	AlertId          string `json:"alert_id"`
+	InspectionItemId string `json:"inspection_item_id"`
+	AssigneeUid      string `json:"assignee_uid"`
+	AssigneeName     string `json:"assignee_name"`
+	Status           string `json:"status"`
+	EscalateLevel    int32  `json:"escalate_level"`
+	DispatchAt       int64  `json:"dispatch_at"`
+	AcceptDeadline   int64  `json:"accept_deadline"`
+	AcceptedAt       int64  `json:"accepted_at"`
+	SubmittedAt      int64  `json:"submitted_at"`
+	VerifiedAt       int64  `json:"verified_at"`
+	ClosedAt         int64  `json:"closed_at"`
+	CancelReason     string `json:"cancel_reason"`
+	CreatedBy        string `json:"created_by"`
+	CreatedAt        int64  `json:"created_at"`
 }
 
 type TokenPair struct {

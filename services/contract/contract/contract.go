@@ -14,52 +14,54 @@ import (
 )
 
 type (
-	ApproveClaimReq         = pb.ApproveClaimReq
-	ApproveClaimResp        = pb.ApproveClaimResp
-	ArchiveContractReq      = pb.ArchiveContractReq
-	ArchiveContractResp     = pb.ArchiveContractResp
-	BindContractSlaReq      = pb.BindContractSlaReq
-	BindContractSlaResp     = pb.BindContractSlaResp
-	ClaimDetail             = pb.ClaimDetail
-	ContractDetail          = pb.ContractDetail
-	ContractFile            = pb.ContractFile
-	ContractTarget          = pb.ContractTarget
-	CreateClaimReq          = pb.CreateClaimReq
-	CreateClaimResp         = pb.CreateClaimResp
-	CreateFromOrderReq      = pb.CreateFromOrderReq
-	CreateFromOrderResp     = pb.CreateFromOrderResp
-	CreateSlaStrategyReq    = pb.CreateSlaStrategyReq
-	CreateSlaStrategyResp   = pb.CreateSlaStrategyResp
-	CreateTemplateReq       = pb.CreateTemplateReq
-	CreateTemplateResp      = pb.CreateTemplateResp
-	GetContractReq          = pb.GetContractReq
-	GetContractResp         = pb.GetContractResp
-	GetWarrantyByTargetReq  = pb.GetWarrantyByTargetReq
-	GetWarrantyByTargetResp = pb.GetWarrantyByTargetResp
-	ListClaimReq            = pb.ListClaimReq
-	ListClaimResp           = pb.ListClaimResp
-	ListContractReq         = pb.ListContractReq
-	ListContractResp        = pb.ListContractResp
-	ListSlaStrategyReq      = pb.ListSlaStrategyReq
-	ListSlaStrategyResp     = pb.ListSlaStrategyResp
-	ListWarrantyReq         = pb.ListWarrantyReq
-	ListWarrantyResp        = pb.ListWarrantyResp
-	PingReq                 = pb.PingReq
-	PingResp                = pb.PingResp
-	RefundExtensionReq      = pb.RefundExtensionReq
-	RefundExtensionResp     = pb.RefundExtensionResp
-	RenderTemplateReq       = pb.RenderTemplateReq
-	RenderTemplateResp      = pb.RenderTemplateResp
-	SellExtensionReq        = pb.SellExtensionReq
-	SellExtensionResp       = pb.SellExtensionResp
-	SettleClaimReq          = pb.SettleClaimReq
-	SettleClaimResp         = pb.SettleClaimResp
-	SlaStrategyDetail       = pb.SlaStrategyDetail
-	TransferExtensionReq    = pb.TransferExtensionReq
-	TransferExtensionResp   = pb.TransferExtensionResp
-	UploadContractFileReq   = pb.UploadContractFileReq
-	UploadContractFileResp  = pb.UploadContractFileResp
-	WarrantyItem            = pb.WarrantyItem
+	ApproveClaimReq             = pb.ApproveClaimReq
+	ApproveClaimResp            = pb.ApproveClaimResp
+	ArchiveContractReq          = pb.ArchiveContractReq
+	ArchiveContractResp         = pb.ArchiveContractResp
+	BindContractSlaReq          = pb.BindContractSlaReq
+	BindContractSlaResp         = pb.BindContractSlaResp
+	ClaimDetail                 = pb.ClaimDetail
+	ContractDetail              = pb.ContractDetail
+	ContractFile                = pb.ContractFile
+	ContractTarget              = pb.ContractTarget
+	CreateClaimReq              = pb.CreateClaimReq
+	CreateClaimResp             = pb.CreateClaimResp
+	CreateFromOrderReq          = pb.CreateFromOrderReq
+	CreateFromOrderResp         = pb.CreateFromOrderResp
+	CreateSlaStrategyReq        = pb.CreateSlaStrategyReq
+	CreateSlaStrategyResp       = pb.CreateSlaStrategyResp
+	CreateTemplateReq           = pb.CreateTemplateReq
+	CreateTemplateResp          = pb.CreateTemplateResp
+	GetContractReq              = pb.GetContractReq
+	GetContractResp             = pb.GetContractResp
+	GetContractSlaByOrderNoReq  = pb.GetContractSlaByOrderNoReq
+	GetContractSlaByOrderNoResp = pb.GetContractSlaByOrderNoResp
+	GetWarrantyByTargetReq      = pb.GetWarrantyByTargetReq
+	GetWarrantyByTargetResp     = pb.GetWarrantyByTargetResp
+	ListClaimReq                = pb.ListClaimReq
+	ListClaimResp               = pb.ListClaimResp
+	ListContractReq             = pb.ListContractReq
+	ListContractResp            = pb.ListContractResp
+	ListSlaStrategyReq          = pb.ListSlaStrategyReq
+	ListSlaStrategyResp         = pb.ListSlaStrategyResp
+	ListWarrantyReq             = pb.ListWarrantyReq
+	ListWarrantyResp            = pb.ListWarrantyResp
+	PingReq                     = pb.PingReq
+	PingResp                    = pb.PingResp
+	RefundExtensionReq          = pb.RefundExtensionReq
+	RefundExtensionResp         = pb.RefundExtensionResp
+	RenderTemplateReq           = pb.RenderTemplateReq
+	RenderTemplateResp          = pb.RenderTemplateResp
+	SellExtensionReq            = pb.SellExtensionReq
+	SellExtensionResp           = pb.SellExtensionResp
+	SettleClaimReq              = pb.SettleClaimReq
+	SettleClaimResp             = pb.SettleClaimResp
+	SlaStrategyDetail           = pb.SlaStrategyDetail
+	TransferExtensionReq        = pb.TransferExtensionReq
+	TransferExtensionResp       = pb.TransferExtensionResp
+	UploadContractFileReq       = pb.UploadContractFileReq
+	UploadContractFileResp      = pb.UploadContractFileResp
+	WarrantyItem                = pb.WarrantyItem
 
 	Contract interface {
 		Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingResp, error)
@@ -79,6 +81,8 @@ type (
 		CreateSlaStrategy(ctx context.Context, in *CreateSlaStrategyReq, opts ...grpc.CallOption) (*CreateSlaStrategyResp, error)
 		BindContractSla(ctx context.Context, in *BindContractSlaReq, opts ...grpc.CallOption) (*BindContractSlaResp, error)
 		ListSlaStrategy(ctx context.Context, in *ListSlaStrategyReq, opts ...grpc.CallOption) (*ListSlaStrategyResp, error)
+		// GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+		GetContractSlaByOrderNo(ctx context.Context, in *GetContractSlaByOrderNoReq, opts ...grpc.CallOption) (*GetContractSlaByOrderNoResp, error)
 		// ---- 索赔（FR-CTR-008）----
 		CreateClaim(ctx context.Context, in *CreateClaimReq, opts ...grpc.CallOption) (*CreateClaimResp, error)
 		ApproveClaim(ctx context.Context, in *ApproveClaimReq, opts ...grpc.CallOption) (*ApproveClaimResp, error)
@@ -168,6 +172,12 @@ func (m *defaultContract) BindContractSla(ctx context.Context, in *BindContractS
 func (m *defaultContract) ListSlaStrategy(ctx context.Context, in *ListSlaStrategyReq, opts ...grpc.CallOption) (*ListSlaStrategyResp, error) {
 	client := pb.NewContractClient(m.cli.Conn())
 	return client.ListSlaStrategy(ctx, in, opts...)
+}
+
+// GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+func (m *defaultContract) GetContractSlaByOrderNo(ctx context.Context, in *GetContractSlaByOrderNoReq, opts ...grpc.CallOption) (*GetContractSlaByOrderNoResp, error) {
+	client := pb.NewContractClient(m.cli.Conn())
+	return client.GetContractSlaByOrderNo(ctx, in, opts...)
 }
 
 // ---- 索赔（FR-CTR-008）----

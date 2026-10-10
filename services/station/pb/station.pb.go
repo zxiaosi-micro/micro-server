@@ -1965,6 +1965,94 @@ func (x *GetDeviceStationReq) GetSn() string {
 	return ""
 }
 
+type ListStationByUserReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStationByUserReq) Reset() {
+	*x = ListStationByUserReq{}
+	mi := &file_pb_station_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStationByUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStationByUserReq) ProtoMessage() {}
+
+func (x *ListStationByUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_station_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStationByUserReq.ProtoReflect.Descriptor instead.
+func (*ListStationByUserReq) Descriptor() ([]byte, []int) {
+	return file_pb_station_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *ListStationByUserReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type ListStationByUserResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*StationView         `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStationByUserResp) Reset() {
+	*x = ListStationByUserResp{}
+	mi := &file_pb_station_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStationByUserResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStationByUserResp) ProtoMessage() {}
+
+func (x *ListStationByUserResp) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_station_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStationByUserResp.ProtoReflect.Descriptor instead.
+func (*ListStationByUserResp) Descriptor() ([]byte, []int) {
+	return file_pb_station_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *ListStationByUserResp) GetList() []*StationView {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
 type GetDeviceStationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Station       *DeviceStationView     `protobuf:"bytes,1,opt,name=station,proto3" json:"station,omitempty"`
@@ -1974,7 +2062,7 @@ type GetDeviceStationResp struct {
 
 func (x *GetDeviceStationResp) Reset() {
 	*x = GetDeviceStationResp{}
-	mi := &file_pb_station_proto_msgTypes[32]
+	mi := &file_pb_station_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1986,7 +2074,7 @@ func (x *GetDeviceStationResp) String() string {
 func (*GetDeviceStationResp) ProtoMessage() {}
 
 func (x *GetDeviceStationResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_station_proto_msgTypes[32]
+	mi := &file_pb_station_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1999,7 +2087,7 @@ func (x *GetDeviceStationResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceStationResp.ProtoReflect.Descriptor instead.
 func (*GetDeviceStationResp) Descriptor() ([]byte, []int) {
-	return file_pb_station_proto_rawDescGZIP(), []int{32}
+	return file_pb_station_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetDeviceStationResp) GetStation() *DeviceStationView {
@@ -2176,9 +2264,13 @@ const file_pb_station_proto_rawDesc = "" +
 	"\x04role\x18\x04 \x01(\tR\x04role\"B\n" +
 	"\x13GetDeviceStationReq\x12\x1b\n" +
 	"\tdevice_id\x18\x01 \x01(\x03R\bdeviceId\x12\x0e\n" +
-	"\x02sn\x18\x02 \x01(\tR\x02sn\"L\n" +
+	"\x02sn\x18\x02 \x01(\tR\x02sn\"/\n" +
+	"\x14ListStationByUserReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"A\n" +
+	"\x15ListStationByUserResp\x12(\n" +
+	"\x04list\x18\x01 \x03(\v2\x14.station.StationViewR\x04list\"L\n" +
 	"\x14GetDeviceStationResp\x124\n" +
-	"\astation\x18\x01 \x01(\v2\x1a.station.DeviceStationViewR\astation2\xba\a\n" +
+	"\astation\x18\x01 \x01(\v2\x1a.station.DeviceStationViewR\astation2\x8e\b\n" +
 	"\aStation\x12+\n" +
 	"\x04Ping\x12\x10.station.PingReq\x1a\x11.station.PingResp\x12F\n" +
 	"\rCreateStation\x12\x19.station.CreateStationReq\x1a\x1a.station.CreateStationResp\x12=\n" +
@@ -2193,7 +2285,8 @@ const file_pb_station_proto_rawDesc = "" +
 	"\x0fAddStationStaff\x12\x1b.station.AddStationStaffReq\x1a\x1c.station.AddStationStaffResp\x12U\n" +
 	"\x12RemoveStationStaff\x12\x1e.station.RemoveStationStaffReq\x1a\x1f.station.RemoveStationStaffResp\x12O\n" +
 	"\x10ListStationStaff\x12\x1c.station.ListStationStaffReq\x1a\x1d.station.ListStationStaffResp\x12O\n" +
-	"\x10GetDeviceStation\x12\x1c.station.GetDeviceStationReq\x1a\x1d.station.GetDeviceStationRespB\x06Z\x04./pbb\x06proto3"
+	"\x10GetDeviceStation\x12\x1c.station.GetDeviceStationReq\x1a\x1d.station.GetDeviceStationResp\x12R\n" +
+	"\x11ListStationByUser\x12\x1d.station.ListStationByUserReq\x1a\x1e.station.ListStationByUserRespB\x06Z\x04./pbb\x06proto3"
 
 var (
 	file_pb_station_proto_rawDescOnce sync.Once
@@ -2207,7 +2300,7 @@ func file_pb_station_proto_rawDescGZIP() []byte {
 	return file_pb_station_proto_rawDescData
 }
 
-var file_pb_station_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_pb_station_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_pb_station_proto_goTypes = []any{
 	(*PingReq)(nil),                // 0: station.PingReq
 	(*PingResp)(nil),               // 1: station.PingResp
@@ -2241,7 +2334,9 @@ var file_pb_station_proto_goTypes = []any{
 	(*ListStationStaffResp)(nil),   // 29: station.ListStationStaffResp
 	(*DeviceStationView)(nil),      // 30: station.DeviceStationView
 	(*GetDeviceStationReq)(nil),    // 31: station.GetDeviceStationReq
-	(*GetDeviceStationResp)(nil),   // 32: station.GetDeviceStationResp
+	(*ListStationByUserReq)(nil),   // 32: station.ListStationByUserReq
+	(*ListStationByUserResp)(nil),  // 33: station.ListStationByUserResp
+	(*GetDeviceStationResp)(nil),   // 34: station.GetDeviceStationResp
 }
 var file_pb_station_proto_depIdxs = []int32{
 	2,  // 0: station.CreateStationReq.devices:type_name -> station.StationDeviceBind
@@ -2252,38 +2347,41 @@ var file_pb_station_proto_depIdxs = []int32{
 	18, // 5: station.GetTopologyResp.topology:type_name -> station.TopologyView
 	20, // 6: station.GetStationMonitorResp.items:type_name -> station.StationMonitorItem
 	23, // 7: station.ListStationStaffResp.list:type_name -> station.StationStaffView
-	30, // 8: station.GetDeviceStationResp.station:type_name -> station.DeviceStationView
-	0,  // 9: station.Station.Ping:input_type -> station.PingReq
-	3,  // 10: station.Station.CreateStation:input_type -> station.CreateStationReq
-	6,  // 11: station.Station.GetStation:input_type -> station.GetStationReq
-	8,  // 12: station.Station.ListStation:input_type -> station.ListStationReq
-	10, // 13: station.Station.BindDevices:input_type -> station.BindDevicesReq
-	13, // 14: station.Station.ListStationDevices:input_type -> station.ListStationDevicesReq
-	15, // 15: station.Station.SaveTopology:input_type -> station.SaveTopologyReq
-	17, // 16: station.Station.GetTopology:input_type -> station.GetTopologyReq
-	21, // 17: station.Station.GetStationMonitor:input_type -> station.GetStationMonitorReq
-	24, // 18: station.Station.AddStationStaff:input_type -> station.AddStationStaffReq
-	26, // 19: station.Station.RemoveStationStaff:input_type -> station.RemoveStationStaffReq
-	28, // 20: station.Station.ListStationStaff:input_type -> station.ListStationStaffReq
-	31, // 21: station.Station.GetDeviceStation:input_type -> station.GetDeviceStationReq
-	1,  // 22: station.Station.Ping:output_type -> station.PingResp
-	4,  // 23: station.Station.CreateStation:output_type -> station.CreateStationResp
-	7,  // 24: station.Station.GetStation:output_type -> station.GetStationResp
-	9,  // 25: station.Station.ListStation:output_type -> station.ListStationResp
-	11, // 26: station.Station.BindDevices:output_type -> station.BindDevicesResp
-	14, // 27: station.Station.ListStationDevices:output_type -> station.ListStationDevicesResp
-	16, // 28: station.Station.SaveTopology:output_type -> station.SaveTopologyResp
-	19, // 29: station.Station.GetTopology:output_type -> station.GetTopologyResp
-	22, // 30: station.Station.GetStationMonitor:output_type -> station.GetStationMonitorResp
-	25, // 31: station.Station.AddStationStaff:output_type -> station.AddStationStaffResp
-	27, // 32: station.Station.RemoveStationStaff:output_type -> station.RemoveStationStaffResp
-	29, // 33: station.Station.ListStationStaff:output_type -> station.ListStationStaffResp
-	32, // 34: station.Station.GetDeviceStation:output_type -> station.GetDeviceStationResp
-	22, // [22:35] is the sub-list for method output_type
-	9,  // [9:22] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	5,  // 8: station.ListStationByUserResp.list:type_name -> station.StationView
+	30, // 9: station.GetDeviceStationResp.station:type_name -> station.DeviceStationView
+	0,  // 10: station.Station.Ping:input_type -> station.PingReq
+	3,  // 11: station.Station.CreateStation:input_type -> station.CreateStationReq
+	6,  // 12: station.Station.GetStation:input_type -> station.GetStationReq
+	8,  // 13: station.Station.ListStation:input_type -> station.ListStationReq
+	10, // 14: station.Station.BindDevices:input_type -> station.BindDevicesReq
+	13, // 15: station.Station.ListStationDevices:input_type -> station.ListStationDevicesReq
+	15, // 16: station.Station.SaveTopology:input_type -> station.SaveTopologyReq
+	17, // 17: station.Station.GetTopology:input_type -> station.GetTopologyReq
+	21, // 18: station.Station.GetStationMonitor:input_type -> station.GetStationMonitorReq
+	24, // 19: station.Station.AddStationStaff:input_type -> station.AddStationStaffReq
+	26, // 20: station.Station.RemoveStationStaff:input_type -> station.RemoveStationStaffReq
+	28, // 21: station.Station.ListStationStaff:input_type -> station.ListStationStaffReq
+	31, // 22: station.Station.GetDeviceStation:input_type -> station.GetDeviceStationReq
+	32, // 23: station.Station.ListStationByUser:input_type -> station.ListStationByUserReq
+	1,  // 24: station.Station.Ping:output_type -> station.PingResp
+	4,  // 25: station.Station.CreateStation:output_type -> station.CreateStationResp
+	7,  // 26: station.Station.GetStation:output_type -> station.GetStationResp
+	9,  // 27: station.Station.ListStation:output_type -> station.ListStationResp
+	11, // 28: station.Station.BindDevices:output_type -> station.BindDevicesResp
+	14, // 29: station.Station.ListStationDevices:output_type -> station.ListStationDevicesResp
+	16, // 30: station.Station.SaveTopology:output_type -> station.SaveTopologyResp
+	19, // 31: station.Station.GetTopology:output_type -> station.GetTopologyResp
+	22, // 32: station.Station.GetStationMonitor:output_type -> station.GetStationMonitorResp
+	25, // 33: station.Station.AddStationStaff:output_type -> station.AddStationStaffResp
+	27, // 34: station.Station.RemoveStationStaff:output_type -> station.RemoveStationStaffResp
+	29, // 35: station.Station.ListStationStaff:output_type -> station.ListStationStaffResp
+	34, // 36: station.Station.GetDeviceStation:output_type -> station.GetDeviceStationResp
+	33, // 37: station.Station.ListStationByUser:output_type -> station.ListStationByUserResp
+	24, // [24:38] is the sub-list for method output_type
+	10, // [10:24] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_pb_station_proto_init() }
@@ -2297,7 +2395,7 @@ func file_pb_station_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pb_station_proto_rawDesc), len(file_pb_station_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   33,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

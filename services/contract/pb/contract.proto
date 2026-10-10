@@ -37,6 +37,9 @@ service Contract {
   rpc CreateSlaStrategy(CreateSlaStrategyReq) returns (CreateSlaStrategyResp);
   rpc BindContractSla(BindContractSlaReq) returns (BindContractSlaResp);
   rpc ListSlaStrategy(ListSlaStrategyReq) returns (ListSlaStrategyResp);
+  // GetContractSlaByOrderNo 按来源订单反查 SLA 绑定（S7 ops 挂计时器用；
+  // station.order_no → contract → contract_sla；无绑定返回 strategy=null，不计时）。
+  rpc GetContractSlaByOrderNo(GetContractSlaByOrderNoReq) returns (GetContractSlaByOrderNoResp);
 
   // ---- 索赔（FR-CTR-008）----
   rpc CreateClaim(CreateClaimReq) returns (CreateClaimResp);
@@ -240,6 +243,12 @@ message BindContractSlaResp {} // 绑定即快照冻结（ops 计时按快照，
 message ListSlaStrategyReq {}
 message ListSlaStrategyResp {
   repeated SlaStrategyDetail list = 1;
+}
+
+message GetContractSlaByOrderNoReq { string order_no = 1; }
+message GetContractSlaByOrderNoResp {
+  string contract_no = 1;
+  SlaStrategyDetail strategy = 2; // null = 该合同未绑定 SLA（ops 不计时）
 }
 
 message ListClaimReq {

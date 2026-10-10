@@ -2646,3 +2646,635 @@ service AdminBffApi {
 	get /device-station (DeviceNoPath) returns (DeviceStationResp)
 }
 
+// ============================================================
+// 运维域（S7-03：告警/工单/SLA/巡检；转发 ops RPC，E8 string ID）
+// ============================================================
+type NoArgsReq {}
+
+type AlertListReq {
+	Status    string `form:"status,optional"`
+	Level     string `form:"level,optional"`
+	Source    string `form:"source,optional"`
+	StationId string `form:"station_id,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type AlertView {
+	AlertId        string  `json:"alert_id"`
+	Level          string  `json:"level"`
+	Source         string  `json:"source"`
+	Metric         string  `json:"metric"`
+	LastValue      float64 `json:"last_value"`
+	Comparator     string  `json:"comparator"`
+	Threshold      float64 `json:"threshold"`
+	StationId      string  `json:"station_id"`
+	StationName    string  `json:"station_name"`
+	DeviceId       string  `json:"device_id"`
+	Sn             string  `json:"sn"`
+	Title          string  `json:"title"`
+	Content        string  `json:"content"`
+	Status         string  `json:"status"`
+	AggregateCount int32   `json:"aggregate_count"`
+	Devices        string  `json:"devices"`
+	FirstSeenAt    int64   `json:"first_seen_at"`
+	LastSeenAt     int64   `json:"last_seen_at"`
+	AckedBy        string  `json:"acked_by"`
+	ClosedTicketId string  `json:"closed_ticket_id"`
+	ClosedReason   string  `json:"closed_reason"`
+}
+
+type AlertListResp {
+	Total int64       `json:"total"`
+	List  []AlertView `json:"list"`
+}
+
+type AlertNoPath {
+	AlertId string `path:"id"`
+}
+
+type AlertGetResp {
+	Alert AlertView `json:"alert"`
+}
+
+type AlertAckReq {
+	AlertId string `path:"id"`
+	Note    string `json:"note,optional"`
+}
+
+type AlertTransferReq {
+	AlertId        string `path:"id"`
+	RequiredSkills string `json:"required_skills,optional"`
+	AutoDispatch   bool   `json:"auto_dispatch,optional"`
+	Remark         string `json:"remark,optional"`
+}
+
+type AlertTransferResp {
+	TicketId     string `json:"ticket_id"`
+	TicketNo     string `json:"ticket_no"`
+	AssigneeUid  string `json:"assignee_uid"`
+	AssigneeName string `json:"assignee_name"`
+}
+
+type AlertCloseReq {
+	AlertId  string `path:"id"`
+	TicketId string `json:"ticket_id,optional"`
+	Reason   string `json:"reason,optional"`
+}
+
+type AlertPendingReq {
+	StationId string `form:"station_id,optional"`
+	SinceId   string `form:"since_id,optional"`
+	Limit     int32  `form:"limit,optional"`
+}
+
+type AlertBriefView {
+	AlertId        string `json:"alert_id"`
+	Level          string `json:"level"`
+	Source         string `json:"source"`
+	Metric         string `json:"metric"`
+	Title          string `json:"title"`
+	StationId      string `json:"station_id"`
+	StationName    string `json:"station_name"`
+	AggregateCount int32  `json:"aggregate_count"`
+	Status         string `json:"status"`
+	FirstSeenAt    int64  `json:"first_seen_at"`
+}
+
+type AlertPendingResp {
+	UnreadCount int64            `json:"unread_count"`
+	MaxId       string           `json:"max_id"`
+	Items       []AlertBriefView `json:"items"`
+}
+
+type AlertRuleView {
+	RuleId            string  `json:"rule_id"`
+	Code              string  `json:"code"`
+	Name              string  `json:"name"`
+	Metric            string  `json:"metric"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec"`
+	Level             string  `json:"level"`
+	SuppressWindowSec int32   `json:"suppress_window_sec"`
+	Scope             string  `json:"scope"`
+	Enabled           bool    `json:"enabled"`
+	CreatedAt         int64   `json:"created_at"`
+}
+
+type AlertRuleListReq {
+	Metric  string `form:"metric,optional"`
+	Level   string `form:"level,optional"`
+	Enabled int64  `form:"enabled,optional"`
+	Page    int64  `form:"page,optional"`
+	Size    int64  `form:"size,optional"`
+}
+
+type AlertRuleListResp {
+	Total int64           `json:"total"`
+	List  []AlertRuleView `json:"list"`
+}
+
+type AlertRuleCreateReq {
+	Code              string  `json:"code"`
+	Name              string  `json:"name"`
+	Metric            string  `json:"metric"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec,optional"`
+	Level             string  `json:"level,optional"`
+	SuppressWindowSec int32   `json:"suppress_window_sec,optional"`
+	Scope             string  `json:"scope,optional"`
+}
+
+type AlertRuleUpdateReq {
+	RuleId            string  `path:"id"`
+	Name              string  `json:"name"`
+	Comparator        string  `json:"comparator"`
+	Threshold         float64 `json:"threshold"`
+	DurationSec       int32   `json:"duration_sec,optional"`
+	Level             string  `json:"level,optional"`
+	SuppressWindowSec int32   `json:"suppress_window_sec,optional"`
+	Scope             string  `json:"scope,optional"`
+	Enabled           bool    `json:"enabled"`
+}
+
+type TicketView {
+	TicketId         string `json:"ticket_id"`
+	TicketNo         string `json:"ticket_no"`
+	Type             string `json:"type"`
+	Title            string `json:"title"`
+	Content          string `json:"content"`
+	Priority         string `json:"priority"`
+	StationId        string `json:"station_id"`
+	StationName      string `json:"station_name"`
+	DeviceId         string `json:"device_id"`
+	Sn               string `json:"sn"`
+	AlertId          string `json:"alert_id"`
+	InspectionItemId string `json:"inspection_item_id"`
+	AssigneeUid      string `json:"assignee_uid"`
+	AssigneeName     string `json:"assignee_name"`
+	Status           string `json:"status"`
+	EscalateLevel    int32  `json:"escalate_level"`
+	DispatchAt       int64  `json:"dispatch_at"`
+	AcceptDeadline   int64  `json:"accept_deadline"`
+	AcceptedAt       int64  `json:"accepted_at"`
+	SubmittedAt      int64  `json:"submitted_at"`
+	VerifiedAt       int64  `json:"verified_at"`
+	ClosedAt         int64  `json:"closed_at"`
+	CancelReason     string `json:"cancel_reason"`
+	CreatedBy        string `json:"created_by"`
+	CreatedAt        int64  `json:"created_at"`
+}
+
+type TicketListReq {
+	Status      string `form:"status,optional"`
+	Type        string `form:"type,optional"`
+	StationId   string `form:"station_id,optional"`
+	AssigneeUid string `form:"assignee_uid,optional"`
+	Page        int64  `form:"page,optional"`
+	Size        int64  `form:"size,optional"`
+}
+
+type TicketListResp {
+	Total int64        `json:"total"`
+	List  []TicketView `json:"list"`
+}
+
+type TicketNoPath {
+	TicketId string `path:"id"`
+}
+
+type TicketGetResp {
+	Ticket TicketView      `json:"ticket"`
+	Logs   []TicketLogView `json:"logs"`
+}
+
+type TicketLogView {
+	LogId       string `json:"log_id"`
+	TicketId    string `json:"ticket_id"`
+	Action      string `json:"action"`
+	FromStatus  string `json:"from_status"`
+	ToStatus    string `json:"to_status"`
+	OperatorUid string `json:"operator_uid"`
+	Note        string `json:"note"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type TicketCreateReq {
+	Type           string `json:"type"`
+	Title          string `json:"title"`
+	Content        string `json:"content,optional"`
+	Priority       string `json:"priority,optional"`
+	StationId      string `json:"station_id,optional"`
+	DeviceId       string `json:"device_id,optional"`
+	Sn             string `json:"sn,optional"`
+	AlertId        string `json:"alert_id,optional"`
+	ClientActionId string `json:"client_action_id,optional"`
+}
+
+type TicketCreateResp {
+	TicketId string `json:"ticket_id"`
+	TicketNo string `json:"ticket_no"`
+}
+
+type TicketPendingReq {
+	StationId   string `form:"station_id,optional"`
+	AssigneeUid string `form:"assignee_uid,optional"`
+	Status      string `form:"status,optional"`
+	SinceId     string `form:"since_id,optional"`
+	Limit       int32  `form:"limit,optional"`
+}
+
+type TicketBriefView {
+	TicketId      string `json:"ticket_id"`
+	TicketNo      string `json:"ticket_no"`
+	Type          string `json:"type"`
+	Title         string `json:"title"`
+	Priority      string `json:"priority"`
+	StationId     string `json:"station_id"`
+	StationName   string `json:"station_name"`
+	Status        string `json:"status"`
+	EscalateLevel int32  `json:"escalate_level"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
+type TicketPendingResp {
+	UnreadCount int64             `json:"unread_count"`
+	MaxId       string            `json:"max_id"`
+	Items       []TicketBriefView `json:"items"`
+}
+
+type TicketDispatchReq {
+	TicketId         string `path:"id"`
+	AssigneeUid      string `json:"assignee_uid,optional"`
+	AcceptTimeoutMin int32  `json:"accept_timeout_min,optional"`
+}
+
+type TicketDispatchResp {
+	AssigneeUid    string `json:"assignee_uid"`
+	AssigneeName   string `json:"assignee_name"`
+	AcceptDeadline int64  `json:"accept_deadline"`
+}
+
+type TicketActionReq {
+	TicketId string `path:"id"`
+}
+
+type TicketSubmitReq {
+	TicketId string `path:"id"`
+	Result   string `json:"result,optional"`
+}
+
+type TicketVerifyReq {
+	TicketId string `path:"id"`
+	Pass     bool   `json:"pass"`
+	Remark   string `json:"remark,optional"`
+}
+
+type TicketCancelReq {
+	TicketId string `path:"id"`
+	Reason   string `json:"reason"`
+}
+
+type StaffCandidateView {
+	StaffId    string `json:"staff_id"`
+	UserId     string `json:"user_id"`
+	Name       string `json:"name"`
+	StaffType  string `json:"staff_type"`
+	SkillTags  string `json:"skill_tags"`
+	WorkRegion string `json:"work_region"`
+}
+
+type TicketMatchStaffReq {
+	StationId      string `form:"station_id"`
+	RequiredSkills string `form:"required_skills,optional"`
+}
+
+type TicketMatchStaffResp {
+	List []StaffCandidateView `json:"list"`
+}
+
+type SlaStrategyListResp {
+	List []SlaStrategyView `json:"list"`
+}
+
+type SlaTimerView {
+	TimerId          string `json:"timer_id"`
+	TicketId         string `json:"ticket_id"`
+	StrategyId       string `json:"strategy_id"`
+	StrategySnapshot string `json:"strategy_snapshot"`
+	ResponseDueAt    int64  `json:"response_due_at"`
+	ResolveDueAt     int64  `json:"resolve_due_at"`
+	PausedAt         int64  `json:"paused_at"`
+	PauseReason      string `json:"pause_reason"`
+	PauseTotalMin    int32  `json:"pause_total_min"`
+	EscalateLevel    int32  `json:"escalate_level"`
+	RespondedAt      int64  `json:"responded_at"`
+	ResolvedAt       int64  `json:"resolved_at"`
+	ResponseBreachAt int64  `json:"response_breach_at"`
+	ResolveBreachAt  int64  `json:"resolve_breach_at"`
+}
+
+type SlaTimerResp {
+	Timer SlaTimerView `json:"timer"`
+}
+
+type SlaPauseReq {
+	TicketId string `path:"id"`
+	Reason   string `json:"reason"`
+}
+
+type InspectionTemplateView {
+	TemplateId  string `json:"template_id"`
+	Name        string `json:"name"`
+	ItemsSchema string `json:"items_schema"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type InspectionTemplateListReq {
+	Page int64 `form:"page,optional"`
+	Size int64 `form:"size,optional"`
+}
+
+type InspectionTemplateListResp {
+	Total int64                    `json:"total"`
+	List  []InspectionTemplateView `json:"list"`
+}
+
+type InspectionTemplateCreateReq {
+	Name        string `json:"name"`
+	ItemsSchema string `json:"items_schema"`
+}
+
+type InspectionPlanView {
+	PlanId      string `json:"plan_id"`
+	StationId   string `json:"station_id"`
+	StationName string `json:"station_name"`
+	Name        string `json:"name"`
+	TemplateId  string `json:"template_id"`
+	CronExpr    string `json:"cron_expr"`
+	Enabled     bool   `json:"enabled"`
+	NextExecAt  int64  `json:"next_exec_at"`
+	LastExecAt  int64  `json:"last_exec_at"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type InspectionPlanListReq {
+	StationId string `form:"station_id,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type InspectionPlanListResp {
+	Total int64                `json:"total"`
+	List  []InspectionPlanView `json:"list"`
+}
+
+type InspectionPlanCreateReq {
+	StationId  string `json:"station_id"`
+	Name       string `json:"name"`
+	TemplateId string `json:"template_id,optional"`
+	CronExpr   string `json:"cron_expr"`
+}
+
+type InspectionPlanUpdateReq {
+	PlanId     string `path:"id"`
+	Name       string `json:"name,optional"`
+	CronExpr   string `json:"cron_expr,optional"`
+	TemplateId string `json:"template_id,optional"`
+	Enabled    int64  `json:"enabled,optional"`
+}
+
+type InspectionTaskView {
+	TaskId       string `json:"task_id"`
+	PlanId       string `json:"plan_id"`
+	TemplateId   string `json:"template_id"`
+	StationId    string `json:"station_id"`
+	StationName  string `json:"station_name"`
+	Title        string `json:"title"`
+	ScheduledFor int64  `json:"scheduled_for"`
+	Status       string `json:"status"`
+	SubmittedBy  string `json:"submitted_by"`
+	SubmittedAt  int64  `json:"submitted_at"`
+	AnomalyCount int32  `json:"anomaly_count"`
+	TicketIds    string `json:"ticket_ids"`
+	CreatedAt    int64  `json:"created_at"`
+}
+
+type InspectionTaskListReq {
+	StationId string `form:"station_id,optional"`
+	Status    string `form:"status,optional"`
+	Page      int64  `form:"page,optional"`
+	Size      int64  `form:"size,optional"`
+}
+
+type InspectionTaskListResp {
+	Total int64                `json:"total"`
+	List  []InspectionTaskView `json:"list"`
+}
+
+type InspectionItemView {
+	ItemId    string `json:"item_id"`
+	TaskId    string `json:"task_id"`
+	Name      string `json:"name"`
+	Result    string `json:"result"`
+	Anomalous bool   `json:"anomalous"`
+	TicketId  string `json:"ticket_id"`
+}
+
+type InspectionTaskGetResp {
+	Task  InspectionTaskView   `json:"task"`
+	Items []InspectionItemView `json:"items"`
+}
+
+type InspectionSubmitItem {
+	Name      string `json:"name"`
+	Result    string `json:"result,optional"`
+	Anomalous bool   `json:"anomalous"`
+}
+
+type InspectionSubmitReq {
+	TaskId   string                 `path:"id"`
+	Items    []InspectionSubmitItem `json:"items"`
+	Location string                 `json:"location,optional"`
+	Photos   string                 `json:"photos,optional"`
+	Remark   string                 `json:"remark,optional"`
+}
+
+type InspectionSubmitResp {
+	AnomalyCount int32  `json:"anomaly_count"`
+	TicketIds    string `json:"ticket_ids"`
+}
+
+// ============================================================
+// 场站 Web（S7-03：STATION_WEB 登录 + 驻站锁定，FR-STN-006）
+// ============================================================
+type StationWebMeResp {
+	UID         string   `json:"uid"`
+	Nickname    string   `json:"nickname"`
+	Roles       []string `json:"roles"`
+	DataScope   string   `json:"data_scope"`
+	StationId   string   `json:"station_id"`
+	StationName string   `json:"station_name"`
+	StationNo   string   `json:"station_no"`
+}
+
+@server (
+	prefix:     /api/v1
+	group:      ops
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "告警列表(perm: ops:alert:list)"
+	@handler listAlerts
+	get /alerts (AlertListReq) returns (AlertListResp)
+
+	@doc "告警详情(perm: ops:alert:list)"
+	@handler getAlert
+	get /alerts/:id (AlertNoPath) returns (AlertGetResp)
+
+	@doc "告警确认(perm: ops:alert:ack)"
+	@handler ackAlert
+	post /alerts/:id/ack (AlertAckReq) returns (SimpleResp)
+
+	@doc "告警转工单(隐含确认, perm: ops:alert:transfer)"
+	@handler transferAlert
+	post /alerts/:id/transfer (AlertTransferReq) returns (AlertTransferResp)
+
+	@doc "告警关闭(须已验收工单或备注原因, perm: ops:alert:close)"
+	@handler closeAlert
+	post /alerts/:id/close (AlertCloseReq) returns (SimpleResp)
+
+	@doc "告警归档(perm: ops:alert:archive)"
+	@handler archiveAlert
+	post /alerts/:id/archive (AlertNoPath) returns (SimpleResp)
+
+	@doc "告警轮询增量(未读计数+since_id, perm: ops:alert:list)"
+	@handler pendingAlerts
+	get /alerts/pending (AlertPendingReq) returns (AlertPendingResp)
+
+	@doc "告警规则列表(perm: ops:rule:list)"
+	@handler listAlertRules
+	get /alert-rules (AlertRuleListReq) returns (AlertRuleListResp)
+
+	@doc "告警规则创建(perm: ops:rule:manage)"
+	@handler createAlertRule
+	post /alert-rules (AlertRuleCreateReq) returns (SimpleResp)
+
+	@doc "告警规则更新(perm: ops:rule:manage)"
+	@handler updateAlertRule
+	put /alert-rules/:id (AlertRuleUpdateReq) returns (SimpleResp)
+
+	@doc "告警规则删除(perm: ops:rule:manage)"
+	@handler deleteAlertRule
+	delete /alert-rules/:id (AlertNoPath) returns (SimpleResp)
+
+	@doc "工单列表(perm: ops:ticket:list)"
+	@handler listTickets
+	get /tickets (TicketListReq) returns (TicketListResp)
+
+	@doc "工单详情(含日志, perm: ops:ticket:list)"
+	@handler getTicket
+	get /tickets/:id (TicketNoPath) returns (TicketGetResp)
+
+	@doc "工单创建(perm: ops:ticket:create)"
+	@handler createTicket
+	post /tickets (TicketCreateReq) returns (TicketCreateResp)
+
+	@doc "工单轮询增量(perm: ops:ticket:list)"
+	@handler pendingTickets
+	get /tickets/pending (TicketPendingReq) returns (TicketPendingResp)
+
+	@doc "派单候选(区域+技能, perm: ops:ticket:dispatch)"
+	@handler matchStaff
+	get /tickets/match-staff (TicketMatchStaffReq) returns (TicketMatchStaffResp)
+
+	@doc "工单派单(perm: ops:ticket:dispatch)"
+	@handler dispatchTicket
+	post /tickets/:id/dispatch (TicketDispatchReq) returns (TicketDispatchResp)
+
+	@doc "工单接单(perm: ops:ticket:handle)"
+	@handler acceptTicket
+	post /tickets/:id/accept (TicketActionReq) returns (SimpleResp)
+
+	@doc "开工处理(perm: ops:ticket:handle)"
+	@handler startTicket
+	post /tickets/:id/start (TicketActionReq) returns (SimpleResp)
+
+	@doc "处理完成提交(perm: ops:ticket:handle)"
+	@handler submitTicket
+	post /tickets/:id/submit (TicketSubmitReq) returns (SimpleResp)
+
+	@doc "工单验收(perm: ops:ticket:verify)"
+	@handler verifyTicket
+	post /tickets/:id/verify (TicketVerifyReq) returns (SimpleResp)
+
+	@doc "工单关闭(perm: ops:ticket:verify)"
+	@handler closeTicket
+	post /tickets/:id/close (TicketActionReq) returns (SimpleResp)
+
+	@doc "工单取消(perm: ops:ticket:dispatch)"
+	@handler cancelTicket
+	post /tickets/:id/cancel (TicketCancelReq) returns (SimpleResp)
+
+	@doc "SLA 策略列表(contract 透传, perm: ops:sla:list)"
+	@handler listSlaStrategies
+	get /sla/strategies (NoArgsReq) returns (SlaStrategyListResp)
+
+	@doc "工单 SLA 计时器(perm: ops:sla:list)"
+	@handler getSlaTimer
+	get /tickets/:id/sla-timer (TicketNoPath) returns (SlaTimerResp)
+
+	@doc "SLA 暂停(留痕, perm: ops:sla:manage)"
+	@handler pauseSlaTimer
+	post /tickets/:id/sla-pause (SlaPauseReq) returns (SimpleResp)
+
+	@doc "SLA 恢复(due 顺延, perm: ops:sla:manage)"
+	@handler resumeSlaTimer
+	post /tickets/:id/sla-resume (TicketActionReq) returns (SimpleResp)
+
+	@doc "巡检模板列表(perm: ops:inspect:list)"
+	@handler listInspectionTemplates
+	get /inspection/templates (InspectionTemplateListReq) returns (InspectionTemplateListResp)
+
+	@doc "巡检模板创建(perm: ops:inspect:manage)"
+	@handler createInspectionTemplate
+	post /inspection/templates (InspectionTemplateCreateReq) returns (SimpleResp)
+
+	@doc "巡检计划列表(perm: ops:inspect:list)"
+	@handler listInspectionPlans
+	get /inspection/plans (InspectionPlanListReq) returns (InspectionPlanListResp)
+
+	@doc "巡检计划创建(perm: ops:inspect:manage)"
+	@handler createInspectionPlan
+	post /inspection/plans (InspectionPlanCreateReq) returns (SimpleResp)
+
+	@doc "巡检计划更新(perm: ops:inspect:manage)"
+	@handler updateInspectionPlan
+	put /inspection/plans/:id (InspectionPlanUpdateReq) returns (SimpleResp)
+
+	@doc "巡检任务列表(perm: ops:inspect:list)"
+	@handler listInspectionTasks
+	get /inspection/tasks (InspectionTaskListReq) returns (InspectionTaskListResp)
+
+	@doc "巡检任务详情(含明细, perm: ops:inspect:list)"
+	@handler getInspectionTask
+	get /inspection/tasks/:id (TicketNoPath) returns (InspectionTaskGetResp)
+
+	@doc "巡检任务批量提交(异常项自动转工单, perm: ops:inspect:submit)"
+	@handler submitInspectionTask
+	post /inspection/tasks/:id/submit (InspectionSubmitReq) returns (InspectionSubmitResp)
+}
+
+@server (
+	prefix:     /api/v1
+	group:      stationweb
+	middleware: Authz
+)
+service AdminBffApi {
+	@doc "场站 Web 我的驻站信息(data_scope 锁定本场站, FR-STN-006)"
+	@handler stationWebMe
+	get /station-web/me (NoArgsReq) returns (StationWebMeResp)
+}
+

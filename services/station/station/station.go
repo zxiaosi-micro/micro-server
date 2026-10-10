@@ -29,6 +29,8 @@ type (
 	GetStationResp         = pb.GetStationResp
 	GetTopologyReq         = pb.GetTopologyReq
 	GetTopologyResp        = pb.GetTopologyResp
+	ListStationByUserReq   = pb.ListStationByUserReq
+	ListStationByUserResp  = pb.ListStationByUserResp
 	ListStationDevicesReq  = pb.ListStationDevicesReq
 	ListStationDevicesResp = pb.ListStationDevicesResp
 	ListStationReq         = pb.ListStationReq
@@ -66,8 +68,10 @@ type (
 		AddStationStaff(ctx context.Context, in *AddStationStaffReq, opts ...grpc.CallOption) (*AddStationStaffResp, error)
 		RemoveStationStaff(ctx context.Context, in *RemoveStationStaffReq, opts ...grpc.CallOption) (*RemoveStationStaffResp, error)
 		ListStationStaff(ctx context.Context, in *ListStationStaffReq, opts ...grpc.CallOption) (*ListStationStaffResp, error)
-		// ---- 反查（设备 → 场站）----
+		// ---- 反查（设备 → 场站；用户 → 场站）----
 		GetDeviceStation(ctx context.Context, in *GetDeviceStationReq, opts ...grpc.CallOption) (*GetDeviceStationResp, error)
+		// ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+		ListStationByUser(ctx context.Context, in *ListStationByUserReq, opts ...grpc.CallOption) (*ListStationByUserResp, error)
 	}
 
 	defaultStation struct {
@@ -146,8 +150,14 @@ func (m *defaultStation) ListStationStaff(ctx context.Context, in *ListStationSt
 	return client.ListStationStaff(ctx, in, opts...)
 }
 
-// ---- 反查（设备 → 场站）----
+// ---- 反查（设备 → 场站；用户 → 场站）----
 func (m *defaultStation) GetDeviceStation(ctx context.Context, in *GetDeviceStationReq, opts ...grpc.CallOption) (*GetDeviceStationResp, error) {
 	client := pb.NewStationClient(m.cli.Conn())
 	return client.GetDeviceStation(ctx, in, opts...)
+}
+
+// ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+func (m *defaultStation) ListStationByUser(ctx context.Context, in *ListStationByUserReq, opts ...grpc.CallOption) (*ListStationByUserResp, error) {
+	client := pb.NewStationClient(m.cli.Conn())
+	return client.ListStationByUser(ctx, in, opts...)
 }

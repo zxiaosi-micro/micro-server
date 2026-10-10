@@ -163,6 +163,8 @@ type (
 		contractSlaModel
 		// InsertTx 绑定落库（contract_id UK——一合同一策略绑定）。
 		InsertTx(ctx context.Context, session sqlx.Session, data *ContractSla) error
+		// FindOneByContract 取绑定（ops 反查 SLA 计时快照用，S7）。
+		FindOneByContract(ctx context.Context, tenantId, contractId int64) (*ContractSla, error)
 	}
 
 	customContractSlaModel struct {
@@ -177,6 +179,16 @@ func NewContractSlaModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Opt
 		defaultContractSlaModel: newContractSlaModel(conn, c, opts...),
 		conn:                    conn,
 	}
+}
+
+// FindOneByContract 取绑定。
+func (m *customContractSlaModel) FindOneByContract(ctx context.Context, tenantId, contractId int64) (*ContractSla, error) {
+	var res ContractSla
+	query := "select " + contractSlaRows + " from `contract_sla` where `contract_id` = ? and `tenant_id` = ? limit 1"
+	if err := m.conn.QueryRowCtx(ctx, &res, query, contractId, tenantId); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (m *customContractSlaModel) InsertTx(ctx context.Context, session sqlx.Session, data *ContractSla) error {

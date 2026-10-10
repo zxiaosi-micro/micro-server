@@ -38,8 +38,10 @@ service Station {
   rpc RemoveStationStaff(RemoveStationStaffReq) returns (RemoveStationStaffResp);
   rpc ListStationStaff(ListStationStaffReq) returns (ListStationStaffResp);
 
-  // ---- 反查（设备 → 场站）----
+  // ---- 反查（设备 → 场站；用户 → 场站）----
   rpc GetDeviceStation(GetDeviceStationReq) returns (GetDeviceStationResp);
+  // ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+  rpc ListStationByUser(ListStationByUserReq) returns (ListStationByUserResp);
 }
 
 message PingReq {}
@@ -200,4 +202,7 @@ message GetDeviceStationReq {
   int64 device_id = 1;
   string sn = 2; // device_id 与 sn 二选一
 }
+
+message ListStationByUserReq { int64 user_id = 1; }
+message ListStationByUserResp { repeated StationView list = 1; }
 message GetDeviceStationResp { DeviceStationView station = 1; }

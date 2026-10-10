@@ -1,0 +1,565 @@
+syntax = "proto3";
+
+package ops;
+
+option go_package = "./pb";
+
+// Ops 运维服务契约（S7-01，v4/03 阶段 7 任务正本）。
+//
+// 职责边界（02 §2.3 唯一写入方）：
+//   - ops_db 全部表归本服务：alert_rule / alert / ticket / ticket_log / sla_timer /
+//     inspection_plan / inspection_template / inspection_task / inspection_item。
+//   - SLA 策略正本在 contract（FR-CTR-007），本服务只做计时（sla_timer 快照冻结）；
+//     ListSlaStrategy 为 contract 透传，前端不直连 contract。
+//   - 告警判定/聚合归本服务（FR-IOT-009：iotingest 只做候选初筛）；
+//     消费 alert_candidate/cmd_failed/ota_paused/device_anomaly/station_created，
+//     发出 alert_created + notification_request（Outbox 同事务）。
+//   - 派单匹配（区域+技能）调 party.ListStaff 拉候选，匹配逻辑归本服务；
+//     设备→场站归属调 station.GetDeviceStation。
+//   - 延迟任务不走 MQ（ADR-09）：接单超时/SLA 超时/巡检生成 = next_exec_at 索引 + cron 注册表扫描。
+//
+// 约定：ID 传输层 int64、对外 string（E8）；时间 UnixMilli；枚举一律 string。
+service Ops {
+  rpc Ping(PingReq) returns (PingResp);
+
+  // ---- 告警规则（FR-OPS-001）----
+  rpc CreateAlertRule(CreateAlertRuleReq) returns (CreateAlertRuleResp);
+  rpc UpdateAlertRule(UpdateAlertRuleReq) returns (UpdateAlertRuleResp);
+  rpc DeleteAlertRule(DeleteAlertRuleReq) returns (DeleteAlertRuleResp);
+  rpc ListAlertRule(ListAlertRuleReq) returns (ListAlertRuleResp);
+
+  // ---- 告警（FR-OPS-002/003/009/010）----
+  // ListAlert 全量列表（分页过滤）；PendingAlerts 轮询增量（since_id + Redis 未读计数）。
+  rpc ListAlert(ListAlertReq) returns (ListAlertResp);
+  rpc GetAlert(GetAlertReq) returns (GetAlertResp);
+  // AckAlert 确认（OPEN→ACKED，记录确认人）。
+  rpc AckAlert(AckAlertReq) returns (AckAlertResp);
+  // TransferAlertToTicket 转工单（隐含确认 OPEN→ACKED；level→优先级；可选自动派单）。
+  rpc TransferAlertToTicket(TransferAlertToTicketReq) returns (TransferAlertToTicketResp);
+  // CloseAlert 关闭（前置：closed_ticket_id 已验收工单，或人工备注原因）。
+  rpc CloseAlert(CloseAlertReq) returns (CloseAlertResp);
+  // ArchiveAlert 归档（终态，只读留痕）。
+  rpc ArchiveAlert(ArchiveAlertReq) returns (ArchiveAlertResp);
+  // PendingAlerts 轮询增量接口（轻量 <5KB / P95<100ms，FR-OPS-010）。
+  rpc PendingAlerts(PendingAlertsReq) returns (PendingAlertsResp);
+
+  // ---- 工单（FR-OPS-004/005/008）----
+  // 状态机：PENDING_DISPATCH→DISPATCHED→ACCEPTED→PROCESSING→SUBMITTED→VERIFIED→CLOSED；
+  // 任意非终态→CANCELLED。接单超时由 escalate_at 扫描升级（ADR-09，无 MQ 延迟消息）。
+  rpc CreateTicket(CreateTicketReq) returns (CreateTicketResp);
+  rpc GetTicket(GetTicketReq) returns (GetTicketResp);
+  rpc ListTicket(ListTicketReq) returns (ListTicketResp);
+  // MatchStaff 派单候选（场站区域 + 技能标签匹配，FR-OPS-004/FR-PTY-005）。
+  rpc MatchStaff(MatchStaffReq) returns (MatchStaffResp);
+  // DispatchTicket 派单（assignee_uid 空 = MatchStaff 自动取第一候选）。
+  rpc DispatchTicket(DispatchTicketReq) returns (DispatchTicketResp);
+  rpc AcceptTicket(AcceptTicketReq) returns (AcceptTicketResp);
+  rpc StartTicket(StartTicketReq) returns (StartTicketResp);
+  // SubmitTicket 处理完成提交（附结果说明）。
+  rpc SubmitTicket(SubmitTicketReq) returns (SubmitTicketResp);
+  // VerifyTicket 验收（pass=false 退回 PROCESSING；告警工单验收后可 CloseAlert）。
+  rpc VerifyTicket(VerifyTicketReq) returns (VerifyTicketResp);
+  rpc CloseTicket(CloseTicketReq) returns (CloseTicketResp);
+  rpc CancelTicket(CancelTicketReq) returns (CancelTicketResp);
+  // PendingTickets 轮询增量接口（与 PendingAlerts 同构，FR-OPS-010）。
+  rpc PendingTickets(PendingTicketsReq) returns (PendingTicketsResp);
+
+  // ---- SLA（FR-OPS-006；策略正本 contract，本服务计时）----
+  // ListSlaStrategy 透传 contract.ListSlaStrategy（前端管理入口统一走 ops）。
+  rpc ListSlaStrategy(ListSlaStrategyReq) returns (ListSlaStrategyResp);
+  // GetSlaTimer 工单计时器详情（策略快照/暂停留痕/分级升级状态）。
+  rpc GetSlaTimer(GetSlaTimerReq) returns (GetSlaTimerResp);
+  // PauseSlaTimer 暂停（必填原因，留痕；pause_minutes 累计）。
+  rpc PauseSlaTimer(PauseSlaTimerReq) returns (PauseSlaTimerResp);
+  // ResumeSlaTimer 恢复（due_at 顺延累计暂停时长）。
+  rpc ResumeSlaTimer(ResumeSlaTimerReq) returns (ResumeSlaTimerResp);
+
+  // ---- 巡检（FR-OPS-007）----
+  // station_created 消费自动建计划（默认模板）；计划 cron 表达式限简化集合：
+  // @daily / @weekly / @monthly / @h:N（每 N 小时）。
+  rpc CreateInspectionPlan(CreateInspectionPlanReq) returns (CreateInspectionPlanResp);
+  rpc UpdateInspectionPlan(UpdateInspectionPlanReq) returns (UpdateInspectionPlanResp);
+  rpc ListInspectionPlan(ListInspectionPlanReq) returns (ListInspectionPlanResp);
+  rpc CreateInspectionTemplate(CreateInspectionTemplateReq) returns (CreateInspectionTemplateResp);
+  rpc ListInspectionTemplate(ListInspectionTemplateReq) returns (ListInspectionTemplateResp);
+  rpc ListInspectionTask(ListInspectionTaskReq) returns (ListInspectionTaskResp);
+  rpc GetInspectionTask(GetInspectionTaskReq) returns (GetInspectionTaskResp);
+  // SubmitInspectionTask 批量提交明细；异常项（anomalous=true）自动生成工单（type=INSPECTION）。
+  rpc SubmitInspectionTask(SubmitInspectionTaskReq) returns (SubmitInspectionTaskResp);
+}
+
+message PingReq {}
+message PingResp { string pong = 1; }
+
+// ---------- 告警规则 ----------
+
+message AlertRuleDetail {
+  int64 rule_id = 1;
+  string code = 2;
+  string name = 3;
+  string metric = 4;              // 指标名（如 cell_temp）
+  string comparator = 5;          // gt/gte/lt/lte
+  double threshold = 6;
+  int32 duration_sec = 7;         // 持续越限时长（0=立即）
+  string level = 8;               // P1/P2/P3
+  int32 suppress_window_sec = 9;  // 抑制窗口（同源聚合不重复生成）
+  string scope = 10;              // 作用域 JSON：{"station_ids":[],"product_keys":[]}（空=全部）
+  bool enabled = 11;
+  int64 created_at = 12;
+  int64 updated_at = 13;
+}
+
+message CreateAlertRuleReq {
+  string code = 1;
+  string name = 2;
+  string metric = 3;
+  string comparator = 4;
+  double threshold = 5;
+  int32 duration_sec = 6;
+  string level = 7;
+  int32 suppress_window_sec = 8;
+  string scope = 9;
+}
+message CreateAlertRuleResp { int64 rule_id = 1; }
+
+message UpdateAlertRuleReq {
+  int64 rule_id = 1;
+  string name = 2;
+  string comparator = 3;
+  double threshold = 4;
+  int32 duration_sec = 5;
+  string level = 6;
+  int32 suppress_window_sec = 7;
+  string scope = 8;
+  bool enabled = 9;
+}
+message UpdateAlertRuleResp {}
+
+message DeleteAlertRuleReq { int64 rule_id = 1; }
+message DeleteAlertRuleResp {}
+
+message ListAlertRuleReq {
+  string metric = 1;
+  string level = 2;
+  int64 enabled = 3; // -1=全部（缺省 1=仅启用）
+  int64 page = 4;
+  int64 size = 5;
+}
+message ListAlertRuleResp {
+  repeated AlertRuleDetail list = 1;
+  int64 total = 2;
+}
+
+// ---------- 告警 ----------
+
+message AlertItem {
+  int64 alert_id = 1;
+  string level = 2;         // P1/P2/P3
+  string source = 3;        // TELEMETRY/CMD_FAILED/OTA_PAUSED/DEVICE_ANOMALY
+  string metric = 4;
+  double last_value = 5;
+  string comparator = 6;
+  double threshold = 7;
+  int64 station_id = 8;     // 0=平台级（设备未绑站）
+  string station_name = 9;
+  int64 device_id = 10;     // 0=系统告警（无设备）
+  string sn = 11;
+  string title = 12;
+  string content = 13;
+  string status = 14;       // OPEN/ACKED/CLOSED/ARCHIVED
+  int32 aggregate_count = 15;
+  string devices = 16;      // 聚合设备明细 JSON [{"sn":"","device_id":0}]
+  int64 first_seen_at = 17;
+  int64 last_seen_at = 18;
+  int64 acked_by = 19;
+  int64 acked_at = 20;
+  int64 closed_ticket_id = 21;
+  string closed_reason = 22;
+  int64 closed_at = 23;
+  int64 archived_at = 24;
+}
+
+message ListAlertReq {
+  string status = 1;
+  string level = 2;
+  string source = 3;
+  int64 station_id = 4;    // 0=不限
+  int64 page = 5;
+  int64 size = 6;
+}
+message ListAlertResp {
+  repeated AlertItem list = 1;
+  int64 total = 2;
+}
+
+message GetAlertReq { int64 alert_id = 1; }
+message GetAlertResp { AlertItem alert = 1; }
+
+message AckAlertReq {
+  int64 alert_id = 1;
+  string note = 2;
+}
+message AckAlertResp {}
+
+message TransferAlertToTicketReq {
+  int64 alert_id = 1;
+  string required_skills = 2; // JSON 数组（空=不限）
+  bool auto_dispatch = 3;     // true=建单后立即派单（MatchStaff 自动）
+  string remark = 4;
+}
+message TransferAlertToTicketResp {
+  int64 ticket_id = 1;
+  string ticket_no = 2;
+  int64 assignee_uid = 3;  // 0=未派单
+  string assignee_name = 4;
+}
+
+message CloseAlertReq {
+  int64 alert_id = 1;
+  int64 ticket_id = 2;    // 已验收工单（0=人工备注关闭）
+  string reason = 3;      // 人工关闭必填
+}
+message CloseAlertResp {}
+
+message ArchiveAlertReq { int64 alert_id = 1; }
+message ArchiveAlertResp {}
+
+message PendingAlertsReq {
+  int64 station_id = 1; // 场站 Web 锁定本场站；0=全部（管理端）
+  int64 since_id = 2;   // 上次最大 ID（雪花天然有序）
+  int32 limit = 3;      // 默认 20（单响应 <5KB）
+}
+message AlertBrief {
+  int64 alert_id = 1;
+  string level = 2;
+  string source = 3;
+  string metric = 4;
+  string title = 5;
+  int64 station_id = 6;
+  string station_name = 7;
+  int32 aggregate_count = 8;
+  string status = 9;
+  int64 first_seen_at = 10;
+}
+message PendingAlertsResp {
+  int64 unread_count = 1; // Redis 计数器（OPEN 未确认数；miss 时 DB count 回填）
+  int64 max_id = 2;       // 本次返回集内最大 ID（前端下次 since_id）
+  repeated AlertBrief items = 3;
+}
+
+// ---------- 工单 ----------
+
+message TicketItem {
+  int64 ticket_id = 1;
+  string ticket_no = 2;
+  string type = 3;          // ALERT/AFTER_SALE/INSPECTION/INSTALL/STATION
+  string title = 4;
+  string content = 5;
+  string priority = 6;      // P1/P2/P3
+  int64 station_id = 7;
+  string station_name = 8;
+  int64 device_id = 9;
+  string sn = 10;
+  int64 alert_id = 11;            // 来源告警（type=ALERT）
+  int64 inspection_item_id = 12;  // 来源巡检异常项（type=INSPECTION）
+  int64 assignee_uid = 13;
+  string assignee_name = 14;
+  string status = 15;
+  int32 escalate_level = 16;      // 接单超时升级次数
+  int64 dispatch_at = 17;
+  int64 accept_deadline = 18;     // 接单截止（超时扫描升级）
+  int64 accepted_at = 19;
+  int64 submitted_at = 20;
+  int64 verified_at = 21;
+  int64 closed_at = 22;
+  string cancel_reason = 23;
+  int64 created_by = 24;
+  string client_action_id = 25;   // 离线工单幂等键（FR-OPS-008，L2）
+  int64 created_at = 26;
+}
+
+message TicketLogItem {
+  int64 log_id = 1;
+  int64 ticket_id = 2;
+  string action = 3;        // create/dispatch/accept/start/submit/verify/close/cancel/escalate/pause/resume
+  string from_status = 4;
+  string to_status = 5;
+  int64 operator_uid = 6;   // 0=系统（cron 扫描）
+  string note = 7;
+  int64 created_at = 8;
+}
+
+message CreateTicketReq {
+  string type = 1;
+  string title = 2;
+  string content = 3;
+  string priority = 4;
+  int64 station_id = 5;
+  int64 device_id = 6;
+  string sn = 7;
+  int64 alert_id = 8;
+  string client_action_id = 9;
+}
+message CreateTicketResp {
+  int64 ticket_id = 1;
+  string ticket_no = 2;
+}
+
+message GetTicketReq { int64 ticket_id = 1; }
+message GetTicketResp {
+  TicketItem ticket = 1;
+  repeated TicketLogItem logs = 2;
+}
+
+message ListTicketReq {
+  string status = 1;
+  string type = 2;
+  int64 station_id = 3;
+  int64 assignee_uid = 4;
+  int64 page = 5;
+  int64 size = 6;
+}
+message ListTicketResp {
+  repeated TicketItem list = 1;
+  int64 total = 2;
+}
+
+message StaffCandidate {
+  int64 staff_id = 1;
+  int64 user_id = 2;
+  string name = 3;
+  string staff_type = 4;
+  string skill_tags = 5; // JSON 数组串
+  string work_region = 6;
+}
+message MatchStaffReq {
+  int64 station_id = 1;
+  string required_skills = 2; // JSON 数组（空=不限技能）
+}
+message MatchStaffResp { repeated StaffCandidate list = 1; }
+
+message DispatchTicketReq {
+  int64 ticket_id = 1;
+  int64 assignee_uid = 2;         // 0=MatchStaff 自动取第一候选
+  int32 accept_timeout_min = 3;   // 0=用服务配置（默认 30min）
+}
+message DispatchTicketResp {
+  int64 assignee_uid = 1;
+  string assignee_name = 2;
+  int64 accept_deadline = 3;
+}
+
+message AcceptTicketReq { int64 ticket_id = 1; }
+message AcceptTicketResp {}
+
+message StartTicketReq { int64 ticket_id = 1; }
+message StartTicketResp {}
+
+message SubmitTicketReq {
+  int64 ticket_id = 1;
+  string result = 2;
+}
+message SubmitTicketResp {}
+
+message VerifyTicketReq {
+  int64 ticket_id = 1;
+  bool pass = 2;
+  string remark = 3;
+}
+message VerifyTicketResp {}
+
+message CloseTicketReq {
+  int64 ticket_id = 1;
+  string remark = 2;
+}
+message CloseTicketResp {}
+
+message CancelTicketReq {
+  int64 ticket_id = 1;
+  string reason = 2;
+}
+message CancelTicketResp {}
+
+message PendingTicketsReq {
+  int64 station_id = 1;
+  int64 assignee_uid = 2;
+  string status = 3;   // 常用 DISPATCHED（待我接单）/PENDING_DISPATCH（待派单）
+  int64 since_id = 4;
+  int32 limit = 5;
+}
+message TicketBrief {
+  int64 ticket_id = 1;
+  string ticket_no = 2;
+  string type = 3;
+  string title = 4;
+  string priority = 5;
+  int64 station_id = 6;
+  string station_name = 7;
+  string status = 8;
+  int32 escalate_level = 9;
+  int64 created_at = 10;
+}
+message PendingTicketsResp {
+  int64 unread_count = 1; // 过滤条件下活跃（非终态）计数
+  int64 max_id = 2;
+  repeated TicketBrief items = 3;
+}
+
+// ---------- SLA ----------
+
+message SlaStrategyView {
+  int64 strategy_id = 1;
+  string code = 2;
+  string name = 3;
+  string level = 4;
+  int32 response_minutes = 5;
+  int32 resolve_minutes = 6;
+}
+message ListSlaStrategyReq {}
+message ListSlaStrategyResp { repeated SlaStrategyView list = 1; }
+
+message SlaTimerView {
+  int64 timer_id = 1;
+  int64 ticket_id = 2;
+  int64 strategy_id = 3;
+  string strategy_snapshot = 4; // 快照 JSON（冻结，FR-CTR-007）
+  int64 response_due_at = 5;
+  int64 resolve_due_at = 6;
+  int64 paused_at = 7;          // 0=未暂停
+  string pause_reason = 8;
+  int32 pause_total_min = 9;    // 累计暂停分钟（due_at 顺延依据）
+  int32 escalate_level = 10;
+  int64 responded_at = 11;      // 接单即响应
+  int64 resolved_at = 12;       // 验收即解决
+  int64 response_breach_at = 13; // 超时发生时刻（0=未超时）
+  int64 resolve_breach_at = 14;
+}
+message GetSlaTimerReq { int64 ticket_id = 1; }
+message GetSlaTimerResp { SlaTimerView timer = 1; }
+
+message PauseSlaTimerReq {
+  int64 ticket_id = 1;
+  string reason = 2;
+}
+message PauseSlaTimerResp {}
+
+message ResumeSlaTimerReq { int64 ticket_id = 1; }
+message ResumeSlaTimerResp {}
+
+// ---------- 巡检 ----------
+
+message InspectionTemplateView {
+  int64 template_id = 1;
+  string name = 2;
+  string items_schema = 3; // 检查项 schema JSON [{"name":"","type":"bool/number/text"}]
+  int64 created_at = 4;
+}
+message CreateInspectionTemplateReq {
+  string name = 1;
+  string items_schema = 2;
+}
+message CreateInspectionTemplateResp { int64 template_id = 1; }
+message ListInspectionTemplateReq {
+  int64 page = 1;
+  int64 size = 2;
+}
+message ListInspectionTemplateResp {
+  repeated InspectionTemplateView list = 1;
+  int64 total = 2;
+}
+
+message InspectionPlanView {
+  int64 plan_id = 1;
+  int64 station_id = 2;
+  string station_name = 3;
+  string name = 4;
+  int64 template_id = 5;
+  string cron_expr = 6; // @daily/@weekly/@monthly/@h:N
+  bool enabled = 7;
+  int64 next_exec_at = 8;
+  int64 last_exec_at = 9;
+  int64 created_at = 10;
+}
+message CreateInspectionPlanReq {
+  int64 station_id = 1;
+  string name = 2;
+  int64 template_id = 3;
+  string cron_expr = 4;
+}
+message CreateInspectionPlanResp { int64 plan_id = 1; }
+
+message UpdateInspectionPlanReq {
+  int64 plan_id = 1;
+  string name = 2;
+  string cron_expr = 3;
+  int64 template_id = 4;
+  int64 enabled = 5; // -1=不改
+}
+message UpdateInspectionPlanResp {}
+
+message ListInspectionPlanReq {
+  int64 station_id = 1; // 0=全部
+  int64 page = 2;
+  int64 size = 3;
+}
+message ListInspectionPlanResp {
+  repeated InspectionPlanView list = 1;
+  int64 total = 2;
+}
+
+message InspectionTaskView {
+  int64 task_id = 1;
+  int64 plan_id = 2;
+  int64 template_id = 3;
+  int64 station_id = 4;
+  string station_name = 5;
+  string title = 6;
+  int64 scheduled_for = 7;
+  string status = 8; // PENDING/SUBMITTED/CANCELLED
+  int64 submitted_by = 9;
+  int64 submitted_at = 10;
+  int32 anomaly_count = 11;
+  string ticket_ids = 12; // 生成工单 JSON 数组串
+  int64 created_at = 13;
+}
+message InspectionItemView {
+  int64 item_id = 1;
+  int64 task_id = 2;
+  string name = 3;
+  string result = 4;   // JSON（值/照片/定位）
+  bool anomalous = 5;
+  int64 ticket_id = 6; // 异常项生成工单回填（0=无）
+}
+message ListInspectionTaskReq {
+  int64 station_id = 1;
+  string status = 2;
+  int64 page = 3;
+  int64 size = 4;
+}
+message ListInspectionTaskResp {
+  repeated InspectionTaskView list = 1;
+  int64 total = 2;
+}
+
+message GetInspectionTaskReq { int64 task_id = 1; }
+message GetInspectionTaskResp {
+  InspectionTaskView task = 1;
+  repeated InspectionItemView items = 2;
+}
+
+message InspectionItemSubmit {
+  string name = 1;
+  string result = 2;   // JSON
+  bool anomalous = 3;
+}
+message SubmitInspectionTaskReq {
+  int64 task_id = 1;
+  repeated InspectionItemSubmit items = 2;
+  string location = 3;  // 定位（FR-OPS-007 拍照定位）
+  string photos = 4;    // 照片 URL JSON 数组
+  string remark = 5;
+}
+message SubmitInspectionTaskResp {
+  int32 anomaly_count = 1;
+  string ticket_ids = 2; // 自动生成工单 JSON 数组串
+}

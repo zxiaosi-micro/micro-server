@@ -24,6 +24,8 @@ type Config struct {
 	// S6 资产域 RPC 客户端（S6-01/02 接入）。
 	DeviceRpc  zrpc.RpcClientConf `json:",optional"`
 	StationRpc zrpc.RpcClientConf `json:",optional"`
+	// S7 运维域
+	OpsRpc zrpc.RpcClientConf `json:",optional"`
 	// Jwt 公钥目录（与 identity 同源 keygen 产出；验签按 kid 选钥）。
 	Jwt struct {
 		KeysDir string `json:",optional"`

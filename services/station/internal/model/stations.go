@@ -178,6 +178,8 @@ type (
 		// SoftRemoveTx 逻辑移除（station_id+user_id）。
 		SoftRemoveTx(ctx context.Context, session sqlx.Session, tenantId, stationId, userId int64) (int64, error)
 		ListByStation(ctx context.Context, tenantId, stationId int64) ([]*StationStaff, error)
+		// ListByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站）。
+		ListByUser(ctx context.Context, tenantId, userId int64) ([]*StationStaff, error)
 	}
 
 	customStationStaffModel struct {
@@ -211,6 +213,15 @@ func (m *customStationStaffModel) ListByStation(ctx context.Context, tenantId, s
 	var list []*StationStaff
 	query := "select " + stationStaffRows + " from `station_staff` where `station_id` = ? and `tenant_id` = ? and `deleted_at` is null order by `id`"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, stationId, tenantId); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (m *customStationStaffModel) ListByUser(ctx context.Context, tenantId, userId int64) ([]*StationStaff, error) {
+	var list []*StationStaff
+	query := "select " + stationStaffRows + " from `station_staff` where `tenant_id` = ? and `user_id` = ? and `deleted_at` is null order by `id`"
+	if err := m.conn.QueryRowsCtx(ctx, &list, query, tenantId, userId); err != nil {
 		return nil, err
 	}
 	return list, nil

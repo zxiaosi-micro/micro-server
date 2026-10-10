@@ -1,0 +1,49 @@
+Name: ops.rpc
+ListenOn: "0.0.0.0:${RPC_PORT|8094}"
+Mode: dev
+Etcd:
+  Hosts:
+    - ${ETCD_HOSTS|127.0.0.1:22379}
+  Key: ops.rpc
+Mysql:
+  DataSource: "${MICRO_DSN_OPS|}"
+Cache:
+  - Host: ${REDIS_HOSTS|127.0.0.1:26379}
+    Pass: ${REDIS_PASS|}
+    Type: node
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
+  Group: ops-consumer
+StationRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: station.rpc
+  NonBlock: true
+  Timeout: 3000
+PartyRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: party.rpc
+  NonBlock: true
+  Timeout: 3000
+ContractRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: contract.rpc
+  NonBlock: true
+  Timeout: 3000
+# 接单超时（分钟，DispatchTicket 默认值；confcenter 可热调 accept_timeout_min）
+AcceptTimeoutMin: 30
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9114
+Telemetry:
+  Name: ops
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+ConfigKey: ${CONFIG_KEY|/micro/config/ops/main}   # configcenter（键位含文件名，ADR-10）

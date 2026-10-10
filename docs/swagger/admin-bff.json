@@ -15,6 +15,596 @@
   },
   "basePath": "/",
   "paths": {
+    "/api/v1/alert-rules": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警规则列表(perm: ops:rule:list)",
+        "operationId": "opsListAlertRules",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "metric",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "level",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "enabled",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AlertRuleListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警规则创建(perm: ops:rule:manage)",
+        "operationId": "opsCreateAlertRule",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AlertRuleCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alert-rules/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警规则更新(perm: ops:rule:manage)",
+        "operationId": "opsUpdateAlertRule",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AlertRuleUpdateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警规则删除(perm: ops:rule:manage)",
+        "operationId": "opsDeleteAlertRule",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警列表(perm: ops:alert:list)",
+        "operationId": "opsListAlerts",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "level",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "source",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AlertListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/pending": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警轮询增量(未读计数+since_id, perm: ops:alert:list)",
+        "operationId": "opsPendingAlerts",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "since_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "limit",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AlertPendingResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警详情(perm: ops:alert:list)",
+        "operationId": "opsGetAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AlertGetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}/ack": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警确认(perm: ops:alert:ack)",
+        "operationId": "opsAckAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AlertAckReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}/archive": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警归档(perm: ops:alert:archive)",
+        "operationId": "opsArchiveAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}/close": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警关闭(须已验收工单或备注原因, perm: ops:alert:close)",
+        "operationId": "opsCloseAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AlertCloseReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}/transfer": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警转工单(隐含确认, perm: ops:alert:transfer)",
+        "operationId": "opsTransferAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AlertTransferReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AlertTransferResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/audit-logs": {
       "get": {
         "produces": [
@@ -1448,6 +2038,414 @@
                 },
                 "data": {
                   "$ref": "#/definitions/FirmwareSaveResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/plans": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检计划列表(perm: ops:inspect:list)",
+        "operationId": "opsListInspectionPlans",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InspectionPlanListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检计划创建(perm: ops:inspect:manage)",
+        "operationId": "opsCreateInspectionPlan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InspectionPlanCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/plans/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检计划更新(perm: ops:inspect:manage)",
+        "operationId": "opsUpdateInspectionPlan",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InspectionPlanUpdateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/tasks": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检任务列表(perm: ops:inspect:list)",
+        "operationId": "opsListInspectionTasks",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InspectionTaskListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/tasks/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检任务详情(含明细, perm: ops:inspect:list)",
+        "operationId": "opsGetInspectionTask",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InspectionTaskGetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/tasks/{id}/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检任务批量提交(异常项自动转工单, perm: ops:inspect:submit)",
+        "operationId": "opsSubmitInspectionTask",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InspectionSubmitReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InspectionSubmitResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspection/templates": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检模板列表(perm: ops:inspect:list)",
+        "operationId": "opsListInspectionTemplates",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/InspectionTemplateListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检模板创建(perm: ops:inspect:manage)",
+        "operationId": "opsCreateInspectionTemplate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InspectionTemplateCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -5395,6 +6393,41 @@
         }
       }
     },
+    "/api/v1/sla/strategies": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SLA 策略列表(contract 透传, perm: ops:sla:list)",
+        "operationId": "opsListSlaStrategies",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SlaStrategyListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/staff": {
       "post": {
         "consumes": [
@@ -5579,6 +6612,41 @@
                 },
                 "data": {
                   "$ref": "#/definitions/StationProductDetailResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/station-web/me": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站 Web 我的驻站信息(data_scope 锁定本场站, FR-STN-006)",
+        "operationId": "stationwebStationWebMe",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/StationWebMeResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -6614,6 +7682,781 @@
         }
       }
     },
+    "/api/v1/tickets": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单列表(perm: ops:ticket:list)",
+        "operationId": "opsListTickets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "assignee_uid",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单创建(perm: ops:ticket:create)",
+        "operationId": "opsCreateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TicketCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/match-staff": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "派单候选(区域+技能, perm: ops:ticket:dispatch)",
+        "operationId": "opsMatchStaff",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "required_skills",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketMatchStaffResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/pending": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单轮询增量(perm: ops:ticket:list)",
+        "operationId": "opsPendingTickets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "station_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "assignee_uid",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "since_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "limit",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketPendingResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单详情(含日志, perm: ops:ticket:list)",
+        "operationId": "opsGetTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketGetResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/accept": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单接单(perm: ops:ticket:handle)",
+        "operationId": "opsAcceptTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/cancel": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单取消(perm: ops:ticket:dispatch)",
+        "operationId": "opsCancelTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TicketCancelReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/close": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单关闭(perm: ops:ticket:verify)",
+        "operationId": "opsCloseTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/dispatch": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单派单(perm: ops:ticket:dispatch)",
+        "operationId": "opsDispatchTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TicketDispatchReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TicketDispatchResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/sla-pause": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SLA 暂停(留痕, perm: ops:sla:manage)",
+        "operationId": "opsPauseSlaTimer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SlaPauseReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/sla-resume": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "SLA 恢复(due 顺延, perm: ops:sla:manage)",
+        "operationId": "opsResumeSlaTimer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/sla-timer": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单 SLA 计时器(perm: ops:sla:list)",
+        "operationId": "opsGetSlaTimer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SlaTimerResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/start": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "开工处理(perm: ops:ticket:handle)",
+        "operationId": "opsStartTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "处理完成提交(perm: ops:ticket:handle)",
+        "operationId": "opsSubmitTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TicketSubmitReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}/verify": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单验收(perm: ops:ticket:verify)",
+        "operationId": "opsVerifyTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TicketVerifyReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users": {
       "get": {
         "produces": [
@@ -7307,6 +9150,499 @@
     }
   },
   "definitions": {
+    "AlertAckReq": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertBriefView": {
+      "type": "object",
+      "required": [
+        "alert_id",
+        "level",
+        "source",
+        "metric",
+        "title",
+        "station_id",
+        "station_name",
+        "aggregate_count",
+        "status",
+        "first_seen_at"
+      ],
+      "properties": {
+        "aggregate_count": {
+          "type": "integer"
+        },
+        "alert_id": {
+          "type": "string"
+        },
+        "first_seen_at": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertCloseReq": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertGetResp": {
+      "type": "object",
+      "required": [
+        "alert"
+      ],
+      "properties": {
+        "alert": {
+          "type": "object",
+          "required": [
+            "alert_id",
+            "level",
+            "source",
+            "metric",
+            "last_value",
+            "comparator",
+            "threshold",
+            "station_id",
+            "station_name",
+            "device_id",
+            "sn",
+            "title",
+            "content",
+            "status",
+            "aggregate_count",
+            "devices",
+            "first_seen_at",
+            "last_seen_at",
+            "acked_by",
+            "closed_ticket_id",
+            "closed_reason"
+          ],
+          "properties": {
+            "acked_by": {
+              "type": "string"
+            },
+            "aggregate_count": {
+              "type": "integer"
+            },
+            "alert_id": {
+              "type": "string"
+            },
+            "closed_reason": {
+              "type": "string"
+            },
+            "closed_ticket_id": {
+              "type": "string"
+            },
+            "comparator": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "device_id": {
+              "type": "string"
+            },
+            "devices": {
+              "type": "string"
+            },
+            "first_seen_at": {
+              "type": "integer"
+            },
+            "last_seen_at": {
+              "type": "integer"
+            },
+            "last_value": {
+              "type": "number"
+            },
+            "level": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "threshold": {
+              "type": "number"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/AlertView"
+        }
+      }
+    },
+    "AlertListReq": {
+      "type": "object"
+    },
+    "AlertListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AlertView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "AlertNoPath": {
+      "type": "object"
+    },
+    "AlertPendingReq": {
+      "type": "object"
+    },
+    "AlertPendingResp": {
+      "type": "object",
+      "required": [
+        "unread_count",
+        "max_id",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AlertBriefView"
+          }
+        },
+        "max_id": {
+          "type": "string"
+        },
+        "unread_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "AlertRuleCreateReq": {
+      "type": "object",
+      "required": [
+        "code",
+        "name",
+        "metric",
+        "comparator",
+        "threshold"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "comparator": {
+          "type": "string"
+        },
+        "duration_sec": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "suppress_window_sec": {
+          "type": "integer"
+        },
+        "threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "AlertRuleListReq": {
+      "type": "object"
+    },
+    "AlertRuleListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AlertRuleView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "AlertRuleUpdateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "comparator",
+        "threshold",
+        "enabled"
+      ],
+      "properties": {
+        "comparator": {
+          "type": "string"
+        },
+        "duration_sec": {
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "level": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "suppress_window_sec": {
+          "type": "integer"
+        },
+        "threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "AlertRuleView": {
+      "type": "object",
+      "required": [
+        "rule_id",
+        "code",
+        "name",
+        "metric",
+        "comparator",
+        "threshold",
+        "duration_sec",
+        "level",
+        "suppress_window_sec",
+        "scope",
+        "enabled",
+        "created_at"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "comparator": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "duration_sec": {
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "level": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rule_id": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "suppress_window_sec": {
+          "type": "integer"
+        },
+        "threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "AlertTransferReq": {
+      "type": "object",
+      "properties": {
+        "auto_dispatch": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "required_skills": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertTransferResp": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "assignee_uid",
+        "assignee_name"
+      ],
+      "properties": {
+        "assignee_name": {
+          "type": "string"
+        },
+        "assignee_uid": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        }
+      }
+    },
+    "AlertView": {
+      "type": "object",
+      "required": [
+        "alert_id",
+        "level",
+        "source",
+        "metric",
+        "last_value",
+        "comparator",
+        "threshold",
+        "station_id",
+        "station_name",
+        "device_id",
+        "sn",
+        "title",
+        "content",
+        "status",
+        "aggregate_count",
+        "devices",
+        "first_seen_at",
+        "last_seen_at",
+        "acked_by",
+        "closed_ticket_id",
+        "closed_reason"
+      ],
+      "properties": {
+        "acked_by": {
+          "type": "string"
+        },
+        "aggregate_count": {
+          "type": "integer"
+        },
+        "alert_id": {
+          "type": "string"
+        },
+        "closed_reason": {
+          "type": "string"
+        },
+        "closed_ticket_id": {
+          "type": "string"
+        },
+        "comparator": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "devices": {
+          "type": "string"
+        },
+        "first_seen_at": {
+          "type": "integer"
+        },
+        "last_seen_at": {
+          "type": "integer"
+        },
+        "last_value": {
+          "type": "number"
+        },
+        "level": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "AuditLogItem": {
       "type": "object",
       "required": [
@@ -8822,6 +11158,414 @@
     "IDPath": {
       "type": "object"
     },
+    "InspectionItemView": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "task_id",
+        "name",
+        "result",
+        "anomalous",
+        "ticket_id"
+      ],
+      "properties": {
+        "anomalous": {
+          "type": "boolean"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionPlanCreateReq": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "name",
+        "cron_expr"
+      ],
+      "properties": {
+        "cron_expr": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionPlanListReq": {
+      "type": "object"
+    },
+    "InspectionPlanListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InspectionPlanView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "InspectionPlanUpdateReq": {
+      "type": "object",
+      "properties": {
+        "cron_expr": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionPlanView": {
+      "type": "object",
+      "required": [
+        "plan_id",
+        "station_id",
+        "station_name",
+        "name",
+        "template_id",
+        "cron_expr",
+        "enabled",
+        "next_exec_at",
+        "last_exec_at",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "cron_expr": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "last_exec_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "next_exec_at": {
+          "type": "integer"
+        },
+        "plan_id": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionSubmitItem": {
+      "type": "object",
+      "required": [
+        "name",
+        "anomalous"
+      ],
+      "properties": {
+        "anomalous": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionSubmitReq": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InspectionSubmitItem"
+          }
+        },
+        "location": {
+          "type": "string"
+        },
+        "photos": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionSubmitResp": {
+      "type": "object",
+      "required": [
+        "anomaly_count",
+        "ticket_ids"
+      ],
+      "properties": {
+        "anomaly_count": {
+          "type": "integer"
+        },
+        "ticket_ids": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionTaskGetResp": {
+      "type": "object",
+      "required": [
+        "task",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InspectionItemView"
+          }
+        },
+        "task": {
+          "type": "object",
+          "required": [
+            "task_id",
+            "plan_id",
+            "template_id",
+            "station_id",
+            "station_name",
+            "title",
+            "scheduled_for",
+            "status",
+            "submitted_by",
+            "submitted_at",
+            "anomaly_count",
+            "ticket_ids",
+            "created_at"
+          ],
+          "properties": {
+            "anomaly_count": {
+              "type": "integer"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "plan_id": {
+              "type": "string"
+            },
+            "scheduled_for": {
+              "type": "integer"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "submitted_at": {
+              "type": "integer"
+            },
+            "submitted_by": {
+              "type": "string"
+            },
+            "task_id": {
+              "type": "string"
+            },
+            "template_id": {
+              "type": "string"
+            },
+            "ticket_ids": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/InspectionTaskView"
+        }
+      }
+    },
+    "InspectionTaskListReq": {
+      "type": "object"
+    },
+    "InspectionTaskListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InspectionTaskView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "InspectionTaskView": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "plan_id",
+        "template_id",
+        "station_id",
+        "station_name",
+        "title",
+        "scheduled_for",
+        "status",
+        "submitted_by",
+        "submitted_at",
+        "anomaly_count",
+        "ticket_ids",
+        "created_at"
+      ],
+      "properties": {
+        "anomaly_count": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "plan_id": {
+          "type": "string"
+        },
+        "scheduled_for": {
+          "type": "integer"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "submitted_at": {
+          "type": "integer"
+        },
+        "submitted_by": {
+          "type": "string"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        },
+        "ticket_ids": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionTemplateCreateReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "items_schema"
+      ],
+      "properties": {
+        "items_schema": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "InspectionTemplateListReq": {
+      "type": "object"
+    },
+    "InspectionTemplateListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InspectionTemplateView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "InspectionTemplateView": {
+      "type": "object",
+      "required": [
+        "template_id",
+        "name",
+        "items_schema",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "items_schema": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "template_id": {
+          "type": "string"
+        }
+      }
+    },
     "InventoryItem": {
       "type": "object",
       "required": [
@@ -9315,6 +12059,9 @@
           "type": "integer"
         }
       }
+    },
+    "NoArgsReq": {
+      "type": "object"
     },
     "NotifySettingItem": {
       "type": "object",
@@ -11504,6 +14251,31 @@
         }
       }
     },
+    "SlaPauseReq": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "SlaStrategyListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SlaStrategyView"
+          }
+        }
+      }
+    },
     "SlaStrategyView": {
       "type": "object",
       "required": [
@@ -11535,6 +14307,172 @@
           "type": "integer"
         },
         "strategy_id": {
+          "type": "string"
+        }
+      }
+    },
+    "SlaTimerResp": {
+      "type": "object",
+      "required": [
+        "timer"
+      ],
+      "properties": {
+        "timer": {
+          "type": "object",
+          "required": [
+            "timer_id",
+            "ticket_id",
+            "strategy_id",
+            "strategy_snapshot",
+            "response_due_at",
+            "resolve_due_at",
+            "paused_at",
+            "pause_reason",
+            "pause_total_min",
+            "escalate_level",
+            "responded_at",
+            "resolved_at",
+            "response_breach_at",
+            "resolve_breach_at"
+          ],
+          "properties": {
+            "escalate_level": {
+              "type": "integer"
+            },
+            "pause_reason": {
+              "type": "string"
+            },
+            "pause_total_min": {
+              "type": "integer"
+            },
+            "paused_at": {
+              "type": "integer"
+            },
+            "resolve_breach_at": {
+              "type": "integer"
+            },
+            "resolve_due_at": {
+              "type": "integer"
+            },
+            "resolved_at": {
+              "type": "integer"
+            },
+            "responded_at": {
+              "type": "integer"
+            },
+            "response_breach_at": {
+              "type": "integer"
+            },
+            "response_due_at": {
+              "type": "integer"
+            },
+            "strategy_id": {
+              "type": "string"
+            },
+            "strategy_snapshot": {
+              "type": "string"
+            },
+            "ticket_id": {
+              "type": "string"
+            },
+            "timer_id": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/SlaTimerView"
+        }
+      }
+    },
+    "SlaTimerView": {
+      "type": "object",
+      "required": [
+        "timer_id",
+        "ticket_id",
+        "strategy_id",
+        "strategy_snapshot",
+        "response_due_at",
+        "resolve_due_at",
+        "paused_at",
+        "pause_reason",
+        "pause_total_min",
+        "escalate_level",
+        "responded_at",
+        "resolved_at",
+        "response_breach_at",
+        "resolve_breach_at"
+      ],
+      "properties": {
+        "escalate_level": {
+          "type": "integer"
+        },
+        "pause_reason": {
+          "type": "string"
+        },
+        "pause_total_min": {
+          "type": "integer"
+        },
+        "paused_at": {
+          "type": "integer"
+        },
+        "resolve_breach_at": {
+          "type": "integer"
+        },
+        "resolve_due_at": {
+          "type": "integer"
+        },
+        "resolved_at": {
+          "type": "integer"
+        },
+        "responded_at": {
+          "type": "integer"
+        },
+        "response_breach_at": {
+          "type": "integer"
+        },
+        "response_due_at": {
+          "type": "integer"
+        },
+        "strategy_id": {
+          "type": "string"
+        },
+        "strategy_snapshot": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "timer_id": {
+          "type": "string"
+        }
+      }
+    },
+    "StaffCandidateView": {
+      "type": "object",
+      "required": [
+        "staff_id",
+        "user_id",
+        "name",
+        "staff_type",
+        "skill_tags",
+        "work_region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "skill_tags": {
+          "type": "string"
+        },
+        "staff_id": {
+          "type": "string"
+        },
+        "staff_type": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "work_region": {
           "type": "string"
         }
       }
@@ -12321,6 +15259,44 @@
         }
       }
     },
+    "StationWebMeResp": {
+      "type": "object",
+      "required": [
+        "uid",
+        "nickname",
+        "roles",
+        "data_scope",
+        "station_id",
+        "station_name",
+        "station_no"
+      ],
+      "properties": {
+        "data_scope": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
     "StepUpReq": {
       "type": "object",
       "required": [
@@ -12829,6 +15805,505 @@
         }
       }
     },
+    "TicketActionReq": {
+      "type": "object"
+    },
+    "TicketBriefView": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "type",
+        "title",
+        "priority",
+        "station_id",
+        "station_name",
+        "status",
+        "escalate_level",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "escalate_level": {
+          "type": "integer"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketCancelReq": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketCreateReq": {
+      "type": "object",
+      "required": [
+        "type",
+        "title"
+      ],
+      "properties": {
+        "alert_id": {
+          "type": "string"
+        },
+        "client_action_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketCreateResp": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketDispatchReq": {
+      "type": "object",
+      "properties": {
+        "accept_timeout_min": {
+          "type": "integer"
+        },
+        "assignee_uid": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketDispatchResp": {
+      "type": "object",
+      "required": [
+        "assignee_uid",
+        "assignee_name",
+        "accept_deadline"
+      ],
+      "properties": {
+        "accept_deadline": {
+          "type": "integer"
+        },
+        "assignee_name": {
+          "type": "string"
+        },
+        "assignee_uid": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketGetResp": {
+      "type": "object",
+      "required": [
+        "ticket",
+        "logs"
+      ],
+      "properties": {
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TicketLogView"
+          }
+        },
+        "ticket": {
+          "type": "object",
+          "required": [
+            "ticket_id",
+            "ticket_no",
+            "type",
+            "title",
+            "content",
+            "priority",
+            "station_id",
+            "station_name",
+            "device_id",
+            "sn",
+            "alert_id",
+            "inspection_item_id",
+            "assignee_uid",
+            "assignee_name",
+            "status",
+            "escalate_level",
+            "dispatch_at",
+            "accept_deadline",
+            "accepted_at",
+            "submitted_at",
+            "verified_at",
+            "closed_at",
+            "cancel_reason",
+            "created_by",
+            "created_at"
+          ],
+          "properties": {
+            "accept_deadline": {
+              "type": "integer"
+            },
+            "accepted_at": {
+              "type": "integer"
+            },
+            "alert_id": {
+              "type": "string"
+            },
+            "assignee_name": {
+              "type": "string"
+            },
+            "assignee_uid": {
+              "type": "string"
+            },
+            "cancel_reason": {
+              "type": "string"
+            },
+            "closed_at": {
+              "type": "integer"
+            },
+            "content": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "created_by": {
+              "type": "string"
+            },
+            "device_id": {
+              "type": "string"
+            },
+            "dispatch_at": {
+              "type": "integer"
+            },
+            "escalate_level": {
+              "type": "integer"
+            },
+            "inspection_item_id": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "submitted_at": {
+              "type": "integer"
+            },
+            "ticket_id": {
+              "type": "string"
+            },
+            "ticket_no": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "verified_at": {
+              "type": "integer"
+            }
+          },
+          "$ref": "#/definitions/TicketView"
+        }
+      }
+    },
+    "TicketListReq": {
+      "type": "object"
+    },
+    "TicketListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TicketView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "TicketLogView": {
+      "type": "object",
+      "required": [
+        "log_id",
+        "ticket_id",
+        "action",
+        "from_status",
+        "to_status",
+        "operator_uid",
+        "note",
+        "created_at"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "from_status": {
+          "type": "string"
+        },
+        "log_id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "operator_uid": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "to_status": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketMatchStaffReq": {
+      "type": "object"
+    },
+    "TicketMatchStaffResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StaffCandidateView"
+          }
+        }
+      }
+    },
+    "TicketNoPath": {
+      "type": "object"
+    },
+    "TicketPendingReq": {
+      "type": "object"
+    },
+    "TicketPendingResp": {
+      "type": "object",
+      "required": [
+        "unread_count",
+        "max_id",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TicketBriefView"
+          }
+        },
+        "max_id": {
+          "type": "string"
+        },
+        "unread_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "TicketSubmitReq": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketVerifyReq": {
+      "type": "object",
+      "required": [
+        "pass"
+      ],
+      "properties": {
+        "pass": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "TicketView": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "type",
+        "title",
+        "content",
+        "priority",
+        "station_id",
+        "station_name",
+        "device_id",
+        "sn",
+        "alert_id",
+        "inspection_item_id",
+        "assignee_uid",
+        "assignee_name",
+        "status",
+        "escalate_level",
+        "dispatch_at",
+        "accept_deadline",
+        "accepted_at",
+        "submitted_at",
+        "verified_at",
+        "closed_at",
+        "cancel_reason",
+        "created_by",
+        "created_at"
+      ],
+      "properties": {
+        "accept_deadline": {
+          "type": "integer"
+        },
+        "accepted_at": {
+          "type": "integer"
+        },
+        "alert_id": {
+          "type": "string"
+        },
+        "assignee_name": {
+          "type": "string"
+        },
+        "assignee_uid": {
+          "type": "string"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "closed_at": {
+          "type": "integer"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "dispatch_at": {
+          "type": "integer"
+        },
+        "escalate_level": {
+          "type": "integer"
+        },
+        "inspection_item_id": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "submitted_at": {
+          "type": "integer"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "verified_at": {
+          "type": "integer"
+        }
+      }
+    },
     "TokenPair": {
       "type": "object",
       "required": [
@@ -13301,7 +16776,7 @@
       "in": "header"
     }
   },
-  "x-date": "2026-10-10 21:28:59",
+  "x-date": "2026-10-11 01:28:41",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

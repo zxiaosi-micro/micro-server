@@ -88,8 +88,14 @@ func (s *StationServer) ListStationStaff(ctx context.Context, in *pb.ListStation
 	return l.ListStationStaff(in)
 }
 
-// ---- 反查（设备 → 场站）----
+// ---- 反查（设备 → 场站；用户 → 场站）----
 func (s *StationServer) GetDeviceStation(ctx context.Context, in *pb.GetDeviceStationReq) (*pb.GetDeviceStationResp, error) {
 	l := logic.NewGetDeviceStationLogic(ctx, s.svcCtx)
 	return l.GetDeviceStation(in)
+}
+
+// ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+func (s *StationServer) ListStationByUser(ctx context.Context, in *pb.ListStationByUserReq) (*pb.ListStationByUserResp, error) {
+	l := logic.NewListStationByUserLogic(ctx, s.svcCtx)
+	return l.ListStationByUser(in)
 }

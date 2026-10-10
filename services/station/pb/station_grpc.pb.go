@@ -32,6 +32,7 @@ const (
 	Station_RemoveStationStaff_FullMethodName = "/station.Station/RemoveStationStaff"
 	Station_ListStationStaff_FullMethodName   = "/station.Station/ListStationStaff"
 	Station_GetDeviceStation_FullMethodName   = "/station.Station/GetDeviceStation"
+	Station_ListStationByUser_FullMethodName  = "/station.Station/ListStationByUser"
 )
 
 // StationClient is the client API for Station service.
@@ -66,8 +67,10 @@ type StationClient interface {
 	AddStationStaff(ctx context.Context, in *AddStationStaffReq, opts ...grpc.CallOption) (*AddStationStaffResp, error)
 	RemoveStationStaff(ctx context.Context, in *RemoveStationStaffReq, opts ...grpc.CallOption) (*RemoveStationStaffResp, error)
 	ListStationStaff(ctx context.Context, in *ListStationStaffReq, opts ...grpc.CallOption) (*ListStationStaffResp, error)
-	// ---- 反查（设备 → 场站）----
+	// ---- 反查（设备 → 场站；用户 → 场站）----
 	GetDeviceStation(ctx context.Context, in *GetDeviceStationReq, opts ...grpc.CallOption) (*GetDeviceStationResp, error)
+	// ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+	ListStationByUser(ctx context.Context, in *ListStationByUserReq, opts ...grpc.CallOption) (*ListStationByUserResp, error)
 }
 
 type stationClient struct {
@@ -208,6 +211,16 @@ func (c *stationClient) GetDeviceStation(ctx context.Context, in *GetDeviceStati
 	return out, nil
 }
 
+func (c *stationClient) ListStationByUser(ctx context.Context, in *ListStationByUserReq, opts ...grpc.CallOption) (*ListStationByUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStationByUserResp)
+	err := c.cc.Invoke(ctx, Station_ListStationByUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StationServer is the server API for Station service.
 // All implementations must embed UnimplementedStationServer
 // for forward compatibility.
@@ -240,8 +253,10 @@ type StationServer interface {
 	AddStationStaff(context.Context, *AddStationStaffReq) (*AddStationStaffResp, error)
 	RemoveStationStaff(context.Context, *RemoveStationStaffReq) (*RemoveStationStaffResp, error)
 	ListStationStaff(context.Context, *ListStationStaffReq) (*ListStationStaffResp, error)
-	// ---- 反查（设备 → 场站）----
+	// ---- 反查（设备 → 场站；用户 → 场站）----
 	GetDeviceStation(context.Context, *GetDeviceStationReq) (*GetDeviceStationResp, error)
+	// ListStationByUser 用户驻站反查（S7 场站 Web data_scope 锁定本场站，FR-STN-006）。
+	ListStationByUser(context.Context, *ListStationByUserReq) (*ListStationByUserResp, error)
 	mustEmbedUnimplementedStationServer()
 }
 
@@ -290,6 +305,9 @@ func (UnimplementedStationServer) ListStationStaff(context.Context, *ListStation
 }
 func (UnimplementedStationServer) GetDeviceStation(context.Context, *GetDeviceStationReq) (*GetDeviceStationResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDeviceStation not implemented")
+}
+func (UnimplementedStationServer) ListStationByUser(context.Context, *ListStationByUserReq) (*ListStationByUserResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStationByUser not implemented")
 }
 func (UnimplementedStationServer) mustEmbedUnimplementedStationServer() {}
 func (UnimplementedStationServer) testEmbeddedByValue()                 {}
@@ -546,6 +564,24 @@ func _Station_GetDeviceStation_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Station_ListStationByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStationByUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StationServer).ListStationByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Station_ListStationByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StationServer).ListStationByUser(ctx, req.(*ListStationByUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Station_ServiceDesc is the grpc.ServiceDesc for Station service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -604,6 +640,10 @@ var Station_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDeviceStation",
 			Handler:    _Station_GetDeviceStation_Handler,
+		},
+		{
+			MethodName: "ListStationByUser",
+			Handler:    _Station_ListStationByUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

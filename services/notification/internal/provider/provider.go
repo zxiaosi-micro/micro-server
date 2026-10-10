@@ -31,9 +31,12 @@ func (p *LogProvider) Send(ctx context.Context, target, title, content string) e
 // For 渠道 → Provider 注册点（SmsProvider 留位：上线前实现并替换）。
 func For(channel, providerCfg string) (Provider, error) {
 	switch channel {
-	case "SMS", "EMAIL", "WECHAT":
-		// TODO(S11 上线准备): SMS 接云短信 Provider（阿里云/腾讯云），EMAIL 接 SMTP，
-		// WECHAT 接订阅消息（FR-NTF-003）——均沿用本接口，出站结果落 outbound_log。
+	case "WECHAT":
+		// S7-02 订阅消息 Provider（FR-NTF-003）：dev MOCKWX 模拟，真实发送待模板 ID（04 §3 F2）。
+		return &WechatProvider{cfg: parseWechatCfg(providerCfg)}, nil
+	case "SMS", "EMAIL":
+		// TODO(S11 上线准备): SMS 接云短信 Provider（阿里云/腾讯云），EMAIL 接 SMTP——
+		// 均沿用本接口，出站结果落 outbound_log。
 		return &LogProvider{}, nil
 	case "INBOX":
 		return nil, fmt.Errorf("provider: INBOX 为站内信落库，不走外发 Provider")

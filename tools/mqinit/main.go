@@ -28,6 +28,8 @@ var topics = []string{
 	"cmd_ack", "cmd_failed", "ota_paused", "device_anomaly",
 	// 场站域（S6-02：ops 消费建巡检计划）
 	"station_created",
+	// 运维域（S7-01：ops 告警产生广播）
+	"alert_created",
 }
 
 func main() {

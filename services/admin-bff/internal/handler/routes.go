@@ -15,12 +15,14 @@ import (
 	inventory "micro-server/services/admin-bff/internal/handler/inventory"
 	menu "micro-server/services/admin-bff/internal/handler/menu"
 	notification "micro-server/services/admin-bff/internal/handler/notification"
+	ops "micro-server/services/admin-bff/internal/handler/ops"
 	order "micro-server/services/admin-bff/internal/handler/order"
 	org "micro-server/services/admin-bff/internal/handler/org"
 	party "micro-server/services/admin-bff/internal/handler/party"
 	role "micro-server/services/admin-bff/internal/handler/role"
 	session "micro-server/services/admin-bff/internal/handler/session"
 	station "micro-server/services/admin-bff/internal/handler/station"
+	stationweb "micro-server/services/admin-bff/internal/handler/stationweb"
 	tenant "micro-server/services/admin-bff/internal/handler/tenant"
 	user "micro-server/services/admin-bff/internal/handler/user"
 	"micro-server/services/admin-bff/internal/svc"
@@ -649,6 +651,225 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authz},
 			[]rest.Route{
 				{
+					// 告警规则列表(perm: ops:rule:list)
+					Method:  http.MethodGet,
+					Path:    "/alert-rules",
+					Handler: ops.ListAlertRulesHandler(serverCtx),
+				},
+				{
+					// 告警规则创建(perm: ops:rule:manage)
+					Method:  http.MethodPost,
+					Path:    "/alert-rules",
+					Handler: ops.CreateAlertRuleHandler(serverCtx),
+				},
+				{
+					// 告警规则更新(perm: ops:rule:manage)
+					Method:  http.MethodPut,
+					Path:    "/alert-rules/:id",
+					Handler: ops.UpdateAlertRuleHandler(serverCtx),
+				},
+				{
+					// 告警规则删除(perm: ops:rule:manage)
+					Method:  http.MethodDelete,
+					Path:    "/alert-rules/:id",
+					Handler: ops.DeleteAlertRuleHandler(serverCtx),
+				},
+				{
+					// 告警列表(perm: ops:alert:list)
+					Method:  http.MethodGet,
+					Path:    "/alerts",
+					Handler: ops.ListAlertsHandler(serverCtx),
+				},
+				{
+					// 告警详情(perm: ops:alert:list)
+					Method:  http.MethodGet,
+					Path:    "/alerts/:id",
+					Handler: ops.GetAlertHandler(serverCtx),
+				},
+				{
+					// 告警确认(perm: ops:alert:ack)
+					Method:  http.MethodPost,
+					Path:    "/alerts/:id/ack",
+					Handler: ops.AckAlertHandler(serverCtx),
+				},
+				{
+					// 告警归档(perm: ops:alert:archive)
+					Method:  http.MethodPost,
+					Path:    "/alerts/:id/archive",
+					Handler: ops.ArchiveAlertHandler(serverCtx),
+				},
+				{
+					// 告警关闭(须已验收工单或备注原因, perm: ops:alert:close)
+					Method:  http.MethodPost,
+					Path:    "/alerts/:id/close",
+					Handler: ops.CloseAlertHandler(serverCtx),
+				},
+				{
+					// 告警转工单(隐含确认, perm: ops:alert:transfer)
+					Method:  http.MethodPost,
+					Path:    "/alerts/:id/transfer",
+					Handler: ops.TransferAlertHandler(serverCtx),
+				},
+				{
+					// 告警轮询增量(未读计数+since_id, perm: ops:alert:list)
+					Method:  http.MethodGet,
+					Path:    "/alerts/pending",
+					Handler: ops.PendingAlertsHandler(serverCtx),
+				},
+				{
+					// 巡检计划列表(perm: ops:inspect:list)
+					Method:  http.MethodGet,
+					Path:    "/inspection/plans",
+					Handler: ops.ListInspectionPlansHandler(serverCtx),
+				},
+				{
+					// 巡检计划创建(perm: ops:inspect:manage)
+					Method:  http.MethodPost,
+					Path:    "/inspection/plans",
+					Handler: ops.CreateInspectionPlanHandler(serverCtx),
+				},
+				{
+					// 巡检计划更新(perm: ops:inspect:manage)
+					Method:  http.MethodPut,
+					Path:    "/inspection/plans/:id",
+					Handler: ops.UpdateInspectionPlanHandler(serverCtx),
+				},
+				{
+					// 巡检任务列表(perm: ops:inspect:list)
+					Method:  http.MethodGet,
+					Path:    "/inspection/tasks",
+					Handler: ops.ListInspectionTasksHandler(serverCtx),
+				},
+				{
+					// 巡检任务详情(含明细, perm: ops:inspect:list)
+					Method:  http.MethodGet,
+					Path:    "/inspection/tasks/:id",
+					Handler: ops.GetInspectionTaskHandler(serverCtx),
+				},
+				{
+					// 巡检任务批量提交(异常项自动转工单, perm: ops:inspect:submit)
+					Method:  http.MethodPost,
+					Path:    "/inspection/tasks/:id/submit",
+					Handler: ops.SubmitInspectionTaskHandler(serverCtx),
+				},
+				{
+					// 巡检模板列表(perm: ops:inspect:list)
+					Method:  http.MethodGet,
+					Path:    "/inspection/templates",
+					Handler: ops.ListInspectionTemplatesHandler(serverCtx),
+				},
+				{
+					// 巡检模板创建(perm: ops:inspect:manage)
+					Method:  http.MethodPost,
+					Path:    "/inspection/templates",
+					Handler: ops.CreateInspectionTemplateHandler(serverCtx),
+				},
+				{
+					// SLA 策略列表(contract 透传, perm: ops:sla:list)
+					Method:  http.MethodGet,
+					Path:    "/sla/strategies",
+					Handler: ops.ListSlaStrategiesHandler(serverCtx),
+				},
+				{
+					// 工单列表(perm: ops:ticket:list)
+					Method:  http.MethodGet,
+					Path:    "/tickets",
+					Handler: ops.ListTicketsHandler(serverCtx),
+				},
+				{
+					// 工单创建(perm: ops:ticket:create)
+					Method:  http.MethodPost,
+					Path:    "/tickets",
+					Handler: ops.CreateTicketHandler(serverCtx),
+				},
+				{
+					// 工单详情(含日志, perm: ops:ticket:list)
+					Method:  http.MethodGet,
+					Path:    "/tickets/:id",
+					Handler: ops.GetTicketHandler(serverCtx),
+				},
+				{
+					// 工单接单(perm: ops:ticket:handle)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/accept",
+					Handler: ops.AcceptTicketHandler(serverCtx),
+				},
+				{
+					// 工单取消(perm: ops:ticket:dispatch)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/cancel",
+					Handler: ops.CancelTicketHandler(serverCtx),
+				},
+				{
+					// 工单关闭(perm: ops:ticket:verify)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/close",
+					Handler: ops.CloseTicketHandler(serverCtx),
+				},
+				{
+					// 工单派单(perm: ops:ticket:dispatch)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/dispatch",
+					Handler: ops.DispatchTicketHandler(serverCtx),
+				},
+				{
+					// SLA 暂停(留痕, perm: ops:sla:manage)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/sla-pause",
+					Handler: ops.PauseSlaTimerHandler(serverCtx),
+				},
+				{
+					// SLA 恢复(due 顺延, perm: ops:sla:manage)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/sla-resume",
+					Handler: ops.ResumeSlaTimerHandler(serverCtx),
+				},
+				{
+					// 工单 SLA 计时器(perm: ops:sla:list)
+					Method:  http.MethodGet,
+					Path:    "/tickets/:id/sla-timer",
+					Handler: ops.GetSlaTimerHandler(serverCtx),
+				},
+				{
+					// 开工处理(perm: ops:ticket:handle)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/start",
+					Handler: ops.StartTicketHandler(serverCtx),
+				},
+				{
+					// 处理完成提交(perm: ops:ticket:handle)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/submit",
+					Handler: ops.SubmitTicketHandler(serverCtx),
+				},
+				{
+					// 工单验收(perm: ops:ticket:verify)
+					Method:  http.MethodPost,
+					Path:    "/tickets/:id/verify",
+					Handler: ops.VerifyTicketHandler(serverCtx),
+				},
+				{
+					// 派单候选(区域+技能, perm: ops:ticket:dispatch)
+					Method:  http.MethodGet,
+					Path:    "/tickets/match-staff",
+					Handler: ops.MatchStaffHandler(serverCtx),
+				},
+				{
+					// 工单轮询增量(perm: ops:ticket:list)
+					Method:  http.MethodGet,
+					Path:    "/tickets/pending",
+					Handler: ops.PendingTicketsHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
 					// 订单列表(perm: trade:order:list)
 					Method:  http.MethodGet,
 					Path:    "/orders",
@@ -1007,6 +1228,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPut,
 					Path:    "/stations/:id/topology",
 					Handler: station.SaveStationTopologyHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authz},
+			[]rest.Route{
+				{
+					// 场站 Web 我的驻站信息(data_scope 锁定本场站, FR-STN-006)
+					Method:  http.MethodGet,
+					Path:    "/station-web/me",
+					Handler: stationweb.StationWebMeHandler(serverCtx),
 				},
 			}...,
 		),

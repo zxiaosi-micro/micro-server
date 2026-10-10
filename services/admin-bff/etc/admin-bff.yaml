@@ -84,3 +84,8 @@ StationRpc:
     - ${STATION_RPC|127.0.0.1:8091}
   NonBlock: true
   Timeout: 5000
+OpsRpc:
+  Endpoints:
+    - ${OPS_RPC|127.0.0.1:8094}
+  NonBlock: true
+  Timeout: 5000

@@ -1,6 +1,7 @@
 #!/bin/bash
 # smoke-start-p5.sh · S9 联调启动器（dev）：11 服务 + mobile-bff 后台启动（pwsh 分离进程），日志落 /tmp/micro-smoke/logs
 # 用法：bash tools/smoke/smoke-start-p5.sh [-force]   # -force = 先停已在跑的服务
+# 收尾：bash tools/smoke/smoke-stop-p5.sh   # 一键全停——分离进程关终端不会退，勿留残留（v4/04 教训）
 # 前置：compose core 全绿 + make migrate-up svc=ops（S9 ticket.party_id）+ go run ./tools/mqinit
 set -e
 DEV_ENV="D:/Personal code/micro-new/micro-deploy/compose/dev/.env"
@@ -69,3 +70,4 @@ sleep 6
 for p in 8081 8082 8083 8084 8085 8089 8090 8092 8093 8094 8890; do
   netstat -ano 2>/dev/null | grep LISTENING | grep -q ":$p " && echo "port $p UP" || echo "port $p DOWN"
 done
+echo "收尾提醒：bash tools/smoke/smoke-stop-p5.sh（分离进程不会随终端退出）"

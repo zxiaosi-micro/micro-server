@@ -1,0 +1,81 @@
+Name: mobile-bff-api
+Host: 0.0.0.0
+Port: 8890
+IdentityRpc:
+  Endpoints:
+    - ${IDENTITY_RPC|127.0.0.1:8081}   # dev 直连；prod 换 Etcd+Target
+  NonBlock: true
+InventoryRpc:
+  Endpoints:
+    - ${INVENTORY_RPC|127.0.0.1:8084}
+  NonBlock: true
+PartyRpc:
+  Endpoints:
+    - ${PARTY_RPC|127.0.0.1:8082}
+  NonBlock: true
+CatalogRpc:
+  Endpoints:
+    - ${CATALOG_RPC|127.0.0.1:8083}
+  NonBlock: true
+OrderRpc:
+  Endpoints:
+    - ${ORDER_RPC|127.0.0.1:8090}
+  NonBlock: true
+  Timeout: 5000
+ContractRpc:
+  Endpoints:
+    - ${CONTRACT_RPC|127.0.0.1:8093}
+  NonBlock: true
+  Timeout: 5000
+DeviceRpc:
+  Endpoints:
+    - ${DEVICE_RPC|127.0.0.1:8085}
+  NonBlock: true
+  Timeout: 5000
+StationRpc:
+  Endpoints:
+    - ${STATION_RPC|127.0.0.1:8091}
+  NonBlock: true
+  Timeout: 5000
+OpsRpc:
+  Endpoints:
+    - ${OPS_RPC|127.0.0.1:8094}
+  NonBlock: true
+  Timeout: 5000
+NotificationRpc:
+  Endpoints:
+    - ${NOTIFICATION_RPC|127.0.0.1:8089}
+  NonBlock: true
+Jwt:
+  KeysDir: "${JWT_KEYS_DIR|}"          # 缺省回落 JWT_KEYS_DIR 环境变量
+Sessionx:
+  Addr: "${REDIS_HOSTS|127.0.0.1:26379}"
+  Password: "${REDIS_PASS|}"
+  DB: 4                                # 会话/auth_cache 只读方（identity 是唯一写入方）
+Authz:
+  SkipPaths:                           # 免鉴权 = 认证动作精确路径（logout/refresh 由 BearerProbe 探针）
+    - /api/v1/auth/login
+    - /api/v1/auth/wx-login
+    - /api/v1/auth/wx-bind-phone
+    - /api/v1/auth/refresh
+    - /api/v1/auth/logout
+    - /api/v1/healthz
+  FailClosePrefixes:                   # 财务面（延保下单发起支付；Redis 故障拒绝，NFR-AVL-005）
+    - /api/v1/customer/extension-orders
+  SensitivePrefixes: []                # 端侧无 step-up 面（控制类指令只在管理面）
+  AllowedClients:                      # mobile-bff 仅服务移动两端（02 §9.5 client 匹配）
+    - OPS_APP
+    - CLIENT_MINI
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9119
+Telemetry:
+  Name: mobile-bff
+  Endpoint: ${OTLP_ENDPOINT|127.0.0.1:24317}
+  Sampler: 1.0
+  Batcher: otlpgrpc        # E18：Batcher: jaeger 已废弃，配了启动失败
+Tdengine:
+  RestUrl: "${TDENGINE_REST|http://127.0.0.1:26041}"
+  User: root
+  Pass: "${MICRO_DEV_TDENGINE_PW|}"
+  DB: micro_iot   # 与 iotingest Tdengine.Db 同源（02 §6.4 文档口径 iot_db 未落地，以实际为准）

@@ -1,0 +1,687 @@
+syntax = "v1"
+
+info (
+	title:                       "MobileBff"
+	desc:                        "mobile-bff REST 契约（S9-01）。服务运维 App（client=OPS_APP）与客户端小程序（client=CLIENT_MINI）。统一信封 {code,msg,data}（wrapCodeMsg）；认证码 10401~10406 → HTTP 401；权限 10408 → 403。所有 ID 字符串传输与渲染（E8）。客户侧端点一律 requireParty：uid → identity.GetUser → party_id，一切查询按 party_id 隔离。"
+	author:                      "micro"
+	version:                     "v1"
+	wrapCodeMsg:                 true
+	useDefinitions:              true
+	securityDefinitionsFromJson: `{"bearerAuth":{"type":"apiKey","in":"header","name":"Authorization","description":"Bearer <access_token>"}}`
+)
+
+// ============================================================
+// 公共类型
+// ============================================================
+type NoArgsReq {}
+
+type SimpleResp {
+	UID string `json:"uid,optional"`
+}
+
+type TokenPair {
+	AccessToken      string `json:"access_token"`
+	RefreshToken     string `json:"refresh_token"`
+	AccessExpiresIn  int64  `json:"access_expires_in"`
+	RefreshExpiresIn int64  `json:"refresh_expires_in"`
+}
+
+// ============================================================
+// 免鉴权组（authz SkipPaths 精确路径；logout 由 BearerProbe 注入 sid）
+// ============================================================
+type LoginReq {
+	Mobile   string `json:"mobile"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	Tokens   TokenPair `json:"tokens"`
+	UID      string    `json:"uid"`
+	Nickname string    `json:"nickname"`
+}
+
+type WxLoginReq {
+	Code string `json:"code"` // wx.login() 临时凭证（dev MOCKWX=1 时为模拟码）
+}
+
+type WxLoginResp {
+	Tokens        TokenPair `json:"tokens,optional"` // need_bind_phone=true 时不签发
+	UID           string    `json:"uid,optional"`
+	NeedBindPhone bool      `json:"need_bind_phone"` // 微信首登未绑手机 → 引导绑定流程
+}
+
+type WxBindPhoneReq {
+	Code  string `json:"code"` // wx.login 凭证（与登录同源，定位影子账号）
+	Phone string `json:"phone"` // 明文（dev MOCKWX 任意；正式走 getPhoneNumber 服务端换号）
+}
+
+type RefreshReq {
+	RefreshToken string `json:"refresh_token"`
+	Client       string `json:"client,options=OPS_APP|CLIENT_MINI"` // 漂移校验：与登录端一致
+}
+
+type RefreshResp {
+	Tokens TokenPair `json:"tokens"`
+}
+
+type HealthResp {
+	Status string            `json:"status"` // ok / degraded
+	Checks map[string]string `json:"checks"` // downstream name → ok/error
+	Time   string            `json:"time"`
+}
+
+@server (
+	prefix: /api/v1
+	group:  auth
+)
+service MobileBffApi {
+	@doc "健康检查（深检：identity Ping）"
+	@handler health
+	get /healthz returns (HealthResp)
+
+	@doc "密码登录（运维 App，client 固定 OPS_APP；10400 凭证错误 / 10407 锁定）"
+	@handler login
+	post /auth/login (LoginReq) returns (LoginResp)
+
+	@doc "微信登录（客户端小程序，client 固定 CLIENT_MINI；MOCKWX=1 走 dev 模拟）"
+	@handler wxLogin
+	post /auth/wx-login (WxLoginReq) returns (WxLoginResp)
+
+	@doc "微信绑定手机号并签发会话（need_bind_phone 流程收尾；code 定位影子账号）"
+	@handler wxBindPhone
+	post /auth/wx-bind-phone (WxBindPhoneReq) returns (WxLoginResp)
+
+	@doc "刷新（轮换式；client 与登录端漂移即拒）"
+	@handler refresh
+	post /auth/refresh (RefreshReq) returns (RefreshResp)
+
+	@doc "登出（BearerProbe 取 sid）"
+	@handler logout
+	post /auth/logout returns (SimpleResp)
+}
+
+// ============================================================
+// 运维 App（approutes；authz AllowedClients=[OPS_APP]）
+// ============================================================
+type AppMeResp {
+	UID          string   `json:"uid"`
+	Nickname     string   `json:"nickname"`
+	MobileMasked string   `json:"mobile_masked"`
+	Roles        []string `json:"roles"`
+	TenantId     string   `json:"tenant_id"`
+}
+
+type AppTicketItem {
+	TicketId       string `json:"ticket_id"`
+	TicketNo       string `json:"ticket_no"`
+	Type           string `json:"type"`
+	Title          string `json:"title"`
+	Content        string `json:"content"`
+	Priority       string `json:"priority"`
+	StationId      string `json:"station_id"`
+	StationName    string `json:"station_name"`
+	DeviceId       string `json:"device_id"`
+	Sn             string `json:"sn"`
+	AssigneeUid    string `json:"assignee_uid"`
+	AssigneeName   string `json:"assignee_name"`
+	Status         string `json:"status"`
+	EscalateLevel  int64  `json:"escalate_level"`
+	AcceptDeadline int64  `json:"accept_deadline"`
+	CreatedAt      int64  `json:"created_at"`
+}
+
+type AppTicketListReq {
+	Status string `form:"status,optional"`
+	Page   int64  `form:"page,range=[1:10000],default=1"`
+	Size   int64  `form:"size,range=[1:100],default=20"`
+}
+
+type AppTicketListResp {
+	Total int64           `json:"total"`
+	List  []AppTicketItem `json:"list"`
+}
+
+type IDPath {
+	ID string `path:"id"`
+}
+
+type AppTicketLogItem {
+	LogId       string `json:"log_id"`
+	Action      string `json:"action"`
+	FromStatus  string `json:"from_status"`
+	ToStatus    string `json:"to_status"`
+	OperatorUid string `json:"operator_uid"`
+	Note        string `json:"note"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type AppTicketDetailResp {
+	Ticket AppTicketItem      `json:"ticket"`
+	Logs   []AppTicketLogItem `json:"logs"`
+}
+
+type AppSubmitTicketReq {
+	ID             string `path:"id"`
+	Result         string `json:"result"`
+	ClientActionId string `json:"client_action_id,optional"` // 离线草稿恢复同步幂等键（FR-OPS-008）
+}
+
+type AppPendingTicketsReq {
+	SinceId string `form:"since_id,optional"`
+}
+
+type AppTicketBrief {
+	TicketId      string `json:"ticket_id"`
+	TicketNo      string `json:"ticket_no"`
+	Type          string `json:"type"`
+	Title         string `json:"title"`
+	Priority      string `json:"priority"`
+	StationId     string `json:"station_id"`
+	StationName   string `json:"station_name"`
+	Status        string `json:"status"`
+	EscalateLevel int64  `json:"escalate_level"`
+	CreatedAt     int64  `json:"created_at"`
+}
+
+type AppPendingTicketsResp {
+	UnreadCount int64            `json:"unread_count"`
+	MaxId       string           `json:"max_id"`
+	Items       []AppTicketBrief `json:"items"`
+}
+
+type AppAlertBrief {
+	AlertId        string `json:"alert_id"`
+	Level          string `json:"level"`
+	Source         string `json:"source"`
+	Metric         string `json:"metric"`
+	Title          string `json:"title"`
+	StationId      string `json:"station_id"`
+	StationName    string `json:"station_name"`
+	AggregateCount int64  `json:"aggregate_count"`
+	Status         string `json:"status"`
+	FirstSeenAt    int64  `json:"first_seen_at"`
+}
+
+type AppPendingAlertsReq {
+	SinceId string `form:"since_id,optional"`
+}
+
+type AppPendingAlertsResp {
+	UnreadCount int64           `json:"unread_count"`
+	MaxId       string          `json:"max_id"`
+	Items       []AppAlertBrief `json:"items"`
+}
+
+type AppAckAlertReq {
+	ID   string `path:"id"`
+	Note string `json:"note,optional"`
+}
+
+type AppInspectionItem {
+	ItemId    string `json:"item_id"`
+	Name      string `json:"name"`
+	Result    string `json:"result"`
+	Anomalous bool   `json:"anomalous"`
+	TicketId  string `json:"ticket_id"`
+}
+
+type AppInspectionTask {
+	TaskId       string              `json:"task_id"`
+	StationId    string              `json:"station_id"`
+	StationName  string              `json:"station_name"`
+	Title        string              `json:"title"`
+	ScheduledFor int64               `json:"scheduled_for"`
+	Status       string              `json:"status"`
+	AnomalyCount int64               `json:"anomaly_count"`
+	SubmittedAt  int64               `json:"submitted_at"`
+	Items        []AppInspectionItem `json:"items"`
+}
+
+type AppInspectionListReq {
+	Status string `form:"status,optional"`
+	Page   int64  `form:"page,range=[1:10000],default=1"`
+	Size   int64  `form:"size,range=[1:100],default=20"`
+}
+
+type AppInspectionListResp {
+	Total int64               `json:"total"`
+	List  []AppInspectionTask `json:"list"`
+}
+
+type AppInspectionSubmitReq {
+	ID       string                   `path:"id"`
+	Items    []AppInspectionItemInput `json:"items"`
+	Location string                   `json:"location,optional"` // gcj02 定位串
+	Photos   []string                 `json:"photos,optional"` // 照片 URL/文件 ID
+	Remark   string                   `json:"remark,optional"`
+}
+
+type AppInspectionItemInput {
+	Name      string `json:"name"`
+	Result    string `json:"result,optional"` // JSON 值
+	Anomalous bool   `json:"anomalous"`
+}
+
+type AppInspectionSubmitResp {
+	AnomalyCount int64    `json:"anomaly_count"`
+	TicketIds    []string `json:"ticket_ids"`
+}
+
+@server (
+	prefix:     /api/v1
+	group:      app
+	middleware: Authz
+)
+service MobileBffApi {
+	@doc "运维 App 我的身份"
+	@handler appMe
+	get /app/me (NoArgsReq) returns (AppMeResp)
+
+	@doc "我的工单列表（assignee=我）"
+	@handler appTickets
+	get /app/tickets (AppTicketListReq) returns (AppTicketListResp)
+
+	@doc "工单详情（含流转日志）"
+	@handler appTicketDetail
+	get /app/tickets/:id (IDPath) returns (AppTicketDetailResp)
+
+	@doc "工单待办增量（FR-OPS-010 轮询）"
+	@handler appPendingTickets
+	get /app/tickets/pending (AppPendingTicketsReq) returns (AppPendingTicketsResp)
+
+	@doc "接单"
+	@handler appAcceptTicket
+	post /app/tickets/:id/accept (IDPath) returns (SimpleResp)
+
+	@doc "开工"
+	@handler appStartTicket
+	post /app/tickets/:id/start (IDPath) returns (SimpleResp)
+
+	@doc "提交处理结果（client_action_id 幂等，离线草稿恢复同步）"
+	@handler appSubmitTicket
+	post /app/tickets/:id/submit (AppSubmitTicketReq) returns (SimpleResp)
+
+	@doc "告警待办增量（10s 轮询，FR-OPS-010）"
+	@handler appPendingAlerts
+	get /app/alerts/pending (AppPendingAlertsReq) returns (AppPendingAlertsResp)
+
+	@doc "告警确认"
+	@handler appAckAlert
+	post /app/alerts/:id/ack (AppAckAlertReq) returns (SimpleResp)
+
+	@doc "我的巡检任务列表"
+	@handler appInspections
+	get /app/inspections (AppInspectionListReq) returns (AppInspectionListResp)
+
+	@doc "巡检任务详情（含明细项）"
+	@handler appInspectionDetail
+	get /app/inspections/:id (IDPath) returns (AppInspectionTask)
+
+	@doc "巡检批量提交（定位+拍照，异常项自动转工单）"
+	@handler appSubmitInspection
+	post /app/inspections/:id/submit (AppInspectionSubmitReq) returns (AppInspectionSubmitResp)
+}
+
+// ============================================================
+// 客户端小程序（customerroutes；authz AllowedClients=[CLIENT_MINI]）
+// requireParty：一切查询按 party_id 隔离（FR-PTY-009）
+// ============================================================
+type PartyView {
+	PartyId string   `json:"party_id"`
+	Name    string   `json:"name"`
+	Types   []string `json:"types"`
+	Status  string   `json:"status"`
+}
+
+type CustomerMeResp {
+	UID          string    `json:"uid"`
+	Nickname     string    `json:"nickname"`
+	MobileMasked string    `json:"mobile_masked"`
+	Party        PartyView `json:"party,optional"`
+	HasParty     bool      `json:"has_party"`
+}
+
+type BindPhoneReq {
+	Phone string `json:"phone"`
+}
+
+type ContactView {
+	ContactId string `json:"contact_id"`
+	Name      string `json:"name"`
+	Mobile    string `json:"mobile"` // party 已脱敏
+	Position  string `json:"position"`
+	IsDefault bool   `json:"is_default"`
+}
+
+type ContactListResp {
+	List []ContactView `json:"list"`
+}
+
+type CustomerDeviceItem {
+	DeviceId    string `json:"device_id"`
+	Sn          string `json:"sn"`
+	ProductKey  string `json:"product_key"`
+	Model       string `json:"model"`
+	Status      string `json:"status"`
+	ActivatedAt int64  `json:"activated_at"`
+}
+
+type CustomerDeviceListReq {
+	Keyword string `form:"keyword,optional"`
+	Page    int64  `form:"page,range=[1:10000],default=1"`
+	Size    int64  `form:"size,range=[1:100],default=20"`
+}
+
+type CustomerDeviceListResp {
+	Total int64                `json:"total"`
+	List  []CustomerDeviceItem `json:"list"`
+}
+
+type ActivateDeviceReq {
+	SN string `json:"sn"` // 扫码所得 SN（requireParty：激活即绑定本人 party）
+}
+
+type MetricView {
+	Key   string  `json:"key"`
+	Value float64 `json:"value"`
+}
+
+type ShadowView {
+	Ts      string       `json:"ts"` // 空串=影子无数据
+	Metrics []MetricView `json:"metrics"`
+}
+
+type WarrantyView {
+	WarrantyId string `json:"warranty_id"`
+	WarrantyNo string `json:"warranty_no"`
+	Level      string `json:"level"` // STATION/DEVICE
+	TargetKey  string `json:"target_key"` // SN / 场站编号
+	Status     string `json:"status"` // PENDING/ACTIVE/EXPIRED/REFUNDED
+	StartAt    int64  `json:"start_at"`
+	EndAt      int64  `json:"end_at"`
+	Months     int64  `json:"months"`
+}
+
+type StationBrief {
+	StationId string `json:"station_id"`
+	StationNo string `json:"station_no"`
+	Name      string `json:"name"`
+}
+
+type CustomerDeviceDetail {
+	Device     CustomerDeviceItem `json:"device"`
+	Shadow     ShadowView         `json:"shadow"`
+	Warranties []WarrantyView     `json:"warranties"`
+	Station    StationBrief       `json:"station,optional"` // 场站归属（FR-DEV-006）
+}
+
+type TrendReq {
+	ID    string `path:"id"`
+	Hours int64  `form:"hours,range=[1:720],default=24"`
+}
+
+type TrendPoint {
+	Ts          string  `json:"ts"`
+	Soc         float64 `json:"soc"`
+	Voltage     float64 `json:"voltage"`
+	Current     float64 `json:"current"`
+	Temperature float64 `json:"temperature"`
+	Power       float64 `json:"power"`
+}
+
+type TrendResp {
+	Points []TrendPoint `json:"points"`
+}
+
+type ContractView {
+	ContractId string `json:"contract_id"`
+	ContractNo string `json:"contract_no"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Status     string `json:"status"`
+	Amount     string `json:"amount"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ContractListReq {
+	Page int64 `form:"page,range=[1:10000],default=1"`
+	Size int64 `form:"size,range=[1:100],default=20"`
+}
+
+type ContractListResp {
+	Total int64          `json:"total"`
+	List  []ContractView `json:"list"`
+}
+
+type WarrantyListReq {
+	Page int64 `form:"page,range=[1:10000],default=1"`
+	Size int64 `form:"size,range=[1:100],default=20"`
+}
+
+type WarrantyListResp {
+	Total int64          `json:"total"`
+	List  []WarrantyView `json:"list"`
+}
+
+type ExtensionSkuView {
+	SkuId string `json:"sku_id"`
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	Spec  string `json:"spec"`
+	Price string `json:"price"` // 零售价（DECIMAL 字符串）
+}
+
+type ExtensionSkuListResp {
+	List []ExtensionSkuView `json:"list"`
+}
+
+type CreateExtensionOrderReq {
+	BaseWarrantyId string `json:"base_warranty_id"` // 衔接的原质保
+	SkuId          string `json:"sku_id"` // EXT_WARRANTY SKU
+	Qty            int64  `json:"qty,range=[1:10],default=1"`
+}
+
+type CreateExtensionOrderResp {
+	OrderNo     string `json:"order_no"`
+	TotalAmount string `json:"total_amount"`
+	PayExpireAt int64  `json:"pay_expire_at"`
+	PaymentNo   string `json:"payment_no"`
+	PayParams   string `json:"pay_params"` // 渠道透传（dev = mock URL JSON）
+}
+
+type CreateTicketReq {
+	DeviceId       string   `json:"device_id,optional"` // 与 SN 二选一（requireParty 校验归属）
+	SN             string   `json:"sn,optional"`
+	Title          string   `json:"title"`
+	Content        string   `json:"content"`
+	Photos         []string `json:"photos,optional"`
+	ClientActionId string   `json:"client_action_id,optional"` // 离线报修幂等
+}
+
+type CreateTicketResp {
+	TicketId string `json:"ticket_id"`
+	TicketNo string `json:"ticket_no"`
+}
+
+type CustomerTicketItem {
+	TicketId    string `json:"ticket_id"`
+	TicketNo    string `json:"ticket_no"`
+	Type        string `json:"type"`
+	Title       string `json:"title"`
+	Content     string `json:"content"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority"`
+	Sn          string `json:"sn"`
+	StationName string `json:"station_name"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
+type CustomerTicketListReq {
+	Status string `form:"status,optional"`
+	Page   int64  `form:"page,range=[1:10000],default=1"`
+	Size   int64  `form:"size,range=[1:100],default=20"`
+}
+
+type CustomerTicketListResp {
+	Total int64                `json:"total"`
+	List  []CustomerTicketItem `json:"list"`
+}
+
+type CustomerTicketDetail {
+	Ticket CustomerTicketItem `json:"ticket"`
+	Logs   []AppTicketLogItem `json:"logs"`
+}
+
+type SlaTimerView {
+	ResponseDueAt  int64  `json:"response_due_at"`
+	ResolveDueAt   int64  `json:"resolve_due_at"`
+	PausedAt       int64  `json:"paused_at"`
+	PauseTotalMin  int64  `json:"pause_total_min"`
+	EscalateLevel  int64  `json:"escalate_level"`
+	RespondedAt    int64  `json:"responded_at"`
+	ResolvedAt     int64  `json:"resolved_at"`
+	ResponseBreach int64  `json:"response_breach_at"`
+	ResolveBreach  int64  `json:"resolve_breach_at"`
+	Snapshot       string `json:"strategy_snapshot"`
+}
+
+type MessageView {
+	MessageId string `json:"message_id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	IsRead    bool   `json:"is_read"`
+	BizType   string `json:"biz_type"`
+	BizId     string `json:"biz_id"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type MessageListReq {
+	OnlyUnread bool  `form:"only_unread,optional"`
+	Page       int64 `form:"page,range=[1:10000],default=1"`
+	Size       int64 `form:"size,range=[1:100],default=20"`
+}
+
+type MessageListResp {
+	Total       int64         `json:"total"`
+	UnreadCount int64         `json:"unread_count"`
+	List        []MessageView `json:"list"`
+}
+
+type CustomerStationItem {
+	StationId   string  `json:"station_id"`
+	StationNo   string  `json:"station_no"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
+	Status      string  `json:"status"`
+	Address     string  `json:"address"`
+	CapacityKwh float64 `json:"capacity_kwh"`
+	PowerKw     float64 `json:"power_kw"`
+	OrderNo     string  `json:"order_no"`
+}
+
+type CustomerStationListResp {
+	List []CustomerStationItem `json:"list"`
+}
+
+type CustomerStationDevice {
+	DeviceId    string  `json:"device_id"`
+	Sn          string  `json:"sn"`
+	Online      bool    `json:"online"`
+	Soc         float64 `json:"soc"`
+	Power       float64 `json:"power"`
+	Voltage     float64 `json:"voltage"`
+	Temperature float64 `json:"temperature"`
+}
+
+type CustomerStationDetail {
+	Station CustomerStationItem     `json:"station"`
+	Devices []CustomerStationDevice `json:"devices"` // 影子聚合监控（FR-STN-005）
+}
+
+@server (
+	prefix:     /api/v1
+	group:      customer
+	middleware: Authz
+)
+service MobileBffApi {
+	@doc "我的档案（uid → party；requireParty 入口）"
+	@handler customerMe
+	get /customer/me (NoArgsReq) returns (CustomerMeResp)
+
+	@doc "绑定手机号（need_bind_phone 流程收尾）"
+	@handler bindPhone
+	post /customer/bind-phone (BindPhoneReq) returns (SimpleResp)
+
+	@doc "我的联系人"
+	@handler contacts
+	get /customer/contacts (NoArgsReq) returns (ContactListResp)
+
+	@doc "我的设备（party_id 隔离）"
+	@handler devices
+	get /customer/devices (CustomerDeviceListReq) returns (CustomerDeviceListResp)
+
+	@doc "扫码激活设备（绑定本人 party，质保起算事件）"
+	@handler activateDevice
+	post /customer/devices/activate (ActivateDeviceReq) returns (SimpleResp)
+
+	@doc "设备详情（影子+质保+场站归属）"
+	@handler deviceDetail
+	get /customer/devices/:id (IDPath) returns (CustomerDeviceDetail)
+
+	@doc "设备影子"
+	@handler deviceShadow
+	get /customer/devices/:id/shadow (IDPath) returns (ShadowView)
+
+	@doc "遥测趋势（TDengine 热点五指标，只读）"
+	@handler deviceTrend
+	get /customer/devices/:id/trend (TrendReq) returns (TrendResp)
+
+	@doc "我的合同（buyer_party_id 隔离）"
+	@handler contracts
+	get /customer/contracts (ContractListReq) returns (ContractListResp)
+
+	@doc "我的质保（设备/场站双层归并）"
+	@handler warranties
+	get /customer/warranties (WarrantyListReq) returns (WarrantyListResp)
+
+	@doc "延保商品（EXT_WARRANTY SKU + 零售价）"
+	@handler extensionSkus
+	get /customer/extension-skus (NoArgsReq) returns (ExtensionSkuListResp)
+
+	@doc "延保购买（下单 + 微信支付，dev mock URL）"
+	@handler createExtensionOrder
+	post /customer/extension-orders (CreateExtensionOrderReq) returns (CreateExtensionOrderResp)
+
+	@doc "报修（AFTER_SALE 工单，requireParty 校验设备归属）"
+	@handler createTicket
+	post /customer/tickets (CreateTicketReq) returns (CreateTicketResp)
+
+	@doc "我的工单（party_id 隔离）"
+	@handler tickets
+	get /customer/tickets (CustomerTicketListReq) returns (CustomerTicketListResp)
+
+	@doc "工单进度详情"
+	@handler ticketDetail
+	get /customer/tickets/:id (IDPath) returns (CustomerTicketDetail)
+
+	@doc "工单 SLA 计时（快照冻结只读）"
+	@handler ticketSla
+	get /customer/tickets/:id/sla (IDPath) returns (SlaTimerView)
+
+	@doc "我的消息（未读计数 + 分页）"
+	@handler messages
+	get /customer/messages (MessageListReq) returns (MessageListResp)
+
+	@doc "消息已读（仅本人）"
+	@handler markMessageRead
+	post /customer/messages/:id/read (IDPath) returns (SimpleResp)
+
+	@doc "我的场站（本人场站单回查）"
+	@handler stations
+	get /customer/stations (NoArgsReq) returns (CustomerStationListResp)
+
+	@doc "场站详情（设备影子聚合监控）"
+	@handler stationDetail
+	get /customer/stations/:id (IDPath) returns (CustomerStationDetail)
+}
+

@@ -35,7 +35,7 @@ type (
 		// MarkArchivedTx 归档回写。
 		MarkArchivedTx(ctx context.Context, session sqlx.Session, tenantId, contractId int64, at time.Time) error
 		// ListPage 合同列表。
-		ListPage(ctx context.Context, tenantId int64, keyword, contractType, status string, page, size int64) ([]*Contract, int64, error)
+		ListPage(ctx context.Context, tenantId int64, keyword, contractType, status string, buyerPartyId int64, page, size int64) ([]*Contract, int64, error)
 	}
 
 	customContractModel struct {
@@ -132,9 +132,13 @@ func (m *customContractModel) MarkArchivedTx(ctx context.Context, session sqlx.S
 	return nil
 }
 
-func (m *customContractModel) ListPage(ctx context.Context, tenantId int64, keyword, contractType, status string, page, size int64) ([]*Contract, int64, error) {
+func (m *customContractModel) ListPage(ctx context.Context, tenantId int64, keyword, contractType, status string, buyerPartyId int64, page, size int64) ([]*Contract, int64, error) {
 	where := "`tenant_id` = ? and `deleted_at` is null"
 	args := []any{tenantId}
+	if buyerPartyId > 0 {
+		where += " and `buyer_party_id` = ?"
+		args = append(args, buyerPartyId)
+	}
 	if keyword != "" {
 		where += " and (`contract_no` like ? or `name` like ?)"
 		args = append(args, "%"+keyword+"%", "%"+keyword+"%")

@@ -27,6 +27,8 @@ const (
 	Identity_StepUp_FullMethodName            = "/identity.Identity/StepUp"
 	Identity_Impersonate_FullMethodName       = "/identity.Identity/Impersonate"
 	Identity_BindParty_FullMethodName         = "/identity.Identity/BindParty"
+	Identity_BindPhone_FullMethodName         = "/identity.Identity/BindPhone"
+	Identity_BindPhoneByCode_FullMethodName   = "/identity.Identity/BindPhoneByCode"
 	Identity_ListSessions_FullMethodName      = "/identity.Identity/ListSessions"
 	Identity_KickSessions_FullMethodName      = "/identity.Identity/KickSessions"
 	Identity_ValidateSession_FullMethodName   = "/identity.Identity/ValidateSession"
@@ -84,6 +86,12 @@ type IdentityClient interface {
 	Impersonate(ctx context.Context, in *ImpersonateReq, opts ...grpc.CallOption) (*ImpersonateResp, error)
 	// 统一账号-参与方绑定（S4 party 落地后消费）
 	BindParty(ctx context.Context, in *BindPartyReq, opts ...grpc.CallOption) (*BindPartyResp, error)
+	// 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+	// mobile 加密 + hash 落库，uk_user_mobile_hash 查重；types 追加当前端）
+	BindPhone(ctx context.Context, in *BindPhoneReq, opts ...grpc.CallOption) (*BindPhoneResp, error)
+	// 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+	// 绑定成功即建会话签发 token——未绑定期不签发 token，端侧无鉴权调用面）
+	BindPhoneByCode(ctx context.Context, in *BindPhoneByCodeReq, opts ...grpc.CallOption) (*LoginByWechatResp, error)
 	// ---- 会话管理 ----
 	ListSessions(ctx context.Context, in *ListSessionsReq, opts ...grpc.CallOption) (*ListSessionsResp, error)
 	KickSessions(ctx context.Context, in *KickSessionsReq, opts ...grpc.CallOption) (*KickSessionsResp, error)
@@ -206,6 +214,26 @@ func (c *identityClient) BindParty(ctx context.Context, in *BindPartyReq, opts .
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BindPartyResp)
 	err := c.cc.Invoke(ctx, Identity_BindParty_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityClient) BindPhone(ctx context.Context, in *BindPhoneReq, opts ...grpc.CallOption) (*BindPhoneResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BindPhoneResp)
+	err := c.cc.Invoke(ctx, Identity_BindPhone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityClient) BindPhoneByCode(ctx context.Context, in *BindPhoneByCodeReq, opts ...grpc.CallOption) (*LoginByWechatResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginByWechatResp)
+	err := c.cc.Invoke(ctx, Identity_BindPhoneByCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -537,6 +565,12 @@ type IdentityServer interface {
 	Impersonate(context.Context, *ImpersonateReq) (*ImpersonateResp, error)
 	// 统一账号-参与方绑定（S4 party 落地后消费）
 	BindParty(context.Context, *BindPartyReq) (*BindPartyResp, error)
+	// 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+	// mobile 加密 + hash 落库，uk_user_mobile_hash 查重；types 追加当前端）
+	BindPhone(context.Context, *BindPhoneReq) (*BindPhoneResp, error)
+	// 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+	// 绑定成功即建会话签发 token——未绑定期不签发 token，端侧无鉴权调用面）
+	BindPhoneByCode(context.Context, *BindPhoneByCodeReq) (*LoginByWechatResp, error)
 	// ---- 会话管理 ----
 	ListSessions(context.Context, *ListSessionsReq) (*ListSessionsResp, error)
 	KickSessions(context.Context, *KickSessionsReq) (*KickSessionsResp, error)
@@ -608,6 +642,12 @@ func (UnimplementedIdentityServer) Impersonate(context.Context, *ImpersonateReq)
 }
 func (UnimplementedIdentityServer) BindParty(context.Context, *BindPartyReq) (*BindPartyResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method BindParty not implemented")
+}
+func (UnimplementedIdentityServer) BindPhone(context.Context, *BindPhoneReq) (*BindPhoneResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method BindPhone not implemented")
+}
+func (UnimplementedIdentityServer) BindPhoneByCode(context.Context, *BindPhoneByCodeReq) (*LoginByWechatResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method BindPhoneByCode not implemented")
 }
 func (UnimplementedIdentityServer) ListSessions(context.Context, *ListSessionsReq) (*ListSessionsResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSessions not implemented")
@@ -860,6 +900,42 @@ func _Identity_BindParty_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IdentityServer).BindParty(ctx, req.(*BindPartyReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Identity_BindPhone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindPhoneReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServer).BindPhone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Identity_BindPhone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServer).BindPhone(ctx, req.(*BindPhoneReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Identity_BindPhoneByCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindPhoneByCodeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServer).BindPhoneByCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Identity_BindPhoneByCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServer).BindPhoneByCode(ctx, req.(*BindPhoneByCodeReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1442,6 +1518,14 @@ var Identity_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BindParty",
 			Handler:    _Identity_BindParty_Handler,
+		},
+		{
+			MethodName: "BindPhone",
+			Handler:    _Identity_BindPhone_Handler,
+		},
+		{
+			MethodName: "BindPhoneByCode",
+			Handler:    _Identity_BindPhoneByCode_Handler,
 		},
 		{
 			MethodName: "ListSessions",

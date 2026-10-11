@@ -37,6 +37,11 @@ func (l *SubmitTicketLogic) SubmitTicket(in *pb.SubmitTicketReq) (*pb.SubmitTick
 	if err != nil {
 		return nil, errTicketNotFound
 	}
+	// FR-OPS-008 离线草稿恢复同步：带 client_action_id 的重放（工单已提交/更后状态）幂等成功，
+	// 让端侧"恢复同步"可安全重试；不带 action id 的非法迁移照旧拒绝。
+	if in.ClientActionId != "" && !transitionAllowed(tk.Status, "SUBMITTED") {
+		return &pb.SubmitTicketResp{}, nil
+	}
 	if !transitionAllowed(tk.Status, "SUBMITTED") {
 		return nil, errTicketStatusBad
 	}

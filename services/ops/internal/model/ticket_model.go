@@ -19,7 +19,7 @@ type (
 		InsertTx(ctx context.Context, session sqlx.Session, data *Ticket) error
 		FindOneScoped(ctx context.Context, tenantId, ticketId int64) (*Ticket, error)
 		FindByClientActionScoped(ctx context.Context, tenantId int64, clientActionId string) (*Ticket, error)
-		ListPage(ctx context.Context, tenantId int64, status, ticketType string, stationId, assigneeUid int64, limit, offset int) ([]*Ticket, int64, error)
+		ListPage(ctx context.Context, tenantId int64, status, ticketType string, stationId, assigneeUid, partyId int64, limit, offset int) ([]*Ticket, int64, error)
 		// ListPending 轮询增量（id > since_id，FR-OPS-010）。
 		ListPending(ctx context.Context, tenantId, stationId, assigneeUid int64, status string, sinceId int64, limit int) ([]*Ticket, error)
 		// CountActive 过滤条件下活跃（非终态）计数（轮询 unread）。
@@ -53,16 +53,19 @@ func NewTicketModel(conn sqlx.SqlConn) TicketModel {
 
 const ticketSoftFilter = "`deleted_at` is null"
 
+// nullInt64 int64 → sql.NullInt64（0=NULL：party_id 等可空外键的统一口径）。
+func nullInt64(v int64) sql.NullInt64 { return sql.NullInt64{Int64: v, Valid: v > 0} }
+
 // 终态集合（轮询 unread 排除）。
 const ticketActiveFilter = "`status` not in ('CLOSED','CANCELLED')"
 
 func (m *customTicketModel) InsertTx(ctx context.Context, session sqlx.Session, data *Ticket) error {
-	query := "insert into `ticket` (`ticket_id`,`ticket_no`,`type`,`title`,`content`,`priority`,`station_id`,`station_name`,`device_id`,`sn`,`alert_id`,`inspection_item_id`,`assignee_uid`,`assignee_name`,`status`,`escalate_level`,`created_by`,`client_action_id`,`tenant_id`) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	query := "insert into `ticket` (`ticket_id`,`ticket_no`,`type`,`title`,`content`,`priority`,`station_id`,`station_name`,`device_id`,`sn`,`alert_id`,`inspection_item_id`,`assignee_uid`,`assignee_name`,`status`,`escalate_level`,`created_by`,`client_action_id`,`party_id`,`tenant_id`) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 	_, err := session.ExecCtx(ctx, query,
 		data.TicketId, data.TicketNo, data.Type, data.Title, data.Content, data.Priority,
 		data.StationId, data.StationName, data.DeviceId, data.Sn, data.AlertId,
 		data.InspectionItemId, data.AssigneeUid, data.AssigneeName, data.Status,
-		data.EscalateLevel, data.CreatedBy, data.ClientActionId, data.TenantId)
+		data.EscalateLevel, data.CreatedBy, data.ClientActionId, data.PartyId, data.TenantId)
 	return err
 }
 
@@ -84,9 +87,13 @@ func (m *customTicketModel) FindByClientActionScoped(ctx context.Context, tenant
 	return &res, nil
 }
 
-func (m *customTicketModel) ListPage(ctx context.Context, tenantId int64, status, ticketType string, stationId, assigneeUid int64, limit, offset int) ([]*Ticket, int64, error) {
+func (m *customTicketModel) ListPage(ctx context.Context, tenantId int64, status, ticketType string, stationId, assigneeUid, partyId int64, limit, offset int) ([]*Ticket, int64, error) {
 	where := "`tenant_id` = ? and " + ticketSoftFilter
 	args := []any{tenantId}
+	if partyId > 0 {
+		where += " and `party_id` = ?"
+		args = append(args, partyId)
+	}
 	if status != "" {
 		where += " and `status` = ?"
 		args = append(args, status)

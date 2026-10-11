@@ -23,7 +23,7 @@ type (
 		FindOneByOrderNoScoped(ctx context.Context, tenantId int64, orderNo string) (*Station, error)
 		// FindOneByNoScoped 场站编号查询。
 		FindOneByNoScoped(ctx context.Context, tenantId int64, stationNo string) (*Station, error)
-		ListPage(ctx context.Context, tenantId int64, keyword, status, stationType string, limit, offset int) ([]*Station, int64, error)
+		ListPage(ctx context.Context, tenantId int64, keyword, status, stationType, orderNo string, limit, offset int) ([]*Station, int64, error)
 	}
 
 	customStationModel struct {
@@ -75,9 +75,13 @@ func (m *customStationModel) FindOneByNoScoped(ctx context.Context, tenantId int
 	return &res, nil
 }
 
-func (m *customStationModel) ListPage(ctx context.Context, tenantId int64, keyword, status, stationType string, limit, offset int) ([]*Station, int64, error) {
+func (m *customStationModel) ListPage(ctx context.Context, tenantId int64, keyword, status, stationType, orderNo string, limit, offset int) ([]*Station, int64, error) {
 	where := "`tenant_id` = ? and " + stationSoftFilter
 	args := []any{tenantId}
+	if orderNo != "" {
+		where += " and `order_no` = ?"
+		args = append(args, orderNo)
+	}
 	if keyword != "" {
 		where += " and (`station_no` like ? or `name` like ?)"
 		kw := "%" + keyword + "%"

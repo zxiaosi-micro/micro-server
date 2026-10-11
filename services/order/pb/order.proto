@@ -112,6 +112,7 @@ message ListOrderReq {
   string status = 3;  // 空=全部
   int64 page = 4;
   int64 size = 5;
+  int64 buyer_party_id = 6; // 买方参与方过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 }
 message ListOrderResp {
   repeated OrderDetail list = 1;

@@ -596,6 +596,7 @@ type ListDeviceReq struct {
 	ProductKey    string                 `protobuf:"bytes,3,opt,name=product_key,json=productKey,proto3" json:"product_key,omitempty"`
 	Page          int32                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
 	Size          int32                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	PartyId       int64                  `protobuf:"varint,6,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 归属客户过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -661,6 +662,13 @@ func (x *ListDeviceReq) GetPage() int32 {
 func (x *ListDeviceReq) GetSize() int32 {
 	if x != nil {
 		return x.Size
+	}
+	return 0
+}
+
+func (x *ListDeviceReq) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
 	}
 	return 0
 }
@@ -3047,14 +3055,15 @@ const file_pb_device_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\v \x01(\x03R\tcreatedAt\";\n" +
 	"\rGetDeviceResp\x12*\n" +
-	"\x06device\x18\x01 \x01(\v2\x12.device.DeviceViewR\x06device\"\x8a\x01\n" +
+	"\x06device\x18\x01 \x01(\v2\x12.device.DeviceViewR\x06device\"\xa5\x01\n" +
 	"\rListDeviceReq\x12\x18\n" +
 	"\akeyword\x18\x01 \x01(\tR\akeyword\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12\x1f\n" +
 	"\vproduct_key\x18\x03 \x01(\tR\n" +
 	"productKey\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\x05R\x04page\x12\x12\n" +
-	"\x04size\x18\x05 \x01(\x05R\x04size\"N\n" +
+	"\x04size\x18\x05 \x01(\x05R\x04size\x12\x19\n" +
+	"\bparty_id\x18\x06 \x01(\x03R\apartyId\"N\n" +
 	"\x0eListDeviceResp\x12&\n" +
 	"\x04list\x18\x01 \x03(\v2\x12.device.DeviceViewR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\"-\n" +

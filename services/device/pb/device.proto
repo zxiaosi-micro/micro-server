@@ -104,6 +104,7 @@ message ListDeviceReq {
   string product_key = 3;
   int32 page = 4;
   int32 size = 5;
+  int64 party_id = 6; // 归属客户过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 }
 message ListDeviceResp {
   repeated DeviceView list = 1;

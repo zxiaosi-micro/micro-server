@@ -276,6 +276,7 @@ message TicketItem {
   int64 created_by = 24;
   string client_action_id = 25;   // 离线工单幂等键（FR-OPS-008，L2）
   int64 created_at = 26;
+  int64 party_id = 27;            // 报修客户（type=AFTER_SALE，S9-01 requireParty 隔离）
 }
 
 message TicketLogItem {
@@ -299,6 +300,7 @@ message CreateTicketReq {
   string sn = 7;
   int64 alert_id = 8;
   string client_action_id = 9;
+  int64 party_id = 10; // 报修客户（AFTER_SALE 客户端小程序落派对隔离查询键，S9-01）
 }
 message CreateTicketResp {
   int64 ticket_id = 1;
@@ -318,6 +320,7 @@ message ListTicketReq {
   int64 assignee_uid = 4;
   int64 page = 5;
   int64 size = 6;
+  int64 party_id = 7; // 报修客户过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 }
 message ListTicketResp {
   repeated TicketItem list = 1;
@@ -358,6 +361,7 @@ message StartTicketResp {}
 message SubmitTicketReq {
   int64 ticket_id = 1;
   string result = 2;
+  string client_action_id = 3; // 离线草稿恢复同步幂等键（FR-OPS-008，S9-05 运维 App）
 }
 message SubmitTicketResp {}
 

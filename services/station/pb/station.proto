@@ -99,6 +99,7 @@ message ListStationReq {
   string type = 3;
   int32 page = 4;
   int32 size = 5;
+  string order_no = 6; // 来源订单过滤（S9-01 客户端小程序按本人场站单回查；空=不过滤）
 }
 message ListStationResp {
   repeated StationView list = 1;

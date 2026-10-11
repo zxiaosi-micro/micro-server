@@ -33,8 +33,8 @@ type (
 		CASStatusTx(ctx context.Context, session sqlx.Session, tenantId, orderId int64, from []string, to string) error
 		// MarkPaidTx 回写支付完成（order_paid 事件驱动）。
 		MarkPaidTx(ctx context.Context, session sqlx.Session, tenantId, orderId int64, paidAt time.Time) error
-		// ListPage 订单列表（keyword/type/status 过滤，新→旧）。
-		ListPage(ctx context.Context, tenantId int64, keyword, orderType, status string, page, size int64) ([]*Order, int64, error)
+		// ListPage 订单列表（keyword/type/status/buyer_party 过滤，新→旧；S9-01 增买方过滤）。
+		ListPage(ctx context.Context, tenantId int64, keyword, orderType, status string, buyerPartyId int64, page, size int64) ([]*Order, int64, error)
 		// FindPayExpired 支付超时扫描（status 仍在支付窗口且到期；后台作业无租户上下文）。
 		FindPayExpired(ctx context.Context, now time.Time, limit int) ([]*Order, error)
 		// SumPaidSales 已支付销售汇总（PAID 起含，FR 统计口径）。
@@ -117,9 +117,13 @@ func (m *customOrderModel) MarkPaidTx(ctx context.Context, session sqlx.Session,
 	return err
 }
 
-func (m *customOrderModel) ListPage(ctx context.Context, tenantId int64, keyword, orderType, status string, page, size int64) ([]*Order, int64, error) {
+func (m *customOrderModel) ListPage(ctx context.Context, tenantId int64, keyword, orderType, status string, buyerPartyId int64, page, size int64) ([]*Order, int64, error) {
 	where := "`tenant_id` = ? and `deleted_at` is null"
 	args := []any{tenantId}
+	if buyerPartyId > 0 {
+		where += " and `buyer_party_id` = ?"
+		args = append(args, buyerPartyId)
+	}
 	if keyword != "" {
 		where += " and `order_no` like ?"
 		args = append(args, "%"+keyword+"%")

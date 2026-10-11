@@ -64,6 +64,7 @@ type (
 		CancelReason     sql.NullString `db:"cancel_reason"`
 		CreatedBy        sql.NullInt64  `db:"created_by"`       // 创建人 uid（0=系统生成）
 		ClientActionId   sql.NullString `db:"client_action_id"` // 离线工单幂等键（FR-OPS-008，L2）
+		PartyId          sql.NullInt64  `db:"party_id"`         // 报修客户（type=AFTER_SALE，S9-01 requireParty）
 		TenantId         int64          `db:"tenant_id"`        // 租户 ID
 		CreatedAt        time.Time      `db:"created_at"`       // 创建时间
 		UpdatedAt        time.Time      `db:"updated_at"`       // 更新时间

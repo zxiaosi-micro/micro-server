@@ -30,7 +30,7 @@ func (l *ListOrderLogic) ListOrder(in *pb.ListOrderReq) (*pb.ListOrderResp, erro
 		return nil, err
 	}
 	page, size := clampPage(in.Page, in.Size)
-	list, total, err := l.svcCtx.Models.Order.ListPage(l.ctx, tid, in.Keyword, in.Type, in.Status, page, size)
+	list, total, err := l.svcCtx.Models.Order.ListPage(l.ctx, tid, in.Keyword, in.Type, in.Status, in.BuyerPartyId, page, size)
 	if err != nil {
 		return nil, err
 	}

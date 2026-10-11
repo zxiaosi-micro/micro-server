@@ -69,6 +69,18 @@ func (s *IdentityServer) BindParty(ctx context.Context, in *pb.BindPartyReq) (*p
 	return l.BindParty(in)
 }
 
+// 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+func (s *IdentityServer) BindPhone(ctx context.Context, in *pb.BindPhoneReq) (*pb.BindPhoneResp, error) {
+	l := logic.NewBindPhoneLogic(ctx, s.svcCtx)
+	return l.BindPhone(in)
+}
+
+// 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+func (s *IdentityServer) BindPhoneByCode(ctx context.Context, in *pb.BindPhoneByCodeReq) (*pb.LoginByWechatResp, error) {
+	l := logic.NewBindPhoneByCodeLogic(ctx, s.svcCtx)
+	return l.BindPhoneByCode(in)
+}
+
 // ---- 会话管理 ----
 func (s *IdentityServer) ListSessions(ctx context.Context, in *pb.ListSessionsReq) (*pb.ListSessionsResp, error) {
 	l := logic.NewListSessionsLogic(ctx, s.svcCtx)

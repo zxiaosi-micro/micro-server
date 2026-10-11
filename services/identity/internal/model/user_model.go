@@ -51,6 +51,9 @@ type (
 		UpdatePassword(ctx context.Context, tenantId, userId int64, passwordHash string, updatedBy int64) error
 		// SoftDelete 软删（置 deleted_at；绑定的角色/会话由 Logic 层联动清理）。
 		SoftDelete(ctx context.Context, tenantId, userId, updatedBy int64) error
+		// BindMobile 绑定手机号（S9-01 微信首登 need_bind_phone 后调用）：mobile 加密列 +
+		// hash 索引列与可登录端 types 一次落库；查重与 types 合并由 Logic 层先行。
+		BindMobile(ctx context.Context, tenantId, userId int64, types, mobile, mobileHash string, updatedBy int64) error
 	}
 
 	customUserModel struct {
@@ -188,6 +191,17 @@ func (m *customUserModel) FindOneByUID(ctx context.Context, userId int64) (*User
 	default:
 		return nil, err
 	}
+}
+
+// BindMobile 绑定手机号（S9-01 微信首登 need_bind_phone 后调用）：mobile 加密列 + hash 索引列
+// 与可登录端 types 一次落库；调用方保证 mobileHash 查重与 types 合并先行。
+func (m *customUserModel) BindMobile(ctx context.Context, tenantId, userId int64, types, mobile, mobileHash string, updatedBy int64) error {
+	query := fmt.Sprintf("update %s set `types` = ?, `mobile` = ?, `mobile_hash` = ?, `updated_by` = ?, `updated_at` = ? where `user_id` = ? and `tenant_id` = ? and `deleted_at` is null", m.table)
+	_, err := m.ExecNoCacheCtx(ctx, query, types,
+		sql.NullString{String: mobile, Valid: mobile != ""},
+		sql.NullString{String: mobileHash, Valid: mobileHash != ""},
+		sql.NullInt64{Int64: updatedBy, Valid: updatedBy > 0}, time.Now(), userId, tenantId)
+	return err
 }
 
 func (m *customUserModel) UpdateParty(ctx context.Context, tenantId, userId, partyId, updatedBy int64) error {

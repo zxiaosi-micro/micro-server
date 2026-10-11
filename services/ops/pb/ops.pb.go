@@ -1861,6 +1861,7 @@ type TicketItem struct {
 	CreatedBy        int64                  `protobuf:"varint,24,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	ClientActionId   string                 `protobuf:"bytes,25,opt,name=client_action_id,json=clientActionId,proto3" json:"client_action_id,omitempty"` // 离线工单幂等键（FR-OPS-008，L2）
 	CreatedAt        int64                  `protobuf:"varint,26,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PartyId          int64                  `protobuf:"varint,27,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 报修客户（type=AFTER_SALE，S9-01 requireParty 隔离）
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -2077,6 +2078,13 @@ func (x *TicketItem) GetCreatedAt() int64 {
 	return 0
 }
 
+func (x *TicketItem) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
 type TicketLogItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LogId         int64                  `protobuf:"varint,1,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
@@ -2188,6 +2196,7 @@ type CreateTicketReq struct {
 	Sn             string                 `protobuf:"bytes,7,opt,name=sn,proto3" json:"sn,omitempty"`
 	AlertId        int64                  `protobuf:"varint,8,opt,name=alert_id,json=alertId,proto3" json:"alert_id,omitempty"`
 	ClientActionId string                 `protobuf:"bytes,9,opt,name=client_action_id,json=clientActionId,proto3" json:"client_action_id,omitempty"`
+	PartyId        int64                  `protobuf:"varint,10,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 报修客户（AFTER_SALE 客户端小程序落派对隔离查询键，S9-01）
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -2283,6 +2292,13 @@ func (x *CreateTicketReq) GetClientActionId() string {
 		return x.ClientActionId
 	}
 	return ""
+}
+
+func (x *CreateTicketReq) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
 }
 
 type CreateTicketResp struct {
@@ -2441,6 +2457,7 @@ type ListTicketReq struct {
 	AssigneeUid   int64                  `protobuf:"varint,4,opt,name=assignee_uid,json=assigneeUid,proto3" json:"assignee_uid,omitempty"`
 	Page          int64                  `protobuf:"varint,5,opt,name=page,proto3" json:"page,omitempty"`
 	Size          int64                  `protobuf:"varint,6,opt,name=size,proto3" json:"size,omitempty"`
+	PartyId       int64                  `protobuf:"varint,7,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 报修客户过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2513,6 +2530,13 @@ func (x *ListTicketReq) GetPage() int64 {
 func (x *ListTicketReq) GetSize() int64 {
 	if x != nil {
 		return x.Size
+	}
+	return 0
+}
+
+func (x *ListTicketReq) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
 	}
 	return 0
 }
@@ -3030,11 +3054,12 @@ func (*StartTicketResp) Descriptor() ([]byte, []int) {
 }
 
 type SubmitTicketReq struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TicketId      int64                  `protobuf:"varint,1,opt,name=ticket_id,json=ticketId,proto3" json:"ticket_id,omitempty"`
-	Result        string                 `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TicketId       int64                  `protobuf:"varint,1,opt,name=ticket_id,json=ticketId,proto3" json:"ticket_id,omitempty"`
+	Result         string                 `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	ClientActionId string                 `protobuf:"bytes,3,opt,name=client_action_id,json=clientActionId,proto3" json:"client_action_id,omitempty"` // 离线草稿恢复同步幂等键（FR-OPS-008，S9-05 运维 App）
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *SubmitTicketReq) Reset() {
@@ -3077,6 +3102,13 @@ func (x *SubmitTicketReq) GetTicketId() int64 {
 func (x *SubmitTicketReq) GetResult() string {
 	if x != nil {
 		return x.Result
+	}
+	return ""
+}
+
+func (x *SubmitTicketReq) GetClientActionId() string {
+	if x != nil {
+		return x.ClientActionId
 	}
 	return ""
 }
@@ -5714,7 +5746,7 @@ const file_pb_ops_proto_rawDesc = "" +
 	"\x11PendingAlertsResp\x12!\n" +
 	"\funread_count\x18\x01 \x01(\x03R\vunreadCount\x12\x15\n" +
 	"\x06max_id\x18\x02 \x01(\x03R\x05maxId\x12%\n" +
-	"\x05items\x18\x03 \x03(\v2\x0f.ops.AlertBriefR\x05items\"\xbe\x06\n" +
+	"\x05items\x18\x03 \x03(\v2\x0f.ops.AlertBriefR\x05items\"\xd9\x06\n" +
 	"\n" +
 	"TicketItem\x12\x1b\n" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\x12\x1b\n" +
@@ -5749,7 +5781,8 @@ const file_pb_ops_proto_rawDesc = "" +
 	"created_by\x18\x18 \x01(\x03R\tcreatedBy\x12(\n" +
 	"\x10client_action_id\x18\x19 \x01(\tR\x0eclientActionId\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x1a \x01(\x03R\tcreatedAt\"\xef\x01\n" +
+	"created_at\x18\x1a \x01(\x03R\tcreatedAt\x12\x19\n" +
+	"\bparty_id\x18\x1b \x01(\x03R\apartyId\"\xef\x01\n" +
 	"\rTicketLogItem\x12\x15\n" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x12\x1b\n" +
 	"\tticket_id\x18\x02 \x01(\x03R\bticketId\x12\x16\n" +
@@ -5760,7 +5793,7 @@ const file_pb_ops_proto_rawDesc = "" +
 	"\foperator_uid\x18\x06 \x01(\x03R\voperatorUid\x12\x12\n" +
 	"\x04note\x18\a \x01(\tR\x04note\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\b \x01(\x03R\tcreatedAt\"\x82\x02\n" +
+	"created_at\x18\b \x01(\x03R\tcreatedAt\"\x9d\x02\n" +
 	"\x0fCreateTicketReq\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x18\n" +
@@ -5771,7 +5804,9 @@ const file_pb_ops_proto_rawDesc = "" +
 	"\tdevice_id\x18\x06 \x01(\x03R\bdeviceId\x12\x0e\n" +
 	"\x02sn\x18\a \x01(\tR\x02sn\x12\x19\n" +
 	"\balert_id\x18\b \x01(\x03R\aalertId\x12(\n" +
-	"\x10client_action_id\x18\t \x01(\tR\x0eclientActionId\"L\n" +
+	"\x10client_action_id\x18\t \x01(\tR\x0eclientActionId\x12\x19\n" +
+	"\bparty_id\x18\n" +
+	" \x01(\x03R\apartyId\"L\n" +
 	"\x10CreateTicketResp\x12\x1b\n" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\x12\x1b\n" +
 	"\tticket_no\x18\x02 \x01(\tR\bticketNo\"+\n" +
@@ -5779,7 +5814,7 @@ const file_pb_ops_proto_rawDesc = "" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\"`\n" +
 	"\rGetTicketResp\x12'\n" +
 	"\x06ticket\x18\x01 \x01(\v2\x0f.ops.TicketItemR\x06ticket\x12&\n" +
-	"\x04logs\x18\x02 \x03(\v2\x12.ops.TicketLogItemR\x04logs\"\xa5\x01\n" +
+	"\x04logs\x18\x02 \x03(\v2\x12.ops.TicketLogItemR\x04logs\"\xc0\x01\n" +
 	"\rListTicketReq\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x1d\n" +
@@ -5787,7 +5822,8 @@ const file_pb_ops_proto_rawDesc = "" +
 	"station_id\x18\x03 \x01(\x03R\tstationId\x12!\n" +
 	"\fassignee_uid\x18\x04 \x01(\x03R\vassigneeUid\x12\x12\n" +
 	"\x04page\x18\x05 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x06 \x01(\x03R\x04size\"K\n" +
+	"\x04size\x18\x06 \x01(\x03R\x04size\x12\x19\n" +
+	"\bparty_id\x18\a \x01(\x03R\apartyId\"K\n" +
 	"\x0eListTicketResp\x12#\n" +
 	"\x04list\x18\x01 \x03(\v2\x0f.ops.TicketItemR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\"\xb7\x01\n" +
@@ -5820,10 +5856,11 @@ const file_pb_ops_proto_rawDesc = "" +
 	"\x10AcceptTicketResp\"-\n" +
 	"\x0eStartTicketReq\x12\x1b\n" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\"\x11\n" +
-	"\x0fStartTicketResp\"F\n" +
+	"\x0fStartTicketResp\"p\n" +
 	"\x0fSubmitTicketReq\x12\x1b\n" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\x12\x16\n" +
-	"\x06result\x18\x02 \x01(\tR\x06result\"\x12\n" +
+	"\x06result\x18\x02 \x01(\tR\x06result\x12(\n" +
+	"\x10client_action_id\x18\x03 \x01(\tR\x0eclientActionId\"\x12\n" +
 	"\x10SubmitTicketResp\"Z\n" +
 	"\x0fVerifyTicketReq\x12\x1b\n" +
 	"\tticket_id\x18\x01 \x01(\x03R\bticketId\x12\x12\n" +

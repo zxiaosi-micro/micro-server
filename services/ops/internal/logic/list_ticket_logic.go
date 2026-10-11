@@ -29,7 +29,7 @@ func (l *ListTicketLogic) ListTicket(in *pb.ListTicketReq) (*pb.ListTicketResp, 
 		return nil, err
 	}
 	page, size := clampPage(in.Page, in.Size)
-	list, total, err := l.svcCtx.Models.Ticket.ListPage(l.ctx, tid, in.Status, in.Type, in.StationId, in.AssigneeUid, size, (page-1)*size)
+	list, total, err := l.svcCtx.Models.Ticket.ListPage(l.ctx, tid, in.Status, in.Type, in.StationId, in.AssigneeUid, in.PartyId, size, (page-1)*size)
 	if err != nil {
 		return nil, err
 	}

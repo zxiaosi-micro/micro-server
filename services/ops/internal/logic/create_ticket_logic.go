@@ -43,6 +43,7 @@ func (l *CreateTicketLogic) CreateTicket(in *pb.CreateTicketReq) (*pb.CreateTick
 		AlertId:        in.AlertId,
 		CreatedBy:      nullInt64(ctxkit.UID(l.ctx)),
 		ClientActionId: nullString(in.ClientActionId),
+		PartyId:        nullInt64(in.PartyId),
 	}
 	created, err := createTicketCore(l.ctx, l.svcCtx, tid, row)
 	if err != nil {

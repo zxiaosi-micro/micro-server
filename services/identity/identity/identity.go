@@ -16,6 +16,9 @@ import (
 type (
 	BindPartyReq          = pb.BindPartyReq
 	BindPartyResp         = pb.BindPartyResp
+	BindPhoneByCodeReq    = pb.BindPhoneByCodeReq
+	BindPhoneReq          = pb.BindPhoneReq
+	BindPhoneResp         = pb.BindPhoneResp
 	CreateMenuReq         = pb.CreateMenuReq
 	CreateMenuResp        = pb.CreateMenuResp
 	CreateOrgReq          = pb.CreateOrgReq
@@ -113,6 +116,10 @@ type (
 		Impersonate(ctx context.Context, in *ImpersonateReq, opts ...grpc.CallOption) (*ImpersonateResp, error)
 		// 统一账号-参与方绑定（S4 party 落地后消费）
 		BindParty(ctx context.Context, in *BindPartyReq, opts ...grpc.CallOption) (*BindPartyResp, error)
+		// 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+		BindPhone(ctx context.Context, in *BindPhoneReq, opts ...grpc.CallOption) (*BindPhoneResp, error)
+		// 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+		BindPhoneByCode(ctx context.Context, in *BindPhoneByCodeReq, opts ...grpc.CallOption) (*LoginByWechatResp, error)
 		// ---- 会话管理 ----
 		ListSessions(ctx context.Context, in *ListSessionsReq, opts ...grpc.CallOption) (*ListSessionsResp, error)
 		KickSessions(ctx context.Context, in *KickSessionsReq, opts ...grpc.CallOption) (*KickSessionsResp, error)
@@ -208,6 +215,18 @@ func (m *defaultIdentity) Impersonate(ctx context.Context, in *ImpersonateReq, o
 func (m *defaultIdentity) BindParty(ctx context.Context, in *BindPartyReq, opts ...grpc.CallOption) (*BindPartyResp, error) {
 	client := pb.NewIdentityClient(m.cli.Conn())
 	return client.BindParty(ctx, in, opts...)
+}
+
+// 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+func (m *defaultIdentity) BindPhone(ctx context.Context, in *BindPhoneReq, opts ...grpc.CallOption) (*BindPhoneResp, error) {
+	client := pb.NewIdentityClient(m.cli.Conn())
+	return client.BindPhone(ctx, in, opts...)
+}
+
+// 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+func (m *defaultIdentity) BindPhoneByCode(ctx context.Context, in *BindPhoneByCodeReq, opts ...grpc.CallOption) (*LoginByWechatResp, error) {
+	client := pb.NewIdentityClient(m.cli.Conn())
+	return client.BindPhoneByCode(ctx, in, opts...)
 }
 
 // ---- 会话管理 ----

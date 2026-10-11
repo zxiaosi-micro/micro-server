@@ -34,6 +34,8 @@ export EMQX_PLATFORM_PASS=$(grep MICRO_DEV_EMQX_PLATFORM_PW "$DEV_ENV" | cut -d=
 [ -n "$EMQX_PLATFORM_PASS" ] || export EMQX_PLATFORM_PASS="$EMQX_DEVICE_PASS"
 export MICRO_DEV_TDENGINE_PW=$(grep MICRO_DEV_TDENGINE_PW "$DEV_ENV" | cut -d= -f2)
 export TDENGINE_REST="${TDENGINE_REST:-http://127.0.0.1:26041}"
+# S9 微信模拟（MOCKWX=1：identity LoginByWechat 用 mock openid + notification 订阅消息日志桩，04 §3 F2）
+export MOCKWX="${MOCKWX:-1}"
 export TDENGINE_PASS="$MICRO_DEV_TDENGINE_PW"
 export OTA_PUBLIC_KEY="${OTA_PUBLIC_KEY:-D:/Personal code/micro-new/micro-deploy/deploy/conf/keys/ota_ed25519_public.pem}"
 export OTA_SIGN_KEY="${OTA_SIGN_KEY:-D:/Personal code/micro-new/micro-deploy/deploy/conf/keys/ota_ed25519_private.pem}"

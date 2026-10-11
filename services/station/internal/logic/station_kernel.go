@@ -168,7 +168,7 @@ func (l *ListStationLogic) ListStation(in *pb.ListStationReq) (*pb.ListStationRe
 	if in.Status != "" && !isStationStatus(in.Status) {
 		return nil, errStatusBad
 	}
-	list, total, err := l.svcCtx.Models.Station.ListPage(l.ctx, tid, in.Keyword, in.Status, in.Type, size, (page-1)*size)
+	list, total, err := l.svcCtx.Models.Station.ListPage(l.ctx, tid, in.Keyword, in.Status, in.Type, in.OrderNo, size, (page-1)*size)
 	if err != nil {
 		return nil, err
 	}

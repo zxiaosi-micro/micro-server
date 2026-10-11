@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"micro-server/services/identity/internal/model"
@@ -41,21 +43,32 @@ type wxSession struct {
 
 // LoginByWechat 微信登录：code2session → SSO 绑定定位 →
 // 未绑手机 → need_bind_phone=true（前端走绑定流程，不签发 token）；
-// 已绑 → 建会话签发。dev 未配 Wechat.* 返回 1101013 明确报错。
+// 已绑 → 建会话签发。dev MOCKWX=1 走模拟（openid=mock-<code>，不触外网，04 §3 F2）；
+// 未配 Wechat.* 且未开模拟返回 1101013 明确报错。
 func (l *LoginByWechatLogic) LoginByWechat(in *pb.LoginByWechatReq) (*pb.LoginByWechatResp, error) {
 	if in.Code == "" || in.Client == "" {
 		return nil, errcode.ErrBadRequest.WithMsg("code/client 必填")
 	}
 	appID := l.svcCtx.Config.Wechat.AppID
 	appSecret := l.svcCtx.Config.Wechat.AppSecret
+	if strings.EqualFold(os.Getenv("MOCKWX"), "1") {
+		// dev 微信模拟：openid 由 code 确定性派生（同 code 同账号，冒烟可重放）
+		appID, appSecret = "mock", "mock"
+	}
 	if appID == "" || appSecret == "" {
 		return nil, errWechatNotConf
 	}
 
 	// ① code2session（jscode2interface；GET https://api.weixin.qq.com/sns/jscode2session）
-	wxs, err := code2session(l.ctx, appID, appSecret, in.Code)
-	if err != nil {
-		return nil, errcode.ErrInvalidCredential.WithMsg("微信登录失败").WithCause(err)
+	var wxs *wxSession
+	if appID == "mock" {
+		wxs = &wxSession{OpenID: "mock-openid-" + in.Code}
+	} else {
+		var err error
+		wxs, err = code2session(l.ctx, appID, appSecret, in.Code)
+		if err != nil {
+			return nil, errcode.ErrInvalidCredential.WithMsg("微信登录失败").WithCause(err)
+		}
 	}
 
 	// ② SSO 绑定定位（provider+openid 全局 UK；登录路径租户上下文尚不可得）

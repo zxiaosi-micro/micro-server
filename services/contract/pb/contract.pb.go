@@ -904,6 +904,7 @@ type ListContractReq struct {
 	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
 	Page          int64                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
 	Size          int64                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	BuyerPartyId  int64                  `protobuf:"varint,6,opt,name=buyer_party_id,json=buyerPartyId,proto3" json:"buyer_party_id,omitempty"` // 买方参与方过滤（S9-01 客户端小程序 requireParty；0=不过滤）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -969,6 +970,13 @@ func (x *ListContractReq) GetPage() int64 {
 func (x *ListContractReq) GetSize() int64 {
 	if x != nil {
 		return x.Size
+	}
+	return 0
+}
+
+func (x *ListContractReq) GetBuyerPartyId() int64 {
+	if x != nil {
+		return x.BuyerPartyId
 	}
 	return 0
 }
@@ -3029,13 +3037,14 @@ const file_pb_contract_proto_rawDesc = "" +
 	"\vcontract_no\x18\x02 \x01(\tR\n" +
 	"contractNo\"G\n" +
 	"\x0fGetContractResp\x124\n" +
-	"\bcontract\x18\x01 \x01(\v2\x18.contract.ContractDetailR\bcontract\"\x7f\n" +
+	"\bcontract\x18\x01 \x01(\v2\x18.contract.ContractDetailR\bcontract\"\xa5\x01\n" +
 	"\x0fListContractReq\x12\x18\n" +
 	"\akeyword\x18\x01 \x01(\tR\akeyword\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\tR\x06status\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\x03R\x04page\x12\x12\n" +
-	"\x04size\x18\x05 \x01(\x03R\x04size\"V\n" +
+	"\x04size\x18\x05 \x01(\x03R\x04size\x12$\n" +
+	"\x0ebuyer_party_id\x18\x06 \x01(\x03R\fbuyerPartyId\"V\n" +
 	"\x10ListContractResp\x12,\n" +
 	"\x04list\x18\x01 \x03(\v2\x18.contract.ContractDetailR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\"\xd6\x01\n" +

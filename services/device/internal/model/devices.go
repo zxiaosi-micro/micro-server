@@ -27,7 +27,7 @@ type (
 		// CasStatusTx 条件状态迁移：affected==0 → ErrStatusConflict（FR-DEV-003 白名单校验在 logic 层）。
 		CasStatusTx(ctx context.Context, session sqlx.Session, tenantId, deviceId int64, from, to string) (int64, error)
 		// ListPage 列表（禁 SELECT *，显式列；NoCache）。
-		ListPage(ctx context.Context, tenantId int64, keyword, status, productKey string, limit, offset int) ([]*Device, int64, error)
+		ListPage(ctx context.Context, tenantId int64, keyword, status, productKey string, partyId int64, limit, offset int) ([]*Device, int64, error)
 		// ListByOrderNoByTenant 按来源订单查询。
 		ListByOrderNoByTenant(ctx context.Context, tenantId int64, orderNo string) ([]*Device, error)
 		// ListActiveByProduct OTA 目标设备扫描（跨租户由调用方保证；无 tenant 条件，软删过滤保留）。
@@ -98,9 +98,13 @@ func (m *customDeviceModel) CasStatusTx(ctx context.Context, session sqlx.Sessio
 	return res.RowsAffected()
 }
 
-func (m *customDeviceModel) ListPage(ctx context.Context, tenantId int64, keyword, status, productKey string, limit, offset int) ([]*Device, int64, error) {
+func (m *customDeviceModel) ListPage(ctx context.Context, tenantId int64, keyword, status, productKey string, partyId int64, limit, offset int) ([]*Device, int64, error) {
 	where := "`tenant_id` = ? and " + deviceSoftFilter
 	args := []any{tenantId}
+	if partyId > 0 {
+		where += " and `party_id` = ?"
+		args = append(args, partyId)
+	}
 	if keyword != "" {
 		where += " and (`sn` like ? or `model` like ?)"
 		kw := "%" + keyword + "%"

@@ -14,6 +14,7 @@ use (
 	./services/identity
 	./services/inventory
 	./services/iotingest
+	./services/mobile-bff
 	./services/notification
 	./services/ops
 	./services/order

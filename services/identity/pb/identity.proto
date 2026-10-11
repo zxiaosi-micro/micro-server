@@ -26,6 +26,12 @@ service Identity {
   rpc Impersonate(ImpersonateReq) returns (ImpersonateResp);
   // 统一账号-参与方绑定（S4 party 落地后消费）
   rpc BindParty(BindPartyReq) returns (BindPartyResp);
+  // 绑定手机号（S9-01 客户端小程序：微信首登 need_bind_phone 后调用；
+  // mobile 加密 + hash 落库，uk_user_mobile_hash 查重；types 追加当前端）
+  rpc BindPhone(BindPhoneReq) returns (BindPhoneResp);
+  // 绑定手机号并签发会话（need_bind_phone 流程收尾：code 复用登录凭证定位影子账号，
+  // 绑定成功即建会话签发 token——未绑定期不签发 token，端侧无鉴权调用面）
+  rpc BindPhoneByCode(BindPhoneByCodeReq) returns (LoginByWechatResp);
 
   // ---- 会话管理 ----
   rpc ListSessions(ListSessionsReq) returns (ListSessionsResp);
@@ -152,6 +158,20 @@ message BindPartyReq {
 }
 
 message BindPartyResp {}
+
+message BindPhoneReq {
+  int64 uid = 1;
+  string phone = 2;   // 明文（BFF→RPC 内网通道；落库前加密）
+  string client = 3;  // 当前端（types 缺失时追加）
+}
+
+message BindPhoneResp {}
+
+message BindPhoneByCodeReq {
+  string code = 1;   // wx.login 临时凭证（与登录同源，dev MOCKWX=1 时为模拟码）
+  string phone = 2;  // 明文（BFF→RPC 内网通道；落库前加密）
+  string client = 3; // 当前端（types 追加）
+}
 
 // ---- 会话 ----
 

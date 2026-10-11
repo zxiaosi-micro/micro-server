@@ -130,7 +130,7 @@ func (l *ListDeviceLogic) ListDevice(in *pb.ListDeviceReq) (*pb.ListDeviceResp, 
 	if in.Status != "" && !isDeviceStatus(in.Status) {
 		return nil, errStatusBad
 	}
-	list, total, err := l.svcCtx.Models.Device.ListPage(l.ctx, tid, in.Keyword, in.Status, in.ProductKey, size, (page-1)*size)
+	list, total, err := l.svcCtx.Models.Device.ListPage(l.ctx, tid, in.Keyword, in.Status, in.ProductKey, in.PartyId, size, (page-1)*size)
 	if err != nil {
 		return nil, err
 	}

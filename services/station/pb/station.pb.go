@@ -596,6 +596,7 @@ type ListStationReq struct {
 	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	Page          int32                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
 	Size          int32                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	OrderNo       string                 `protobuf:"bytes,6,opt,name=order_no,json=orderNo,proto3" json:"order_no,omitempty"` // 来源订单过滤（S9-01 客户端小程序按本人场站单回查；空=不过滤）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -663,6 +664,13 @@ func (x *ListStationReq) GetSize() int32 {
 		return x.Size
 	}
 	return 0
+}
+
+func (x *ListStationReq) GetOrderNo() string {
+	if x != nil {
+		return x.OrderNo
+	}
+	return ""
 }
 
 type ListStationResp struct {
@@ -2154,13 +2162,14 @@ const file_pb_station_proto_rawDesc = "" +
 	"\n" +
 	"station_id\x18\x01 \x01(\x03R\tstationId\"@\n" +
 	"\x0eGetStationResp\x12.\n" +
-	"\astation\x18\x01 \x01(\v2\x14.station.StationViewR\astation\"~\n" +
+	"\astation\x18\x01 \x01(\v2\x14.station.StationViewR\astation\"\x99\x01\n" +
 	"\x0eListStationReq\x12\x18\n" +
 	"\akeyword\x18\x01 \x01(\tR\akeyword\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\x05R\x04page\x12\x12\n" +
-	"\x04size\x18\x05 \x01(\x05R\x04size\"Q\n" +
+	"\x04size\x18\x05 \x01(\x05R\x04size\x12\x19\n" +
+	"\border_no\x18\x06 \x01(\tR\aorderNo\"Q\n" +
 	"\x0fListStationResp\x12(\n" +
 	"\x04list\x18\x01 \x03(\v2\x14.station.StationViewR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\"\x80\x01\n" +

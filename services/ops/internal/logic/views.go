@@ -87,6 +87,7 @@ func pbTicket(t *model.Ticket) *pb.TicketItem {
 		CancelReason:     t.CancelReason.String,
 		CreatedBy:        t.CreatedBy.Int64,
 		ClientActionId:   t.ClientActionId.String,
+		PartyId:          t.PartyId.Int64,
 		CreatedAt:        t.CreatedAt.UnixMilli(),
 	}
 	if t.AssigneeUid.Valid {

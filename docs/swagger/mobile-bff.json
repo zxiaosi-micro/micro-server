@@ -1,0 +1,3671 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "MobileBff",
+    "version": "v1"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/app/alerts/pending": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警待办增量（10s 轮询，FR-OPS-010）",
+        "operationId": "appAppPendingAlerts",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "since_id",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppPendingAlertsResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/alerts/{id}/ack": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "告警确认",
+        "operationId": "appAppAckAlert",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AppAckAlertReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/inspections": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的巡检任务列表",
+        "operationId": "appAppInspections",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppInspectionListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/inspections/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检任务详情（含明细项）",
+        "operationId": "appAppInspectionDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppInspectionTask"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/inspections/{id}/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "巡检批量提交（定位+拍照，异常项自动转工单）",
+        "operationId": "appAppSubmitInspection",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AppInspectionSubmitReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppInspectionSubmitResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/me": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "运维 App 我的身份",
+        "operationId": "appAppMe",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppMeResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的工单列表（assignee=我）",
+        "operationId": "appAppTickets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppTicketListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets/pending": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单待办增量（FR-OPS-010 轮询）",
+        "operationId": "appAppPendingTickets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "since_id",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppPendingTicketsResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单详情（含流转日志）",
+        "operationId": "appAppTicketDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/AppTicketDetailResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets/{id}/accept": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "接单",
+        "operationId": "appAppAcceptTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets/{id}/start": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "开工",
+        "operationId": "appAppStartTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/tickets/{id}/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "提交处理结果（client_action_id 幂等，离线草稿恢复同步）",
+        "operationId": "appAppSubmitTicket",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AppSubmitTicketReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "密码登录（运维 App，client 固定 OPS_APP；10400 凭证错误 / 10407 锁定）",
+        "operationId": "authLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/LoginResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "登出（BearerProbe 取 sid）",
+        "operationId": "authLogout",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "刷新（轮换式；client 与登录端漂移即拒）",
+        "operationId": "authRefresh",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RefreshReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RefreshResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/wx-bind-phone": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "微信绑定手机号并签发会话（need_bind_phone 流程收尾；code 定位影子账号）",
+        "operationId": "authWxBindPhone",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WxBindPhoneReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WxLoginResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/wx-login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "微信登录（客户端小程序，client 固定 CLIENT_MINI；MOCKWX=1 走 dev 模拟）",
+        "operationId": "authWxLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WxLoginReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WxLoginResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/bind-phone": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "绑定手机号（need_bind_phone 流程收尾）",
+        "operationId": "customerBindPhone",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BindPhoneReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/contacts": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的联系人",
+        "operationId": "customerContacts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContactListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/contracts": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的合同（buyer_party_id 隔离）",
+        "operationId": "customerContracts",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ContractListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/devices": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的设备（party_id 隔离）",
+        "operationId": "customerDevices",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerDeviceListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/devices/activate": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "扫码激活设备（绑定本人 party，质保起算事件）",
+        "operationId": "customerActivateDevice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ActivateDeviceReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/devices/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备详情（影子+质保+场站归属）",
+        "operationId": "customerDeviceDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerDeviceDetail"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/devices/{id}/shadow": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "设备影子",
+        "operationId": "customerDeviceShadow",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ShadowView"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/devices/{id}/trend": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "遥测趋势（TDengine 热点五指标，只读）",
+        "operationId": "customerDeviceTrend",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "maximum": 720,
+            "minimum": 1,
+            "type": "integer",
+            "default": 24,
+            "example": 24,
+            "name": "hours",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/TrendResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/extension-orders": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "延保购买（下单 + 微信支付，dev mock URL）",
+        "operationId": "customerCreateExtensionOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateExtensionOrderReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CreateExtensionOrderResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/extension-skus": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "延保商品（EXT_WARRANTY SKU + 零售价）",
+        "operationId": "customerExtensionSkus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/ExtensionSkuListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/me": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的档案（uid → party；requireParty 入口）",
+        "operationId": "customerCustomerMe",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerMeResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/messages": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的消息（未读计数 + 分页）",
+        "operationId": "customerMessages",
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "only_unread",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/MessageListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/messages/{id}/read": {
+      "post": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "消息已读（仅本人）",
+        "operationId": "customerMarkMessageRead",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/stations": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的场站（本人场站单回查）",
+        "operationId": "customerStations",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerStationListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/stations/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "场站详情（设备影子聚合监控）",
+        "operationId": "customerStationDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerStationDetail"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/tickets": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的工单（party_id 隔离）",
+        "operationId": "customerTickets",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerTicketListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "报修（AFTER_SALE 工单，requireParty 校验设备归属）",
+        "operationId": "customerCreateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTicketReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CreateTicketResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/tickets/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单进度详情",
+        "operationId": "customerTicketDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/CustomerTicketDetail"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/tickets/{id}/sla": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "工单 SLA 计时（快照冻结只读）",
+        "operationId": "customerTicketSla",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SlaTimerView"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer/warranties": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "我的质保（设备/场站双层归并）",
+        "operationId": "customerWarranties",
+        "parameters": [
+          {
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "example": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 20,
+            "example": 20,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/WarrantyListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/healthz": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "健康检查（深检：identity Ping）",
+        "operationId": "authHealth",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/HealthResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ActivateDeviceReq": {
+      "type": "object",
+      "required": [
+        "sn"
+      ],
+      "properties": {
+        "sn": {
+          "description": "扫码所得 SN（requireParty：激活即绑定本人 party）",
+          "type": "string"
+        }
+      }
+    },
+    "AppAckAlertReq": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "AppAlertBrief": {
+      "type": "object",
+      "required": [
+        "alert_id",
+        "level",
+        "source",
+        "metric",
+        "title",
+        "station_id",
+        "station_name",
+        "aggregate_count",
+        "status",
+        "first_seen_at"
+      ],
+      "properties": {
+        "aggregate_count": {
+          "type": "integer"
+        },
+        "alert_id": {
+          "type": "string"
+        },
+        "first_seen_at": {
+          "type": "integer"
+        },
+        "level": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "AppInspectionItem": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "name",
+        "result",
+        "anomalous",
+        "ticket_id"
+      ],
+      "properties": {
+        "anomalous": {
+          "type": "boolean"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        }
+      }
+    },
+    "AppInspectionItemInput": {
+      "type": "object",
+      "required": [
+        "name",
+        "anomalous"
+      ],
+      "properties": {
+        "anomalous": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "result": {
+          "description": "JSON 值",
+          "type": "string"
+        }
+      }
+    },
+    "AppInspectionListReq": {
+      "type": "object"
+    },
+    "AppInspectionListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppInspectionTask"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "AppInspectionSubmitReq": {
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppInspectionItemInput"
+          }
+        },
+        "location": {
+          "description": "gcj02 定位串",
+          "type": "string"
+        },
+        "photos": {
+          "description": "照片 URL/文件 ID",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "AppInspectionSubmitResp": {
+      "type": "object",
+      "required": [
+        "anomaly_count",
+        "ticket_ids"
+      ],
+      "properties": {
+        "anomaly_count": {
+          "type": "integer"
+        },
+        "ticket_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AppInspectionTask": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "station_id",
+        "station_name",
+        "title",
+        "scheduled_for",
+        "status",
+        "anomaly_count",
+        "submitted_at",
+        "items"
+      ],
+      "properties": {
+        "anomaly_count": {
+          "type": "integer"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppInspectionItem"
+          }
+        },
+        "scheduled_for": {
+          "type": "integer"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "submitted_at": {
+          "type": "integer"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "AppMeResp": {
+      "type": "object",
+      "required": [
+        "uid",
+        "nickname",
+        "mobile_masked",
+        "roles",
+        "tenant_id"
+      ],
+      "properties": {
+        "mobile_masked": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tenant_id": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "AppPendingAlertsReq": {
+      "type": "object"
+    },
+    "AppPendingAlertsResp": {
+      "type": "object",
+      "required": [
+        "unread_count",
+        "max_id",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppAlertBrief"
+          }
+        },
+        "max_id": {
+          "type": "string"
+        },
+        "unread_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "AppPendingTicketsReq": {
+      "type": "object"
+    },
+    "AppPendingTicketsResp": {
+      "type": "object",
+      "required": [
+        "unread_count",
+        "max_id",
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppTicketBrief"
+          }
+        },
+        "max_id": {
+          "type": "string"
+        },
+        "unread_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "AppSubmitTicketReq": {
+      "type": "object",
+      "required": [
+        "result"
+      ],
+      "properties": {
+        "client_action_id": {
+          "description": "离线草稿恢复同步幂等键（FR-OPS-008）",
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        }
+      }
+    },
+    "AppTicketBrief": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "type",
+        "title",
+        "priority",
+        "station_id",
+        "station_name",
+        "status",
+        "escalate_level",
+        "created_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "escalate_level": {
+          "type": "integer"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "AppTicketDetailResp": {
+      "type": "object",
+      "required": [
+        "ticket",
+        "logs"
+      ],
+      "properties": {
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppTicketLogItem"
+          }
+        },
+        "ticket": {
+          "type": "object",
+          "required": [
+            "ticket_id",
+            "ticket_no",
+            "type",
+            "title",
+            "content",
+            "priority",
+            "station_id",
+            "station_name",
+            "device_id",
+            "sn",
+            "assignee_uid",
+            "assignee_name",
+            "status",
+            "escalate_level",
+            "accept_deadline",
+            "created_at"
+          ],
+          "properties": {
+            "accept_deadline": {
+              "type": "integer"
+            },
+            "assignee_name": {
+              "type": "string"
+            },
+            "assignee_uid": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "device_id": {
+              "type": "string"
+            },
+            "escalate_level": {
+              "type": "integer"
+            },
+            "priority": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "ticket_id": {
+              "type": "string"
+            },
+            "ticket_no": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/AppTicketItem"
+        }
+      }
+    },
+    "AppTicketItem": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "type",
+        "title",
+        "content",
+        "priority",
+        "station_id",
+        "station_name",
+        "device_id",
+        "sn",
+        "assignee_uid",
+        "assignee_name",
+        "status",
+        "escalate_level",
+        "accept_deadline",
+        "created_at"
+      ],
+      "properties": {
+        "accept_deadline": {
+          "type": "integer"
+        },
+        "assignee_name": {
+          "type": "string"
+        },
+        "assignee_uid": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "escalate_level": {
+          "type": "integer"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "AppTicketListReq": {
+      "type": "object"
+    },
+    "AppTicketListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppTicketItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "AppTicketLogItem": {
+      "type": "object",
+      "required": [
+        "log_id",
+        "action",
+        "from_status",
+        "to_status",
+        "operator_uid",
+        "note",
+        "created_at"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "from_status": {
+          "type": "string"
+        },
+        "log_id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "operator_uid": {
+          "type": "string"
+        },
+        "to_status": {
+          "type": "string"
+        }
+      }
+    },
+    "BindPhoneReq": {
+      "type": "object",
+      "required": [
+        "phone"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "ContactListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContactView"
+          }
+        }
+      }
+    },
+    "ContactView": {
+      "type": "object",
+      "required": [
+        "contact_id",
+        "name",
+        "mobile",
+        "position",
+        "is_default"
+      ],
+      "properties": {
+        "contact_id": {
+          "type": "string"
+        },
+        "is_default": {
+          "type": "boolean"
+        },
+        "mobile": {
+          "description": "party 已脱敏",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      }
+    },
+    "ContractListReq": {
+      "type": "object"
+    },
+    "ContractListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContractView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ContractView": {
+      "type": "object",
+      "required": [
+        "contract_id",
+        "contract_no",
+        "name",
+        "type",
+        "status",
+        "amount",
+        "created_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "contract_id": {
+          "type": "string"
+        },
+        "contract_no": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateExtensionOrderReq": {
+      "type": "object",
+      "required": [
+        "base_warranty_id",
+        "sku_id",
+        "qty"
+      ],
+      "properties": {
+        "base_warranty_id": {
+          "description": "衔接的原质保",
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer",
+          "default": 1,
+          "maximum": 10,
+          "minimum": 1,
+          "example": 1
+        },
+        "sku_id": {
+          "description": "EXT_WARRANTY SKU",
+          "type": "string"
+        }
+      }
+    },
+    "CreateExtensionOrderResp": {
+      "type": "object",
+      "required": [
+        "order_no",
+        "total_amount",
+        "pay_expire_at",
+        "payment_no",
+        "pay_params"
+      ],
+      "properties": {
+        "order_no": {
+          "type": "string"
+        },
+        "pay_expire_at": {
+          "type": "integer"
+        },
+        "pay_params": {
+          "description": "渠道透传（dev = mock URL JSON）",
+          "type": "string"
+        },
+        "payment_no": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateTicketReq": {
+      "type": "object",
+      "required": [
+        "title",
+        "content"
+      ],
+      "properties": {
+        "client_action_id": {
+          "description": "离线报修幂等",
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "device_id": {
+          "description": "与 SN 二选一（requireParty 校验归属）",
+          "type": "string"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sn": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateTicketResp": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomerDeviceDetail": {
+      "type": "object",
+      "required": [
+        "device",
+        "shadow",
+        "warranties"
+      ],
+      "properties": {
+        "device": {
+          "type": "object",
+          "required": [
+            "device_id",
+            "sn",
+            "product_key",
+            "model",
+            "status",
+            "activated_at"
+          ],
+          "properties": {
+            "activated_at": {
+              "type": "integer"
+            },
+            "device_id": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "product_key": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/CustomerDeviceItem"
+        },
+        "shadow": {
+          "type": "object",
+          "required": [
+            "ts",
+            "metrics"
+          ],
+          "properties": {
+            "metrics": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MetricView"
+              }
+            },
+            "ts": {
+              "description": "空串=影子无数据",
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/ShadowView"
+        },
+        "station": {
+          "description": "场站归属（FR-DEV-006）",
+          "type": "object",
+          "required": [
+            "station_id",
+            "station_no",
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_no": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/StationBrief"
+        },
+        "warranties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WarrantyView"
+          }
+        }
+      }
+    },
+    "CustomerDeviceItem": {
+      "type": "object",
+      "required": [
+        "device_id",
+        "sn",
+        "product_key",
+        "model",
+        "status",
+        "activated_at"
+      ],
+      "properties": {
+        "activated_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "product_key": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomerDeviceListReq": {
+      "type": "object"
+    },
+    "CustomerDeviceListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerDeviceItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "CustomerMeResp": {
+      "type": "object",
+      "required": [
+        "uid",
+        "nickname",
+        "mobile_masked",
+        "has_party"
+      ],
+      "properties": {
+        "has_party": {
+          "type": "boolean"
+        },
+        "mobile_masked": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "party": {
+          "type": "object",
+          "required": [
+            "party_id",
+            "name",
+            "types",
+            "status"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "party_id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "$ref": "#/definitions/PartyView"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomerStationDetail": {
+      "type": "object",
+      "required": [
+        "station",
+        "devices"
+      ],
+      "properties": {
+        "devices": {
+          "description": "影子聚合监控（FR-STN-005）",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerStationDevice"
+          }
+        },
+        "station": {
+          "type": "object",
+          "required": [
+            "station_id",
+            "station_no",
+            "name",
+            "type",
+            "status",
+            "address",
+            "capacity_kwh",
+            "power_kw",
+            "order_no"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "capacity_kwh": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "order_no": {
+              "type": "string"
+            },
+            "power_kw": {
+              "type": "number"
+            },
+            "station_id": {
+              "type": "string"
+            },
+            "station_no": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/CustomerStationItem"
+        }
+      }
+    },
+    "CustomerStationDevice": {
+      "type": "object",
+      "required": [
+        "device_id",
+        "sn",
+        "online",
+        "soc",
+        "power",
+        "voltage",
+        "temperature"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "online": {
+          "type": "boolean"
+        },
+        "power": {
+          "type": "number"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "soc": {
+          "type": "number"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "voltage": {
+          "type": "number"
+        }
+      }
+    },
+    "CustomerStationItem": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "station_no",
+        "name",
+        "type",
+        "status",
+        "address",
+        "capacity_kwh",
+        "power_kw",
+        "order_no"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "capacity_kwh": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "power_kw": {
+          "type": "number"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomerStationListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerStationItem"
+          }
+        }
+      }
+    },
+    "CustomerTicketDetail": {
+      "type": "object",
+      "required": [
+        "ticket",
+        "logs"
+      ],
+      "properties": {
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppTicketLogItem"
+          }
+        },
+        "ticket": {
+          "type": "object",
+          "required": [
+            "ticket_id",
+            "ticket_no",
+            "type",
+            "title",
+            "content",
+            "status",
+            "priority",
+            "sn",
+            "station_name",
+            "created_at"
+          ],
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "integer"
+            },
+            "priority": {
+              "type": "string"
+            },
+            "sn": {
+              "type": "string"
+            },
+            "station_name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "ticket_id": {
+              "type": "string"
+            },
+            "ticket_no": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/CustomerTicketItem"
+        }
+      }
+    },
+    "CustomerTicketItem": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "ticket_no",
+        "type",
+        "title",
+        "content",
+        "status",
+        "priority",
+        "sn",
+        "station_name",
+        "created_at"
+      ],
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "station_name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "ticket_no": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomerTicketListReq": {
+      "type": "object"
+    },
+    "CustomerTicketListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerTicketItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ExtensionSkuListResp": {
+      "type": "object",
+      "required": [
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionSkuView"
+          }
+        }
+      }
+    },
+    "ExtensionSkuView": {
+      "type": "object",
+      "required": [
+        "sku_id",
+        "code",
+        "name",
+        "spec",
+        "price"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "description": "零售价（DECIMAL 字符串）",
+          "type": "string"
+        },
+        "sku_id": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        }
+      }
+    },
+    "HealthResp": {
+      "type": "object",
+      "required": [
+        "status",
+        "checks",
+        "time"
+      ],
+      "properties": {
+        "checks": {
+          "description": "downstream name → ok/error",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "description": "ok / degraded",
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        }
+      }
+    },
+    "IDPath": {
+      "type": "object"
+    },
+    "LoginReq": {
+      "type": "object",
+      "required": [
+        "mobile",
+        "password"
+      ],
+      "properties": {
+        "mobile": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginResp": {
+      "type": "object",
+      "required": [
+        "tokens",
+        "uid",
+        "nickname"
+      ],
+      "properties": {
+        "nickname": {
+          "type": "string"
+        },
+        "tokens": {
+          "type": "object",
+          "required": [
+            "access_token",
+            "refresh_token",
+            "access_expires_in",
+            "refresh_expires_in"
+          ],
+          "properties": {
+            "access_expires_in": {
+              "type": "integer"
+            },
+            "access_token": {
+              "type": "string"
+            },
+            "refresh_expires_in": {
+              "type": "integer"
+            },
+            "refresh_token": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/TokenPair"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "MessageListReq": {
+      "type": "object"
+    },
+    "MessageListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "unread_count",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MessageView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        },
+        "unread_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "MessageView": {
+      "type": "object",
+      "required": [
+        "message_id",
+        "title",
+        "content",
+        "is_read",
+        "biz_type",
+        "biz_id",
+        "created_at"
+      ],
+      "properties": {
+        "biz_id": {
+          "type": "string"
+        },
+        "biz_type": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "message_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "MetricView": {
+      "type": "object",
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      }
+    },
+    "NoArgsReq": {
+      "type": "object"
+    },
+    "PartyView": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "name",
+        "types",
+        "status"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RefreshReq": {
+      "type": "object",
+      "required": [
+        "refresh_token",
+        "client"
+      ],
+      "properties": {
+        "client": {
+          "description": "漂移校验：与登录端一致",
+          "type": "string",
+          "enum": [
+            "OPS_APP",
+            "CLIENT_MINI"
+          ]
+        },
+        "refresh_token": {
+          "type": "string"
+        }
+      }
+    },
+    "RefreshResp": {
+      "type": "object",
+      "required": [
+        "tokens"
+      ],
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "required": [
+            "access_token",
+            "refresh_token",
+            "access_expires_in",
+            "refresh_expires_in"
+          ],
+          "properties": {
+            "access_expires_in": {
+              "type": "integer"
+            },
+            "access_token": {
+              "type": "string"
+            },
+            "refresh_expires_in": {
+              "type": "integer"
+            },
+            "refresh_token": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/TokenPair"
+        }
+      }
+    },
+    "ShadowView": {
+      "type": "object",
+      "required": [
+        "ts",
+        "metrics"
+      ],
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetricView"
+          }
+        },
+        "ts": {
+          "description": "空串=影子无数据",
+          "type": "string"
+        }
+      }
+    },
+    "SimpleResp": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string"
+        }
+      }
+    },
+    "SlaTimerView": {
+      "type": "object",
+      "required": [
+        "response_due_at",
+        "resolve_due_at",
+        "paused_at",
+        "pause_total_min",
+        "escalate_level",
+        "responded_at",
+        "resolved_at",
+        "response_breach_at",
+        "resolve_breach_at",
+        "strategy_snapshot"
+      ],
+      "properties": {
+        "escalate_level": {
+          "type": "integer"
+        },
+        "pause_total_min": {
+          "type": "integer"
+        },
+        "paused_at": {
+          "type": "integer"
+        },
+        "resolve_breach_at": {
+          "type": "integer"
+        },
+        "resolve_due_at": {
+          "type": "integer"
+        },
+        "resolved_at": {
+          "type": "integer"
+        },
+        "responded_at": {
+          "type": "integer"
+        },
+        "response_breach_at": {
+          "type": "integer"
+        },
+        "response_due_at": {
+          "type": "integer"
+        },
+        "strategy_snapshot": {
+          "type": "string"
+        }
+      }
+    },
+    "StationBrief": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "station_no",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "station_id": {
+          "type": "string"
+        },
+        "station_no": {
+          "type": "string"
+        }
+      }
+    },
+    "TokenPair": {
+      "type": "object",
+      "required": [
+        "access_token",
+        "refresh_token",
+        "access_expires_in",
+        "refresh_expires_in"
+      ],
+      "properties": {
+        "access_expires_in": {
+          "type": "integer"
+        },
+        "access_token": {
+          "type": "string"
+        },
+        "refresh_expires_in": {
+          "type": "integer"
+        },
+        "refresh_token": {
+          "type": "string"
+        }
+      }
+    },
+    "TrendPoint": {
+      "type": "object",
+      "required": [
+        "ts",
+        "soc",
+        "voltage",
+        "current",
+        "temperature",
+        "power"
+      ],
+      "properties": {
+        "current": {
+          "type": "number"
+        },
+        "power": {
+          "type": "number"
+        },
+        "soc": {
+          "type": "number"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "ts": {
+          "type": "string"
+        },
+        "voltage": {
+          "type": "number"
+        }
+      }
+    },
+    "TrendReq": {
+      "type": "object"
+    },
+    "TrendResp": {
+      "type": "object",
+      "required": [
+        "points"
+      ],
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrendPoint"
+          }
+        }
+      }
+    },
+    "WarrantyListReq": {
+      "type": "object"
+    },
+    "WarrantyListResp": {
+      "type": "object",
+      "required": [
+        "total",
+        "list"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WarrantyView"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "WarrantyView": {
+      "type": "object",
+      "required": [
+        "warranty_id",
+        "warranty_no",
+        "level",
+        "target_key",
+        "status",
+        "start_at",
+        "end_at",
+        "months"
+      ],
+      "properties": {
+        "end_at": {
+          "type": "integer"
+        },
+        "level": {
+          "description": "STATION/DEVICE",
+          "type": "string"
+        },
+        "months": {
+          "type": "integer"
+        },
+        "start_at": {
+          "type": "integer"
+        },
+        "status": {
+          "description": "PENDING/ACTIVE/EXPIRED/REFUNDED",
+          "type": "string"
+        },
+        "target_key": {
+          "description": "SN / 场站编号",
+          "type": "string"
+        },
+        "warranty_id": {
+          "type": "string"
+        },
+        "warranty_no": {
+          "type": "string"
+        }
+      }
+    },
+    "WxBindPhoneReq": {
+      "type": "object",
+      "required": [
+        "code",
+        "phone"
+      ],
+      "properties": {
+        "code": {
+          "description": "wx.login 凭证（与登录同源，定位影子账号）",
+          "type": "string"
+        },
+        "phone": {
+          "description": "明文（dev MOCKWX 任意；正式走 getPhoneNumber 服务端换号）",
+          "type": "string"
+        }
+      }
+    },
+    "WxLoginReq": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "description": "wx.login() 临时凭证（dev MOCKWX=1 时为模拟码）",
+          "type": "string"
+        }
+      }
+    },
+    "WxLoginResp": {
+      "type": "object",
+      "required": [
+        "need_bind_phone"
+      ],
+      "properties": {
+        "need_bind_phone": {
+          "description": "微信首登未绑手机 → 引导绑定流程",
+          "type": "boolean"
+        },
+        "tokens": {
+          "description": "need_bind_phone=true 时不签发",
+          "type": "object",
+          "required": [
+            "access_token",
+            "refresh_token",
+            "access_expires_in",
+            "refresh_expires_in"
+          ],
+          "properties": {
+            "access_expires_in": {
+              "type": "integer"
+            },
+            "access_token": {
+              "type": "string"
+            },
+            "refresh_expires_in": {
+              "type": "integer"
+            },
+            "refresh_token": {
+              "type": "string"
+            }
+          },
+          "$ref": "#/definitions/TokenPair"
+        },
+        "uid": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "description": "Bearer \u003caccess_token\u003e",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "x-date": "2026-10-12 00:28:35",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.10.2"
+}

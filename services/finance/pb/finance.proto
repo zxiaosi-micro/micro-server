@@ -45,6 +45,12 @@ service Finance {
   rpc CreateReconcileTask(CreateReconcileTaskReq) returns (CreateReconcileTaskResp);
   rpc ResolveReconcileTask(ResolveReconcileTaskReq) returns (ResolveReconcileTaskResp);
   rpc ListReconcileTask(ListReconcileTaskReq) returns (ListReconcileTaskResp);
+
+  // ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+  rpc RunRebateSettlement(RunRebateSettlementReq) returns (RunRebateSettlementResp);
+  rpc ListRebateSettlement(ListRebateSettlementReq) returns (ListRebateSettlementResp);
+  rpc ConfirmRebateSettlement(ConfirmRebateSettlementReq) returns (ConfirmRebateSettlementResp);
+  rpc ReconcileRebate(ReconcileRebateReq) returns (ReconcileRebateResp);
 }
 
 message PingReq {}
@@ -275,4 +281,68 @@ message ListReconcileTaskReq {
 message ListReconcileTaskResp {
   repeated ReconcileTaskDetail list = 1;
   int64 total = 2;
+}
+
+// ---- 经销商返利（S10-03） ----
+
+message RunRebateSettlementReq {
+  string period = 1;  // 结算周期 yyyy-MM
+  int64 party_id = 2; // 指定经销商（0=全部有规则经销商）
+}
+
+message RebateSettlementResult {
+  int64 party_id = 1;
+  string amount = 2;      // 返利金额 DECIMAL 字符串
+  string base_amount = 3; // 计提基数（period 内实付总额）
+  string rate = 4;        // 费率（规则快照）
+  int64 payment_count = 5; // 计提支付单数
+}
+
+message RunRebateSettlementResp {
+  repeated RebateSettlementResult results = 1;
+}
+
+message RebateSettlementItem {
+  int64 settlement_id = 1;
+  string period = 2;
+  int64 party_id = 3;
+  string amount = 4;
+  string status = 5; // PENDING/CONFIRMED/PAID
+  string rule_snapshot = 6; // 规则快照 JSON（结算金额可追溯，验收项）
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+message ListRebateSettlementReq {
+  string period = 1;  // 空=全部
+  string status = 2;  // 空=全部
+  int64 party_id = 3; // 0=全部
+  int64 page = 4;
+  int64 size = 5;
+}
+message ListRebateSettlementResp {
+  repeated RebateSettlementItem list = 1;
+  int64 total = 2;
+}
+
+message ConfirmRebateSettlementReq {
+  int64 settlement_id = 1;
+  string action = 2; // CONFIRM（PENDING→CONFIRMED）/ PAID（CONFIRMED→PAID）
+  string remark = 3;
+}
+message ConfirmRebateSettlementResp {}
+
+message RebateDiffItem {
+  int64 settlement_id = 1;
+  int64 party_id = 2;
+  string stored_amount = 3;
+  string recomputed_amount = 4;
+}
+
+message ReconcileRebateReq {
+  string period = 1; // yyyy-MM
+}
+message ReconcileRebateResp {
+  int64 diff_count = 1;
+  repeated RebateDiffItem diffs = 2;
 }

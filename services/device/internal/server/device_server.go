@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
+	"micro-server/services/device/pb"
 	"micro-server/services/device/internal/logic"
 	"micro-server/services/device/internal/svc"
-	"micro-server/services/device/pb"
 )
 
 type DeviceServer struct {
@@ -129,4 +129,35 @@ func (s *DeviceServer) ListOtaTask(ctx context.Context, in *pb.ListOtaTaskReq) (
 func (s *DeviceServer) RollbackOtaTask(ctx context.Context, in *pb.RollbackOtaTaskReq) (*pb.RollbackOtaTaskResp, error) {
 	l := logic.NewRollbackOtaTaskLogic(ctx, s.svcCtx)
 	return l.RollbackOtaTask(in)
+}
+
+// ---- 退役评估（S10-01 梯次利用 + 回收；评级定稿：A 二次销售/B 降容备电/C 报废回收）----
+func (s *DeviceServer) CreateRetirementAssessment(ctx context.Context, in *pb.CreateRetirementAssessmentReq) (*pb.CreateRetirementAssessmentResp, error) {
+	l := logic.NewCreateRetirementAssessmentLogic(ctx, s.svcCtx)
+	return l.CreateRetirementAssessment(in)
+}
+
+func (s *DeviceServer) SubmitRetirementResult(ctx context.Context, in *pb.SubmitRetirementResultReq) (*pb.SubmitRetirementResultResp, error) {
+	l := logic.NewSubmitRetirementResultLogic(ctx, s.svcCtx)
+	return l.SubmitRetirementResult(in)
+}
+
+func (s *DeviceServer) DecideRetirement(ctx context.Context, in *pb.DecideRetirementReq) (*pb.DecideRetirementResp, error) {
+	l := logic.NewDecideRetirementLogic(ctx, s.svcCtx)
+	return l.DecideRetirement(in)
+}
+
+func (s *DeviceServer) ListRetirementAssessment(ctx context.Context, in *pb.ListRetirementAssessmentReq) (*pb.ListRetirementAssessmentResp, error) {
+	l := logic.NewListRetirementAssessmentLogic(ctx, s.svcCtx)
+	return l.ListRetirementAssessment(in)
+}
+
+func (s *DeviceServer) CreateRecycleOrder(ctx context.Context, in *pb.CreateRecycleOrderReq) (*pb.CreateRecycleOrderResp, error) {
+	l := logic.NewCreateRecycleOrderLogic(ctx, s.svcCtx)
+	return l.CreateRecycleOrder(in)
+}
+
+func (s *DeviceServer) ListRecycleOrder(ctx context.Context, in *pb.ListRecycleOrderReq) (*pb.ListRecycleOrderResp, error) {
+	l := logic.NewListRecycleOrderLogic(ctx, s.svcCtx)
+	return l.ListRecycleOrder(in)
 }

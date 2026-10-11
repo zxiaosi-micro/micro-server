@@ -26,6 +26,16 @@ var (
 	errPdfFontMissing  = errcode.New(SegAnalytics, 1007, "PDF 字体未配置（pdf_font），PDF 导出不可用")
 	errReconDateBad    = errcode.New(SegAnalytics, 1008, "对账日期不合法")
 	errReconRunning    = errcode.New(SegAnalytics, 1009, "该业务日对账正在执行")
+
+	// S10-02 BI 自助 + 数仓 ETL。
+	errBITableBad   = errcode.New(SegAnalytics, 1010, "查询表不在白名单")
+	errBIColumnBad  = errcode.New(SegAnalytics, 1011, "查询列不在白名单")
+	errBIOpBad      = errcode.New(SegAnalytics, 1012, "过滤操作符/值不合法")
+	errBIAggBad     = errcode.New(SegAnalytics, 1013, "聚合不合法")
+	errBIQueryEmpty = errcode.New(SegAnalytics, 1014, "维度与指标至少一项")
+	errBITooMany    = errcode.New(SegAnalytics, 1015, "维度/指标/过滤超引擎上限")
+	errBIOrderBad   = errcode.New(SegAnalytics, 1016, "排序字段不在查询列内")
+	errEtlDateBad   = errcode.New(SegAnalytics, 1017, "ETL 日期不合法（yyyy-MM-dd）")
 )
 
 func registerSeg() bool {

@@ -7,9 +7,14 @@ import (
 	"micro-server/services/finance/internal/config"
 	"micro-server/services/finance/internal/model"
 
+	partyclient "micro-server/services/party/party"
+
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
+	"github.com/zxiaosi-micro/micro-common/authz"
 	"github.com/zxiaosi-micro/micro-common/snowflake"
+	"google.golang.org/grpc"
 )
 
 // ServiceContext finance 服务根装配。
@@ -23,6 +28,8 @@ type ServiceContext struct {
 
 	// 渠道网关（dev 模拟 / 微信 v3 / 支付宝 RSA2，按配置装配）。
 	Gateway *Gateway
+	// Party 返利规则源（dealer_ext.rebate_rule；未配置 = 返利结算不可用）。
+	Party partyclient.Party
 }
 
 // Models model 聚合。
@@ -31,6 +38,7 @@ type Models struct {
 	Refund        model.RefundModel
 	Invoice       model.InvoiceModel
 	ReconcileTask model.ReconcileTaskModel
+	Rebate        model.RebateSettlementModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -52,10 +60,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			Refund:        model.NewRefundModel(conn, cacheConf),
 			Invoice:       model.NewInvoiceModel(conn, cacheConf),
 			ReconcileTask: model.NewReconcileTaskModel(conn, cacheConf),
+			Rebate:        model.NewRebateSettlementModel(conn, cacheConf),
 		},
 		Gateway: NewGateway(c),
 	}
 
-	logx.Info("finance 就绪：db=micro_finance gateway=", sc.Gateway.Mode())
+	// PartyRpc（S10-03 返利规则源；缺失降级：返利结算报业务错误）
+	if len(c.PartyRpc.Etcd.Hosts) > 0 || c.PartyRpc.Target != "" {
+		sc.Party = partyclient.NewParty(zrpc.MustNewClient(c.PartyRpc,
+			zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor))))
+	}
+
+	logx.Info("finance 就绪：db=micro_finance gateway=", sc.Gateway.Mode(), " party=", sc.Party != nil)
 	return sc
 }

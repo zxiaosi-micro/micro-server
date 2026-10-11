@@ -19,3 +19,10 @@ func paymentView(p *finpb.PaymentDetail) *types.PaymentView {
 		Remark:       p.Remark, PaidAt: p.PaidAt, CreatedAt: p.CreatedAt,
 	}
 }
+
+func parseI64(v string) int64 {
+	n, _ := strconv.ParseInt(v, 10, 64)
+	return n
+}
+
+func i64s(v int64) string { return strconv.FormatInt(v, 10) }

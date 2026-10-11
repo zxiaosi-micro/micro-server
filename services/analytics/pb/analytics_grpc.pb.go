@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v3.19.4
-// source: pb/analytics.proto
+// source: services/analytics/pb/analytics.proto
 
 package pb
 
@@ -28,6 +28,9 @@ const (
 	Analytics_ListExportTask_FullMethodName   = "/analytics.Analytics/ListExportTask"
 	Analytics_RunRecon_FullMethodName         = "/analytics.Analytics/RunRecon"
 	Analytics_RebuildReadModel_FullMethodName = "/analytics.Analytics/RebuildReadModel"
+	Analytics_ListBIWhitelist_FullMethodName  = "/analytics.Analytics/ListBIWhitelist"
+	Analytics_RunBIQuery_FullMethodName       = "/analytics.Analytics/RunBIQuery"
+	Analytics_RunDwEtl_FullMethodName         = "/analytics.Analytics/RunDwEtl"
 )
 
 // AnalyticsClient is the client API for Analytics service.
@@ -56,6 +59,11 @@ type AnalyticsClient interface {
 	RunRecon(ctx context.Context, in *RunReconReq, opts ...grpc.CallOption) (*RunReconResp, error)
 	// 读模型全量重建：台账/聚合表清空 + 消费组版本号 +1（重启后新组从头回放）
 	RebuildReadModel(ctx context.Context, in *RebuildReadModelReq, opts ...grpc.CallOption) (*RebuildReadModelResp, error)
+	// ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+	ListBIWhitelist(ctx context.Context, in *ListBIWhitelistReq, opts ...grpc.CallOption) (*ListBIWhitelistResp, error)
+	RunBIQuery(ctx context.Context, in *RunBIQueryReq, opts ...grpc.CallOption) (*RunBIQueryResp, error)
+	// ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+	RunDwEtl(ctx context.Context, in *RunDwEtlReq, opts ...grpc.CallOption) (*RunDwEtlResp, error)
 }
 
 type analyticsClient struct {
@@ -156,6 +164,36 @@ func (c *analyticsClient) RebuildReadModel(ctx context.Context, in *RebuildReadM
 	return out, nil
 }
 
+func (c *analyticsClient) ListBIWhitelist(ctx context.Context, in *ListBIWhitelistReq, opts ...grpc.CallOption) (*ListBIWhitelistResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListBIWhitelistResp)
+	err := c.cc.Invoke(ctx, Analytics_ListBIWhitelist_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsClient) RunBIQuery(ctx context.Context, in *RunBIQueryReq, opts ...grpc.CallOption) (*RunBIQueryResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RunBIQueryResp)
+	err := c.cc.Invoke(ctx, Analytics_RunBIQuery_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsClient) RunDwEtl(ctx context.Context, in *RunDwEtlReq, opts ...grpc.CallOption) (*RunDwEtlResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RunDwEtlResp)
+	err := c.cc.Invoke(ctx, Analytics_RunDwEtl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AnalyticsServer is the server API for Analytics service.
 // All implementations must embed UnimplementedAnalyticsServer
 // for forward compatibility.
@@ -182,6 +220,11 @@ type AnalyticsServer interface {
 	RunRecon(context.Context, *RunReconReq) (*RunReconResp, error)
 	// 读模型全量重建：台账/聚合表清空 + 消费组版本号 +1（重启后新组从头回放）
 	RebuildReadModel(context.Context, *RebuildReadModelReq) (*RebuildReadModelResp, error)
+	// ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+	ListBIWhitelist(context.Context, *ListBIWhitelistReq) (*ListBIWhitelistResp, error)
+	RunBIQuery(context.Context, *RunBIQueryReq) (*RunBIQueryResp, error)
+	// ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+	RunDwEtl(context.Context, *RunDwEtlReq) (*RunDwEtlResp, error)
 	mustEmbedUnimplementedAnalyticsServer()
 }
 
@@ -218,6 +261,15 @@ func (UnimplementedAnalyticsServer) RunRecon(context.Context, *RunReconReq) (*Ru
 }
 func (UnimplementedAnalyticsServer) RebuildReadModel(context.Context, *RebuildReadModelReq) (*RebuildReadModelResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method RebuildReadModel not implemented")
+}
+func (UnimplementedAnalyticsServer) ListBIWhitelist(context.Context, *ListBIWhitelistReq) (*ListBIWhitelistResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListBIWhitelist not implemented")
+}
+func (UnimplementedAnalyticsServer) RunBIQuery(context.Context, *RunBIQueryReq) (*RunBIQueryResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunBIQuery not implemented")
+}
+func (UnimplementedAnalyticsServer) RunDwEtl(context.Context, *RunDwEtlReq) (*RunDwEtlResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunDwEtl not implemented")
 }
 func (UnimplementedAnalyticsServer) mustEmbedUnimplementedAnalyticsServer() {}
 func (UnimplementedAnalyticsServer) testEmbeddedByValue()                   {}
@@ -402,6 +454,60 @@ func _Analytics_RebuildReadModel_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Analytics_ListBIWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBIWhitelistReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServer).ListBIWhitelist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Analytics_ListBIWhitelist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServer).ListBIWhitelist(ctx, req.(*ListBIWhitelistReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Analytics_RunBIQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunBIQueryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServer).RunBIQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Analytics_RunBIQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServer).RunBIQuery(ctx, req.(*RunBIQueryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Analytics_RunDwEtl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunDwEtlReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServer).RunDwEtl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Analytics_RunDwEtl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServer).RunDwEtl(ctx, req.(*RunDwEtlReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Analytics_ServiceDesc is the grpc.ServiceDesc for Analytics service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -445,7 +551,19 @@ var Analytics_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "RebuildReadModel",
 			Handler:    _Analytics_RebuildReadModel_Handler,
 		},
+		{
+			MethodName: "ListBIWhitelist",
+			Handler:    _Analytics_ListBIWhitelist_Handler,
+		},
+		{
+			MethodName: "RunBIQuery",
+			Handler:    _Analytics_RunBIQuery_Handler,
+		},
+		{
+			MethodName: "RunDwEtl",
+			Handler:    _Analytics_RunDwEtl_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pb/analytics.proto",
+	Metadata: "services/analytics/pb/analytics.proto",
 }

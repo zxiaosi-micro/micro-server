@@ -180,6 +180,51 @@ type AuditLogListResp struct {
 	Total int64          `json:"total"`
 }
 
+type BIFilterIn struct {
+	Column string   `json:"column"`
+	Op     string   `json:"op"`
+	Values []string `json:"values"`
+}
+
+type BIQueryRow struct {
+	Values []string `json:"values"`
+}
+
+type BIRunReq struct {
+	Table      string       `json:"table"`
+	Dimensions []string     `json:"dimensions,optional"`
+	Metrics    []string     `json:"metrics,optional"`
+	Filters    []BIFilterIn `json:"filters,optional"`
+	OrderBy    string       `json:"order_by,optional"`
+	OrderDesc  bool         `json:"order_desc,optional"`
+	Page       int          `json:"page,optional"`
+	Size       int          `json:"size,optional"`
+}
+
+type BIRunResp struct {
+	Columns []string     `json:"columns"`
+	Rows    []BIQueryRow `json:"rows"`
+	Total   int64        `json:"total"`
+}
+
+type BIWhitelistColumn struct {
+	Column  string `json:"column"`
+	Kind    string `json:"kind"` // DIM/METRIC/BOTH
+	Aggs    string `json:"aggs"`
+	Ops     string `json:"ops"`
+	Comment string `json:"comment"`
+}
+
+type BIWhitelistResp struct {
+	Tables []BIWhitelistTable `json:"tables"`
+}
+
+type BIWhitelistTable struct {
+	Table   string              `json:"table"`
+	Comment string              `json:"comment"`
+	Columns []BIWhitelistColumn `json:"columns"`
+}
+
 type BomItem struct {
 	SkuID   string `json:"sku_id"`
 	SkuName string `json:"sku_name"`
@@ -547,6 +592,25 @@ type DeviceView struct {
 	ActivatedAt int64  `json:"activated_at"`
 	HasSecret   bool   `json:"has_secret"`
 	CreatedAt   int64  `json:"created_at"`
+}
+
+type DwEtlDay struct {
+	EtlDate         string `json:"etl_date"`
+	DimDateRows     int64  `json:"dim_date_rows"`
+	DimTenantRows   int64  `json:"dim_tenant_rows"`
+	DimPartyRows    int64  `json:"dim_party_rows"`
+	FactOrderRows   int64  `json:"fact_order_rows"`
+	FactPaymentRows int64  `json:"fact_payment_rows"`
+	CostMs          int64  `json:"cost_ms"`
+}
+
+type DwEtlRunReq struct {
+	DateStart string `json:"date_start"`
+	DateEnd   string `json:"date_end,optional"`
+}
+
+type DwEtlRunResp struct {
+	Days []DwEtlDay `json:"days"`
 }
 
 type ExportCreateReq struct {
@@ -1364,6 +1428,69 @@ type ProductListResp struct {
 	Total int64         `json:"total"`
 }
 
+type RebateConfirmReq struct {
+	Id     string `path:"id"`
+	Action string `json:"action"` // CONFIRM/PAID
+	Remark string `json:"remark,optional"`
+}
+
+type RebateDiffItem struct {
+	SettlementId     string `json:"settlement_id"`
+	PartyId          string `json:"party_id"`
+	StoredAmount     string `json:"stored_amount"`
+	RecomputedAmount string `json:"recomputed_amount,optional"`
+}
+
+type RebateListReq struct {
+	Period  string `form:"period,optional"`
+	Status  string `form:"status,optional"`
+	PartyId string `form:"party_id,optional"`
+	Page    int    `form:"page,optional"`
+	Size    int    `form:"size,optional"`
+}
+
+type RebateListResp struct {
+	List  []RebateSettlementItem `json:"list"`
+	Total int64                  `json:"total"`
+}
+
+type RebateReconcileReq struct {
+	Period string `json:"period"`
+}
+
+type RebateReconcileResp struct {
+	DiffCount int64            `json:"diff_count"`
+	Diffs     []RebateDiffItem `json:"diffs"`
+}
+
+type RebateRunReq struct {
+	Period  string `json:"period"` // yyyy-MM
+	PartyId string `json:"party_id,optional"`
+}
+
+type RebateRunResp struct {
+	Results []RebateRunResult `json:"results"`
+}
+
+type RebateRunResult struct {
+	PartyId      string `json:"party_id"`
+	Amount       string `json:"amount"`
+	BaseAmount   string `json:"base_amount"`
+	Rate         string `json:"rate"`
+	PaymentCount int64  `json:"payment_count"`
+}
+
+type RebateSettlementItem struct {
+	SettlementId string `json:"settlement_id"`
+	Period       string `json:"period"`
+	PartyId      string `json:"party_id"`
+	Amount       string `json:"amount"`
+	Status       string `json:"status"`
+	RuleSnapshot string `json:"rule_snapshot"`
+	CreatedAt    int64  `json:"created_at"`
+	UpdatedAt    int64  `json:"updated_at"`
+}
+
 type RebuildResp struct {
 	RebuildVersion string `json:"rebuild_version"`
 }
@@ -1404,6 +1531,47 @@ type ReconcileTaskView struct {
 	ResolveRemark string `json:"resolve_remark"`
 	ResolvedBy    string `json:"resolved_by"`
 	CreatedAt     int64  `json:"created_at"`
+}
+
+type RecycleCreateReq struct {
+	Id              string `path:"id"`
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value,optional"`
+	EvidenceFileId  string `json:"evidence_file_id,optional"`
+	Remark          string `json:"remark,optional"`
+}
+
+type RecycleCreateResp struct {
+	RecycleId string `json:"recycle_id"`
+	RecycleNo string `json:"recycle_no"`
+	TraceCode string `json:"trace_code"`
+}
+
+type RecycleItem struct {
+	RecycleId       string `json:"recycle_id"`
+	RecycleNo       string `json:"recycle_no"`
+	AssessmentId    string `json:"assessment_id"`
+	DeviceId        string `json:"device_id"`
+	Sn              string `json:"sn"`
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value"`
+	TraceCode       string `json:"trace_code"`
+	EvidenceFileId  string `json:"evidence_file_id,optional"`
+	Status          string `json:"status"`
+	Remark          string `json:"remark,optional"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type RecycleListReq struct {
+	Keyword string `form:"keyword,optional"`
+	Status  string `form:"status,optional"`
+	Page    int    `form:"page,optional"`
+	Size    int    `form:"size,optional"`
+}
+
+type RecycleListResp struct {
+	List  []RecycleItem `json:"list"`
+	Total int64         `json:"total"`
 }
 
 type RefreshReq struct {
@@ -1485,6 +1653,86 @@ type ReportRow struct {
 	WarehouseId string            `json:"warehouse_id,optional"`
 	Channel     string            `json:"channel,optional"`
 	Metrics     map[string]string `json:"metrics"`
+}
+
+type RetirementCreateReq struct {
+	Id                 string `path:"id"`
+	InspectionTicketNo string `json:"inspection_ticket_no,optional"`
+	Remark             string `json:"remark,optional"`
+}
+
+type RetirementCreateResp struct {
+	AssessmentId string `json:"assessment_id"`
+	AssessmentNo string `json:"assessment_no"`
+	Round        int    `json:"round"`
+}
+
+type RetirementDecideReq struct {
+	Id              string `path:"id"`
+	Target          string `json:"target,optional"` // RESALE/DERATE/RECYCLE（空=按评级默认）
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value,optional"`
+	Remark          string `json:"remark,optional"`
+}
+
+type RetirementDecideResp struct {
+	Grade        string `json:"grade"`
+	Disposition  string `json:"disposition"`
+	RecycleNo    string `json:"recycle_no,optional"`
+	TraceCode    string `json:"trace_code,optional"`
+	DeviceStatus string `json:"device_status"`
+}
+
+type RetirementItem struct {
+	AssessmentId       string `json:"assessment_id"`
+	AssessmentNo       string `json:"assessment_no"`
+	DeviceId           string `json:"device_id"`
+	Sn                 string `json:"sn"`
+	Round              int    `json:"round"`
+	Soh                string `json:"soh"`
+	CycleCount         int    `json:"cycle_count"`
+	ResistanceMohm     string `json:"resistance_mohm,optional"`
+	ConsistencyOk      bool   `json:"consistency_ok"`
+	SafetyJson         string `json:"safety_json,optional"`
+	Grade              string `json:"grade,optional"`
+	Disposition        string `json:"disposition"`
+	InspectionTicketNo string `json:"inspection_ticket_no,optional"`
+	Remark             string `json:"remark,optional"`
+	CreatedAt          int64  `json:"created_at"`
+}
+
+type RetirementListReq struct {
+	Keyword     string `form:"keyword,optional"`
+	Grade       string `form:"grade,optional"`
+	Disposition string `form:"disposition,optional"`
+	Page        int    `form:"page,optional"`
+	Size        int    `form:"size,optional"`
+}
+
+type RetirementListResp struct {
+	List  []RetirementItem `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type RetirementSafetyItem struct {
+	Item string `json:"item"`
+	Pass bool   `json:"pass"`
+}
+
+type RetirementSubmitReq struct {
+	Id             string                 `path:"id"`
+	Soh            string                 `json:"soh"`
+	CycleCount     int                    `json:"cycle_count"`
+	ResistanceMohm string                 `json:"resistance_mohm,optional"`
+	ConsistencyOk  bool                   `json:"consistency_ok"`
+	SafetyItems    []RetirementSafetyItem `json:"safety_items,optional"`
+	MeasuredAt     int64                  `json:"measured_at,optional"`
+	Source         string                 `json:"source,optional"`
+}
+
+type RetirementSubmitResp struct {
+	Grade  string `json:"grade"`
+	Reason string `json:"reason"`
 }
 
 type ReturnApproveReq struct {

@@ -931,6 +931,89 @@
         }
       }
     },
+    "/api/v1/bi/query": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "BI 自助查询(白名单引擎, perm: analytics:bi:query)",
+        "operationId": "analyticsRunBIQuery",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BIRunReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/BIRunResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bi/whitelist": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "BI 白名单元数据(查询构建器数据源, perm: analytics:bi:query)",
+        "operationId": "analyticsListBIWhitelist",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/BIWhitelistResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/claims": {
       "get": {
         "produces": [
@@ -1777,6 +1860,60 @@
         }
       }
     },
+    "/api/v1/devices/{id}/retirement": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "发起退役评估(复用 ops 检测工单, perm: asset:device:retire)",
+        "operationId": "deviceCreateRetirementAssessment",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetirementCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RetirementCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/devices/{id}/shadow": {
       "get": {
         "produces": [
@@ -1957,6 +2094,54 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dw/etl": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "数仓 ETL 手动触发/补历史(重跑幂等, perm: analytics:recon:run)",
+        "operationId": "analyticsRunDwEtl",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DwEtlRunReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/DwEtlRunResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -5378,6 +5563,223 @@
         }
       }
     },
+    "/api/v1/rebate-settlements": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "返利结算列表(perm: finance:rebate:list)",
+        "operationId": "financeListRebateSettlements",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "period",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "party_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RebateListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rebate-settlements/reconcile": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "返利月度对账(差异为 0 验收, perm: finance:rebate:list)",
+        "operationId": "financeReconcileRebate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RebateReconcileReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RebateReconcileResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rebate-settlements/run": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "返利月度结算(规则快照可追溯, perm: finance:rebate:settle)",
+        "operationId": "financeRunRebateSettlement",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RebateRunReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RebateRunResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rebate-settlements/{id}/confirm": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "返利结算确认/打款(PENDING→CONFIRMED→PAID, perm: finance:rebate:confirm)",
+        "operationId": "financeConfirmRebateSettlement",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RebateConfirmReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/reconcile-tasks": {
       "get": {
         "produces": [
@@ -5455,6 +5857,67 @@
                 },
                 "data": {
                   "$ref": "#/definitions/SimpleResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recycle-orders": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "回收单列表(溯源码留痕, perm: asset:device:retire)",
+        "operationId": "deviceListRecycleOrders",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RecycleListResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -5778,6 +6241,235 @@
                 },
                 "data": {
                   "$ref": "#/definitions/ReportResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/retirements": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退役评估列表(perm: asset:device:retire)",
+        "operationId": "deviceListRetirements",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "grade",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "disposition",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "page",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "size",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RetirementListResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/retirements/{id}/decide": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退役评级处置(A→二次销售/B→降容备电/C→报废回收, perm: asset:device:retire)",
+        "operationId": "deviceDecideRetirement",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetirementDecideReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RetirementDecideResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/retirements/{id}/recycle": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "回收单补建(C 级评估漏建补录, perm: asset:device:retire)",
+        "operationId": "deviceCreateRecycleOrder",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecycleCreateReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RecycleCreateResp"
+                },
+                "msg": {
+                  "description": "business message",
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/retirements/{id}/result": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "退役检测结果录入(录入即评级 A/B/C, perm: asset:device:retire)",
+        "operationId": "deviceSubmitRetirementResult",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetirementSubmitReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "business code",
+                  "type": "integer",
+                  "example": 0
+                },
+                "data": {
+                  "$ref": "#/definitions/RetirementSubmitResp"
                 },
                 "msg": {
                   "description": "business message",
@@ -10105,6 +10797,172 @@
         }
       }
     },
+    "BIFilterIn": {
+      "type": "object",
+      "required": [
+        "column",
+        "op",
+        "values"
+      ],
+      "properties": {
+        "column": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BIQueryRow": {
+      "type": "object",
+      "required": [
+        "values"
+      ],
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BIRunReq": {
+      "type": "object",
+      "required": [
+        "table"
+      ],
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BIFilterIn"
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "order_by": {
+          "type": "string"
+        },
+        "order_desc": {
+          "type": "boolean"
+        },
+        "page": {
+          "type": "integer"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "table": {
+          "type": "string"
+        }
+      }
+    },
+    "BIRunResp": {
+      "type": "object",
+      "required": [
+        "columns",
+        "rows",
+        "total"
+      ],
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BIQueryRow"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "BIWhitelistColumn": {
+      "type": "object",
+      "required": [
+        "column",
+        "kind",
+        "aggs",
+        "ops",
+        "comment"
+      ],
+      "properties": {
+        "aggs": {
+          "type": "string"
+        },
+        "column": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "kind": {
+          "description": "DIM/METRIC/BOTH",
+          "type": "string"
+        },
+        "ops": {
+          "type": "string"
+        }
+      }
+    },
+    "BIWhitelistResp": {
+      "type": "object",
+      "required": [
+        "tables"
+      ],
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BIWhitelistTable"
+          }
+        }
+      }
+    },
+    "BIWhitelistTable": {
+      "type": "object",
+      "required": [
+        "table",
+        "comment",
+        "columns"
+      ],
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BIWhitelistColumn"
+          }
+        },
+        "comment": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        }
+      }
+    },
     "BomItem": {
       "type": "object",
       "required": [
@@ -11343,6 +12201,69 @@
         },
         "status": {
           "type": "string"
+        }
+      }
+    },
+    "DwEtlDay": {
+      "type": "object",
+      "required": [
+        "etl_date",
+        "dim_date_rows",
+        "dim_tenant_rows",
+        "dim_party_rows",
+        "fact_order_rows",
+        "fact_payment_rows",
+        "cost_ms"
+      ],
+      "properties": {
+        "cost_ms": {
+          "type": "integer"
+        },
+        "dim_date_rows": {
+          "type": "integer"
+        },
+        "dim_party_rows": {
+          "type": "integer"
+        },
+        "dim_tenant_rows": {
+          "type": "integer"
+        },
+        "etl_date": {
+          "type": "string"
+        },
+        "fact_order_rows": {
+          "type": "integer"
+        },
+        "fact_payment_rows": {
+          "type": "integer"
+        }
+      }
+    },
+    "DwEtlRunReq": {
+      "type": "object",
+      "required": [
+        "date_start"
+      ],
+      "properties": {
+        "date_end": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string"
+        }
+      }
+    },
+    "DwEtlRunResp": {
+      "type": "object",
+      "required": [
+        "days"
+      ],
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DwEtlDay"
+          }
         }
       }
     },
@@ -13878,6 +14799,188 @@
         }
       }
     },
+    "RebateConfirmReq": {
+      "type": "object",
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "description": "CONFIRM/PAID",
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "RebateDiffItem": {
+      "type": "object",
+      "required": [
+        "settlement_id",
+        "party_id",
+        "stored_amount"
+      ],
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "recomputed_amount": {
+          "type": "string"
+        },
+        "settlement_id": {
+          "type": "string"
+        },
+        "stored_amount": {
+          "type": "string"
+        }
+      }
+    },
+    "RebateListReq": {
+      "type": "object"
+    },
+    "RebateListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RebateSettlementItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "RebateReconcileReq": {
+      "type": "object",
+      "required": [
+        "period"
+      ],
+      "properties": {
+        "period": {
+          "type": "string"
+        }
+      }
+    },
+    "RebateReconcileResp": {
+      "type": "object",
+      "required": [
+        "diff_count",
+        "diffs"
+      ],
+      "properties": {
+        "diff_count": {
+          "type": "integer"
+        },
+        "diffs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RebateDiffItem"
+          }
+        }
+      }
+    },
+    "RebateRunReq": {
+      "type": "object",
+      "required": [
+        "period"
+      ],
+      "properties": {
+        "party_id": {
+          "type": "string"
+        },
+        "period": {
+          "description": "yyyy-MM",
+          "type": "string"
+        }
+      }
+    },
+    "RebateRunResp": {
+      "type": "object",
+      "required": [
+        "results"
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RebateRunResult"
+          }
+        }
+      }
+    },
+    "RebateRunResult": {
+      "type": "object",
+      "required": [
+        "party_id",
+        "amount",
+        "base_amount",
+        "rate",
+        "payment_count"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "base_amount": {
+          "type": "string"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "payment_count": {
+          "type": "integer"
+        },
+        "rate": {
+          "type": "string"
+        }
+      }
+    },
+    "RebateSettlementItem": {
+      "type": "object",
+      "required": [
+        "settlement_id",
+        "period",
+        "party_id",
+        "amount",
+        "status",
+        "rule_snapshot",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "party_id": {
+          "type": "string"
+        },
+        "period": {
+          "type": "string"
+        },
+        "rule_snapshot": {
+          "type": "string"
+        },
+        "settlement_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "integer"
+        }
+      }
+    },
     "RebuildResp": {
       "type": "object",
       "required": [
@@ -14010,6 +15113,115 @@
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "RecycleCreateReq": {
+      "type": "object",
+      "properties": {
+        "evidence_file_id": {
+          "type": "string"
+        },
+        "recycler_party_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "residual_value": {
+          "type": "string"
+        }
+      }
+    },
+    "RecycleCreateResp": {
+      "type": "object",
+      "required": [
+        "recycle_id",
+        "recycle_no",
+        "trace_code"
+      ],
+      "properties": {
+        "recycle_id": {
+          "type": "string"
+        },
+        "recycle_no": {
+          "type": "string"
+        },
+        "trace_code": {
+          "type": "string"
+        }
+      }
+    },
+    "RecycleItem": {
+      "type": "object",
+      "required": [
+        "recycle_id",
+        "recycle_no",
+        "assessment_id",
+        "device_id",
+        "sn",
+        "residual_value",
+        "trace_code",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "assessment_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "evidence_file_id": {
+          "type": "string"
+        },
+        "recycle_id": {
+          "type": "string"
+        },
+        "recycle_no": {
+          "type": "string"
+        },
+        "recycler_party_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "residual_value": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "trace_code": {
+          "type": "string"
+        }
+      }
+    },
+    "RecycleListReq": {
+      "type": "object"
+    },
+    "RecycleListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecycleItem"
+          }
+        },
+        "total": {
+          "type": "integer"
         }
       }
     },
@@ -14265,6 +15477,226 @@
           "type": "string"
         },
         "warehouse_id": {
+          "type": "string"
+        }
+      }
+    },
+    "RetirementCreateReq": {
+      "type": "object",
+      "properties": {
+        "inspection_ticket_no": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    },
+    "RetirementCreateResp": {
+      "type": "object",
+      "required": [
+        "assessment_id",
+        "assessment_no",
+        "round"
+      ],
+      "properties": {
+        "assessment_id": {
+          "type": "string"
+        },
+        "assessment_no": {
+          "type": "string"
+        },
+        "round": {
+          "type": "integer"
+        }
+      }
+    },
+    "RetirementDecideReq": {
+      "type": "object",
+      "properties": {
+        "recycler_party_id": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "residual_value": {
+          "type": "string"
+        },
+        "target": {
+          "description": "RESALE/DERATE/RECYCLE（空=按评级默认）",
+          "type": "string"
+        }
+      }
+    },
+    "RetirementDecideResp": {
+      "type": "object",
+      "required": [
+        "grade",
+        "disposition",
+        "device_status"
+      ],
+      "properties": {
+        "device_status": {
+          "type": "string"
+        },
+        "disposition": {
+          "type": "string"
+        },
+        "grade": {
+          "type": "string"
+        },
+        "recycle_no": {
+          "type": "string"
+        },
+        "trace_code": {
+          "type": "string"
+        }
+      }
+    },
+    "RetirementItem": {
+      "type": "object",
+      "required": [
+        "assessment_id",
+        "assessment_no",
+        "device_id",
+        "sn",
+        "round",
+        "soh",
+        "cycle_count",
+        "consistency_ok",
+        "disposition",
+        "created_at"
+      ],
+      "properties": {
+        "assessment_id": {
+          "type": "string"
+        },
+        "assessment_no": {
+          "type": "string"
+        },
+        "consistency_ok": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "integer"
+        },
+        "cycle_count": {
+          "type": "integer"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "disposition": {
+          "type": "string"
+        },
+        "grade": {
+          "type": "string"
+        },
+        "inspection_ticket_no": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "resistance_mohm": {
+          "type": "string"
+        },
+        "round": {
+          "type": "integer"
+        },
+        "safety_json": {
+          "type": "string"
+        },
+        "sn": {
+          "type": "string"
+        },
+        "soh": {
+          "type": "string"
+        }
+      }
+    },
+    "RetirementListReq": {
+      "type": "object"
+    },
+    "RetirementListResp": {
+      "type": "object",
+      "required": [
+        "list",
+        "total"
+      ],
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RetirementItem"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "RetirementSafetyItem": {
+      "type": "object",
+      "required": [
+        "item",
+        "pass"
+      ],
+      "properties": {
+        "item": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "boolean"
+        }
+      }
+    },
+    "RetirementSubmitReq": {
+      "type": "object",
+      "required": [
+        "soh",
+        "cycle_count",
+        "consistency_ok"
+      ],
+      "properties": {
+        "consistency_ok": {
+          "type": "boolean"
+        },
+        "cycle_count": {
+          "type": "integer"
+        },
+        "measured_at": {
+          "type": "integer"
+        },
+        "resistance_mohm": {
+          "type": "string"
+        },
+        "safety_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RetirementSafetyItem"
+          }
+        },
+        "soh": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "RetirementSubmitResp": {
+      "type": "object",
+      "required": [
+        "grade",
+        "reason"
+      ],
+      "properties": {
+        "grade": {
+          "type": "string"
+        },
+        "reason": {
           "type": "string"
         }
       }
@@ -17476,7 +18908,7 @@
       "in": "header"
     }
   },
-  "x-date": "2026-10-11 05:32:03",
+  "x-date": "2026-10-12 02:02:16",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

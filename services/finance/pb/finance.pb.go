@@ -2477,6 +2477,666 @@ func (x *ListReconcileTaskResp) GetTotal() int64 {
 	return 0
 }
 
+type RunRebateSettlementReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Period        string                 `protobuf:"bytes,1,opt,name=period,proto3" json:"period,omitempty"`                   // 结算周期 yyyy-MM
+	PartyId       int64                  `protobuf:"varint,2,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 指定经销商（0=全部有规则经销商）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunRebateSettlementReq) Reset() {
+	*x = RunRebateSettlementReq{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunRebateSettlementReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunRebateSettlementReq) ProtoMessage() {}
+
+func (x *RunRebateSettlementReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunRebateSettlementReq.ProtoReflect.Descriptor instead.
+func (*RunRebateSettlementReq) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *RunRebateSettlementReq) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+func (x *RunRebateSettlementReq) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
+type RebateSettlementResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PartyId       int64                  `protobuf:"varint,1,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"`
+	Amount        string                 `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`                                  // 返利金额 DECIMAL 字符串
+	BaseAmount    string                 `protobuf:"bytes,3,opt,name=base_amount,json=baseAmount,proto3" json:"base_amount,omitempty"`        // 计提基数（period 内实付总额）
+	Rate          string                 `protobuf:"bytes,4,opt,name=rate,proto3" json:"rate,omitempty"`                                      // 费率（规则快照）
+	PaymentCount  int64                  `protobuf:"varint,5,opt,name=payment_count,json=paymentCount,proto3" json:"payment_count,omitempty"` // 计提支付单数
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RebateSettlementResult) Reset() {
+	*x = RebateSettlementResult{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RebateSettlementResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateSettlementResult) ProtoMessage() {}
+
+func (x *RebateSettlementResult) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateSettlementResult.ProtoReflect.Descriptor instead.
+func (*RebateSettlementResult) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *RebateSettlementResult) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
+func (x *RebateSettlementResult) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *RebateSettlementResult) GetBaseAmount() string {
+	if x != nil {
+		return x.BaseAmount
+	}
+	return ""
+}
+
+func (x *RebateSettlementResult) GetRate() string {
+	if x != nil {
+		return x.Rate
+	}
+	return ""
+}
+
+func (x *RebateSettlementResult) GetPaymentCount() int64 {
+	if x != nil {
+		return x.PaymentCount
+	}
+	return 0
+}
+
+type RunRebateSettlementResp struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Results       []*RebateSettlementResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunRebateSettlementResp) Reset() {
+	*x = RunRebateSettlementResp{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunRebateSettlementResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunRebateSettlementResp) ProtoMessage() {}
+
+func (x *RunRebateSettlementResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunRebateSettlementResp.ProtoReflect.Descriptor instead.
+func (*RunRebateSettlementResp) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *RunRebateSettlementResp) GetResults() []*RebateSettlementResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type RebateSettlementItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SettlementId  int64                  `protobuf:"varint,1,opt,name=settlement_id,json=settlementId,proto3" json:"settlement_id,omitempty"`
+	Period        string                 `protobuf:"bytes,2,opt,name=period,proto3" json:"period,omitempty"`
+	PartyId       int64                  `protobuf:"varint,3,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"`
+	Amount        string                 `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`                                 // PENDING/CONFIRMED/PAID
+	RuleSnapshot  string                 `protobuf:"bytes,6,opt,name=rule_snapshot,json=ruleSnapshot,proto3" json:"rule_snapshot,omitempty"` // 规则快照 JSON（结算金额可追溯，验收项）
+	CreatedAt     int64                  `protobuf:"varint,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     int64                  `protobuf:"varint,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RebateSettlementItem) Reset() {
+	*x = RebateSettlementItem{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RebateSettlementItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateSettlementItem) ProtoMessage() {}
+
+func (x *RebateSettlementItem) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateSettlementItem.ProtoReflect.Descriptor instead.
+func (*RebateSettlementItem) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *RebateSettlementItem) GetSettlementId() int64 {
+	if x != nil {
+		return x.SettlementId
+	}
+	return 0
+}
+
+func (x *RebateSettlementItem) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+func (x *RebateSettlementItem) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
+func (x *RebateSettlementItem) GetAmount() string {
+	if x != nil {
+		return x.Amount
+	}
+	return ""
+}
+
+func (x *RebateSettlementItem) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *RebateSettlementItem) GetRuleSnapshot() string {
+	if x != nil {
+		return x.RuleSnapshot
+	}
+	return ""
+}
+
+func (x *RebateSettlementItem) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *RebateSettlementItem) GetUpdatedAt() int64 {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return 0
+}
+
+type ListRebateSettlementReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Period        string                 `protobuf:"bytes,1,opt,name=period,proto3" json:"period,omitempty"`                   // 空=全部
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`                   // 空=全部
+	PartyId       int64                  `protobuf:"varint,3,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"` // 0=全部
+	Page          int64                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int64                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRebateSettlementReq) Reset() {
+	*x = ListRebateSettlementReq{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRebateSettlementReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRebateSettlementReq) ProtoMessage() {}
+
+func (x *ListRebateSettlementReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRebateSettlementReq.ProtoReflect.Descriptor instead.
+func (*ListRebateSettlementReq) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *ListRebateSettlementReq) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+func (x *ListRebateSettlementReq) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ListRebateSettlementReq) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
+func (x *ListRebateSettlementReq) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListRebateSettlementReq) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type ListRebateSettlementResp struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	List          []*RebateSettlementItem `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                   `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRebateSettlementResp) Reset() {
+	*x = ListRebateSettlementResp{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRebateSettlementResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRebateSettlementResp) ProtoMessage() {}
+
+func (x *ListRebateSettlementResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRebateSettlementResp.ProtoReflect.Descriptor instead.
+func (*ListRebateSettlementResp) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *ListRebateSettlementResp) GetList() []*RebateSettlementItem {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *ListRebateSettlementResp) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type ConfirmRebateSettlementReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SettlementId  int64                  `protobuf:"varint,1,opt,name=settlement_id,json=settlementId,proto3" json:"settlement_id,omitempty"`
+	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"` // CONFIRM（PENDING→CONFIRMED）/ PAID（CONFIRMED→PAID）
+	Remark        string                 `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmRebateSettlementReq) Reset() {
+	*x = ConfirmRebateSettlementReq{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmRebateSettlementReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmRebateSettlementReq) ProtoMessage() {}
+
+func (x *ConfirmRebateSettlementReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmRebateSettlementReq.ProtoReflect.Descriptor instead.
+func (*ConfirmRebateSettlementReq) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *ConfirmRebateSettlementReq) GetSettlementId() int64 {
+	if x != nil {
+		return x.SettlementId
+	}
+	return 0
+}
+
+func (x *ConfirmRebateSettlementReq) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *ConfirmRebateSettlementReq) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+type ConfirmRebateSettlementResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmRebateSettlementResp) Reset() {
+	*x = ConfirmRebateSettlementResp{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmRebateSettlementResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmRebateSettlementResp) ProtoMessage() {}
+
+func (x *ConfirmRebateSettlementResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmRebateSettlementResp.ProtoReflect.Descriptor instead.
+func (*ConfirmRebateSettlementResp) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{49}
+}
+
+type RebateDiffItem struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	SettlementId     int64                  `protobuf:"varint,1,opt,name=settlement_id,json=settlementId,proto3" json:"settlement_id,omitempty"`
+	PartyId          int64                  `protobuf:"varint,2,opt,name=party_id,json=partyId,proto3" json:"party_id,omitempty"`
+	StoredAmount     string                 `protobuf:"bytes,3,opt,name=stored_amount,json=storedAmount,proto3" json:"stored_amount,omitempty"`
+	RecomputedAmount string                 `protobuf:"bytes,4,opt,name=recomputed_amount,json=recomputedAmount,proto3" json:"recomputed_amount,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *RebateDiffItem) Reset() {
+	*x = RebateDiffItem{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RebateDiffItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateDiffItem) ProtoMessage() {}
+
+func (x *RebateDiffItem) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateDiffItem.ProtoReflect.Descriptor instead.
+func (*RebateDiffItem) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *RebateDiffItem) GetSettlementId() int64 {
+	if x != nil {
+		return x.SettlementId
+	}
+	return 0
+}
+
+func (x *RebateDiffItem) GetPartyId() int64 {
+	if x != nil {
+		return x.PartyId
+	}
+	return 0
+}
+
+func (x *RebateDiffItem) GetStoredAmount() string {
+	if x != nil {
+		return x.StoredAmount
+	}
+	return ""
+}
+
+func (x *RebateDiffItem) GetRecomputedAmount() string {
+	if x != nil {
+		return x.RecomputedAmount
+	}
+	return ""
+}
+
+type ReconcileRebateReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Period        string                 `protobuf:"bytes,1,opt,name=period,proto3" json:"period,omitempty"` // yyyy-MM
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReconcileRebateReq) Reset() {
+	*x = ReconcileRebateReq{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReconcileRebateReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReconcileRebateReq) ProtoMessage() {}
+
+func (x *ReconcileRebateReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReconcileRebateReq.ProtoReflect.Descriptor instead.
+func (*ReconcileRebateReq) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *ReconcileRebateReq) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+type ReconcileRebateResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DiffCount     int64                  `protobuf:"varint,1,opt,name=diff_count,json=diffCount,proto3" json:"diff_count,omitempty"`
+	Diffs         []*RebateDiffItem      `protobuf:"bytes,2,rep,name=diffs,proto3" json:"diffs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReconcileRebateResp) Reset() {
+	*x = ReconcileRebateResp{}
+	mi := &file_services_finance_pb_finance_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReconcileRebateResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReconcileRebateResp) ProtoMessage() {}
+
+func (x *ReconcileRebateResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_finance_pb_finance_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReconcileRebateResp.ProtoReflect.Descriptor instead.
+func (*ReconcileRebateResp) Descriptor() ([]byte, []int) {
+	return file_services_finance_pb_finance_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *ReconcileRebateResp) GetDiffCount() int64 {
+	if x != nil {
+		return x.DiffCount
+	}
+	return 0
+}
+
+func (x *ReconcileRebateResp) GetDiffs() []*RebateDiffItem {
+	if x != nil {
+		return x.Diffs
+	}
+	return nil
+}
+
 var File_services_finance_pb_finance_proto protoreflect.FileDescriptor
 
 const file_services_finance_pb_finance_proto_rawDesc = "" +
@@ -2676,8 +3336,55 @@ const file_services_finance_pb_finance_proto_rawDesc = "" +
 	"\x04size\x18\x03 \x01(\x03R\x04size\"_\n" +
 	"\x15ListReconcileTaskResp\x120\n" +
 	"\x04list\x18\x01 \x03(\v2\x1c.finance.ReconcileTaskDetailR\x04list\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x03R\x05total2\xde\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"K\n" +
+	"\x16RunRebateSettlementReq\x12\x16\n" +
+	"\x06period\x18\x01 \x01(\tR\x06period\x12\x19\n" +
+	"\bparty_id\x18\x02 \x01(\x03R\apartyId\"\xa5\x01\n" +
+	"\x16RebateSettlementResult\x12\x19\n" +
+	"\bparty_id\x18\x01 \x01(\x03R\apartyId\x12\x16\n" +
+	"\x06amount\x18\x02 \x01(\tR\x06amount\x12\x1f\n" +
+	"\vbase_amount\x18\x03 \x01(\tR\n" +
+	"baseAmount\x12\x12\n" +
+	"\x04rate\x18\x04 \x01(\tR\x04rate\x12#\n" +
+	"\rpayment_count\x18\x05 \x01(\x03R\fpaymentCount\"T\n" +
+	"\x17RunRebateSettlementResp\x129\n" +
+	"\aresults\x18\x01 \x03(\v2\x1f.finance.RebateSettlementResultR\aresults\"\x81\x02\n" +
+	"\x14RebateSettlementItem\x12#\n" +
+	"\rsettlement_id\x18\x01 \x01(\x03R\fsettlementId\x12\x16\n" +
+	"\x06period\x18\x02 \x01(\tR\x06period\x12\x19\n" +
+	"\bparty_id\x18\x03 \x01(\x03R\apartyId\x12\x16\n" +
+	"\x06amount\x18\x04 \x01(\tR\x06amount\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12#\n" +
+	"\rrule_snapshot\x18\x06 \x01(\tR\fruleSnapshot\x12\x1d\n" +
 	"\n" +
+	"created_at\x18\a \x01(\x03R\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\x03R\tupdatedAt\"\x8c\x01\n" +
+	"\x17ListRebateSettlementReq\x12\x16\n" +
+	"\x06period\x18\x01 \x01(\tR\x06period\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x19\n" +
+	"\bparty_id\x18\x03 \x01(\x03R\apartyId\x12\x12\n" +
+	"\x04page\x18\x04 \x01(\x03R\x04page\x12\x12\n" +
+	"\x04size\x18\x05 \x01(\x03R\x04size\"c\n" +
+	"\x18ListRebateSettlementResp\x121\n" +
+	"\x04list\x18\x01 \x03(\v2\x1d.finance.RebateSettlementItemR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"q\n" +
+	"\x1aConfirmRebateSettlementReq\x12#\n" +
+	"\rsettlement_id\x18\x01 \x01(\x03R\fsettlementId\x12\x16\n" +
+	"\x06action\x18\x02 \x01(\tR\x06action\x12\x16\n" +
+	"\x06remark\x18\x03 \x01(\tR\x06remark\"\x1d\n" +
+	"\x1bConfirmRebateSettlementResp\"\xa2\x01\n" +
+	"\x0eRebateDiffItem\x12#\n" +
+	"\rsettlement_id\x18\x01 \x01(\x03R\fsettlementId\x12\x19\n" +
+	"\bparty_id\x18\x02 \x01(\x03R\apartyId\x12#\n" +
+	"\rstored_amount\x18\x03 \x01(\tR\fstoredAmount\x12+\n" +
+	"\x11recomputed_amount\x18\x04 \x01(\tR\x10recomputedAmount\",\n" +
+	"\x12ReconcileRebateReq\x12\x16\n" +
+	"\x06period\x18\x01 \x01(\tR\x06period\"c\n" +
+	"\x13ReconcileRebateResp\x12\x1d\n" +
+	"\n" +
+	"diff_count\x18\x01 \x01(\x03R\tdiffCount\x12-\n" +
+	"\x05diffs\x18\x02 \x03(\v2\x17.finance.RebateDiffItemR\x05diffs2\xc9\r\n" +
 	"\aFinance\x12+\n" +
 	"\x04Ping\x12\x10.finance.PingReq\x1a\x11.finance.PingResp\x12F\n" +
 	"\rCreatePayment\x12\x19.finance.CreatePaymentReq\x1a\x1a.finance.CreatePaymentResp\x12I\n" +
@@ -2699,7 +3406,11 @@ const file_services_finance_pb_finance_proto_rawDesc = "" +
 	"\vListInvoice\x12\x17.finance.ListInvoiceReq\x1a\x18.finance.ListInvoiceResp\x12X\n" +
 	"\x13CreateReconcileTask\x12\x1f.finance.CreateReconcileTaskReq\x1a .finance.CreateReconcileTaskResp\x12[\n" +
 	"\x14ResolveReconcileTask\x12 .finance.ResolveReconcileTaskReq\x1a!.finance.ResolveReconcileTaskResp\x12R\n" +
-	"\x11ListReconcileTask\x12\x1d.finance.ListReconcileTaskReq\x1a\x1e.finance.ListReconcileTaskRespB\x06Z\x04./pbb\x06proto3"
+	"\x11ListReconcileTask\x12\x1d.finance.ListReconcileTaskReq\x1a\x1e.finance.ListReconcileTaskResp\x12X\n" +
+	"\x13RunRebateSettlement\x12\x1f.finance.RunRebateSettlementReq\x1a .finance.RunRebateSettlementResp\x12[\n" +
+	"\x14ListRebateSettlement\x12 .finance.ListRebateSettlementReq\x1a!.finance.ListRebateSettlementResp\x12d\n" +
+	"\x17ConfirmRebateSettlement\x12#.finance.ConfirmRebateSettlementReq\x1a$.finance.ConfirmRebateSettlementResp\x12L\n" +
+	"\x0fReconcileRebate\x12\x1b.finance.ReconcileRebateReq\x1a\x1c.finance.ReconcileRebateRespB\x06Z\x04./pbb\x06proto3"
 
 var (
 	file_services_finance_pb_finance_proto_rawDescOnce sync.Once
@@ -2713,50 +3424,61 @@ func file_services_finance_pb_finance_proto_rawDescGZIP() []byte {
 	return file_services_finance_pb_finance_proto_rawDescData
 }
 
-var file_services_finance_pb_finance_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
+var file_services_finance_pb_finance_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_services_finance_pb_finance_proto_goTypes = []any{
-	(*PingReq)(nil),                  // 0: finance.PingReq
-	(*PingResp)(nil),                 // 1: finance.PingResp
-	(*CreatePaymentReq)(nil),         // 2: finance.CreatePaymentReq
-	(*CreatePaymentResp)(nil),        // 3: finance.CreatePaymentResp
-	(*ConfirmPaymentReq)(nil),        // 4: finance.ConfirmPaymentReq
-	(*ConfirmPaymentResp)(nil),       // 5: finance.ConfirmPaymentResp
-	(*ApprovePaymentReq)(nil),        // 6: finance.ApprovePaymentReq
-	(*ApprovePaymentResp)(nil),       // 7: finance.ApprovePaymentResp
-	(*SettlePaymentReq)(nil),         // 8: finance.SettlePaymentReq
-	(*SettlePaymentResp)(nil),        // 9: finance.SettlePaymentResp
-	(*PaymentDetail)(nil),            // 10: finance.PaymentDetail
-	(*GetPaymentReq)(nil),            // 11: finance.GetPaymentReq
-	(*GetPaymentResp)(nil),           // 12: finance.GetPaymentResp
-	(*ListPaymentReq)(nil),           // 13: finance.ListPaymentReq
-	(*ListPaymentResp)(nil),          // 14: finance.ListPaymentResp
-	(*WechatPayURLReq)(nil),          // 15: finance.WechatPayURLReq
-	(*WechatPayURLResp)(nil),         // 16: finance.WechatPayURLResp
-	(*WechatCallbackReq)(nil),        // 17: finance.WechatCallbackReq
-	(*WechatCallbackResp)(nil),       // 18: finance.WechatCallbackResp
-	(*AlipayPayURLReq)(nil),          // 19: finance.AlipayPayURLReq
-	(*AlipayPayURLResp)(nil),         // 20: finance.AlipayPayURLResp
-	(*AlipayCallbackReq)(nil),        // 21: finance.AlipayCallbackReq
-	(*AlipayCallbackResp)(nil),       // 22: finance.AlipayCallbackResp
-	(*RefundDetail)(nil),             // 23: finance.RefundDetail
-	(*CreateRefundReq)(nil),          // 24: finance.CreateRefundReq
-	(*CreateRefundResp)(nil),         // 25: finance.CreateRefundResp
-	(*ListRefundReq)(nil),            // 26: finance.ListRefundReq
-	(*ListRefundResp)(nil),           // 27: finance.ListRefundResp
-	(*InvoiceDetail)(nil),            // 28: finance.InvoiceDetail
-	(*IssueInvoiceReq)(nil),          // 29: finance.IssueInvoiceReq
-	(*IssueInvoiceResp)(nil),         // 30: finance.IssueInvoiceResp
-	(*ReverseInvoiceReq)(nil),        // 31: finance.ReverseInvoiceReq
-	(*ReverseInvoiceResp)(nil),       // 32: finance.ReverseInvoiceResp
-	(*ListInvoiceReq)(nil),           // 33: finance.ListInvoiceReq
-	(*ListInvoiceResp)(nil),          // 34: finance.ListInvoiceResp
-	(*ReconcileTaskDetail)(nil),      // 35: finance.ReconcileTaskDetail
-	(*CreateReconcileTaskReq)(nil),   // 36: finance.CreateReconcileTaskReq
-	(*CreateReconcileTaskResp)(nil),  // 37: finance.CreateReconcileTaskResp
-	(*ResolveReconcileTaskReq)(nil),  // 38: finance.ResolveReconcileTaskReq
-	(*ResolveReconcileTaskResp)(nil), // 39: finance.ResolveReconcileTaskResp
-	(*ListReconcileTaskReq)(nil),     // 40: finance.ListReconcileTaskReq
-	(*ListReconcileTaskResp)(nil),    // 41: finance.ListReconcileTaskResp
+	(*PingReq)(nil),                     // 0: finance.PingReq
+	(*PingResp)(nil),                    // 1: finance.PingResp
+	(*CreatePaymentReq)(nil),            // 2: finance.CreatePaymentReq
+	(*CreatePaymentResp)(nil),           // 3: finance.CreatePaymentResp
+	(*ConfirmPaymentReq)(nil),           // 4: finance.ConfirmPaymentReq
+	(*ConfirmPaymentResp)(nil),          // 5: finance.ConfirmPaymentResp
+	(*ApprovePaymentReq)(nil),           // 6: finance.ApprovePaymentReq
+	(*ApprovePaymentResp)(nil),          // 7: finance.ApprovePaymentResp
+	(*SettlePaymentReq)(nil),            // 8: finance.SettlePaymentReq
+	(*SettlePaymentResp)(nil),           // 9: finance.SettlePaymentResp
+	(*PaymentDetail)(nil),               // 10: finance.PaymentDetail
+	(*GetPaymentReq)(nil),               // 11: finance.GetPaymentReq
+	(*GetPaymentResp)(nil),              // 12: finance.GetPaymentResp
+	(*ListPaymentReq)(nil),              // 13: finance.ListPaymentReq
+	(*ListPaymentResp)(nil),             // 14: finance.ListPaymentResp
+	(*WechatPayURLReq)(nil),             // 15: finance.WechatPayURLReq
+	(*WechatPayURLResp)(nil),            // 16: finance.WechatPayURLResp
+	(*WechatCallbackReq)(nil),           // 17: finance.WechatCallbackReq
+	(*WechatCallbackResp)(nil),          // 18: finance.WechatCallbackResp
+	(*AlipayPayURLReq)(nil),             // 19: finance.AlipayPayURLReq
+	(*AlipayPayURLResp)(nil),            // 20: finance.AlipayPayURLResp
+	(*AlipayCallbackReq)(nil),           // 21: finance.AlipayCallbackReq
+	(*AlipayCallbackResp)(nil),          // 22: finance.AlipayCallbackResp
+	(*RefundDetail)(nil),                // 23: finance.RefundDetail
+	(*CreateRefundReq)(nil),             // 24: finance.CreateRefundReq
+	(*CreateRefundResp)(nil),            // 25: finance.CreateRefundResp
+	(*ListRefundReq)(nil),               // 26: finance.ListRefundReq
+	(*ListRefundResp)(nil),              // 27: finance.ListRefundResp
+	(*InvoiceDetail)(nil),               // 28: finance.InvoiceDetail
+	(*IssueInvoiceReq)(nil),             // 29: finance.IssueInvoiceReq
+	(*IssueInvoiceResp)(nil),            // 30: finance.IssueInvoiceResp
+	(*ReverseInvoiceReq)(nil),           // 31: finance.ReverseInvoiceReq
+	(*ReverseInvoiceResp)(nil),          // 32: finance.ReverseInvoiceResp
+	(*ListInvoiceReq)(nil),              // 33: finance.ListInvoiceReq
+	(*ListInvoiceResp)(nil),             // 34: finance.ListInvoiceResp
+	(*ReconcileTaskDetail)(nil),         // 35: finance.ReconcileTaskDetail
+	(*CreateReconcileTaskReq)(nil),      // 36: finance.CreateReconcileTaskReq
+	(*CreateReconcileTaskResp)(nil),     // 37: finance.CreateReconcileTaskResp
+	(*ResolveReconcileTaskReq)(nil),     // 38: finance.ResolveReconcileTaskReq
+	(*ResolveReconcileTaskResp)(nil),    // 39: finance.ResolveReconcileTaskResp
+	(*ListReconcileTaskReq)(nil),        // 40: finance.ListReconcileTaskReq
+	(*ListReconcileTaskResp)(nil),       // 41: finance.ListReconcileTaskResp
+	(*RunRebateSettlementReq)(nil),      // 42: finance.RunRebateSettlementReq
+	(*RebateSettlementResult)(nil),      // 43: finance.RebateSettlementResult
+	(*RunRebateSettlementResp)(nil),     // 44: finance.RunRebateSettlementResp
+	(*RebateSettlementItem)(nil),        // 45: finance.RebateSettlementItem
+	(*ListRebateSettlementReq)(nil),     // 46: finance.ListRebateSettlementReq
+	(*ListRebateSettlementResp)(nil),    // 47: finance.ListRebateSettlementResp
+	(*ConfirmRebateSettlementReq)(nil),  // 48: finance.ConfirmRebateSettlementReq
+	(*ConfirmRebateSettlementResp)(nil), // 49: finance.ConfirmRebateSettlementResp
+	(*RebateDiffItem)(nil),              // 50: finance.RebateDiffItem
+	(*ReconcileRebateReq)(nil),          // 51: finance.ReconcileRebateReq
+	(*ReconcileRebateResp)(nil),         // 52: finance.ReconcileRebateResp
 }
 var file_services_finance_pb_finance_proto_depIdxs = []int32{
 	10, // 0: finance.GetPaymentResp.payment:type_name -> finance.PaymentDetail
@@ -2764,49 +3486,60 @@ var file_services_finance_pb_finance_proto_depIdxs = []int32{
 	23, // 2: finance.ListRefundResp.list:type_name -> finance.RefundDetail
 	28, // 3: finance.ListInvoiceResp.list:type_name -> finance.InvoiceDetail
 	35, // 4: finance.ListReconcileTaskResp.list:type_name -> finance.ReconcileTaskDetail
-	0,  // 5: finance.Finance.Ping:input_type -> finance.PingReq
-	2,  // 6: finance.Finance.CreatePayment:input_type -> finance.CreatePaymentReq
-	4,  // 7: finance.Finance.ConfirmPayment:input_type -> finance.ConfirmPaymentReq
-	6,  // 8: finance.Finance.ApprovePayment:input_type -> finance.ApprovePaymentReq
-	8,  // 9: finance.Finance.SettlePayment:input_type -> finance.SettlePaymentReq
-	11, // 10: finance.Finance.GetPayment:input_type -> finance.GetPaymentReq
-	13, // 11: finance.Finance.ListPayment:input_type -> finance.ListPaymentReq
-	15, // 12: finance.Finance.WechatPayURL:input_type -> finance.WechatPayURLReq
-	17, // 13: finance.Finance.WechatCallback:input_type -> finance.WechatCallbackReq
-	19, // 14: finance.Finance.AlipayPayURL:input_type -> finance.AlipayPayURLReq
-	21, // 15: finance.Finance.AlipayCallback:input_type -> finance.AlipayCallbackReq
-	24, // 16: finance.Finance.CreateRefund:input_type -> finance.CreateRefundReq
-	26, // 17: finance.Finance.ListRefund:input_type -> finance.ListRefundReq
-	29, // 18: finance.Finance.IssueInvoice:input_type -> finance.IssueInvoiceReq
-	31, // 19: finance.Finance.ReverseInvoice:input_type -> finance.ReverseInvoiceReq
-	33, // 20: finance.Finance.ListInvoice:input_type -> finance.ListInvoiceReq
-	36, // 21: finance.Finance.CreateReconcileTask:input_type -> finance.CreateReconcileTaskReq
-	38, // 22: finance.Finance.ResolveReconcileTask:input_type -> finance.ResolveReconcileTaskReq
-	40, // 23: finance.Finance.ListReconcileTask:input_type -> finance.ListReconcileTaskReq
-	1,  // 24: finance.Finance.Ping:output_type -> finance.PingResp
-	3,  // 25: finance.Finance.CreatePayment:output_type -> finance.CreatePaymentResp
-	5,  // 26: finance.Finance.ConfirmPayment:output_type -> finance.ConfirmPaymentResp
-	7,  // 27: finance.Finance.ApprovePayment:output_type -> finance.ApprovePaymentResp
-	9,  // 28: finance.Finance.SettlePayment:output_type -> finance.SettlePaymentResp
-	12, // 29: finance.Finance.GetPayment:output_type -> finance.GetPaymentResp
-	14, // 30: finance.Finance.ListPayment:output_type -> finance.ListPaymentResp
-	16, // 31: finance.Finance.WechatPayURL:output_type -> finance.WechatPayURLResp
-	18, // 32: finance.Finance.WechatCallback:output_type -> finance.WechatCallbackResp
-	20, // 33: finance.Finance.AlipayPayURL:output_type -> finance.AlipayPayURLResp
-	22, // 34: finance.Finance.AlipayCallback:output_type -> finance.AlipayCallbackResp
-	25, // 35: finance.Finance.CreateRefund:output_type -> finance.CreateRefundResp
-	27, // 36: finance.Finance.ListRefund:output_type -> finance.ListRefundResp
-	30, // 37: finance.Finance.IssueInvoice:output_type -> finance.IssueInvoiceResp
-	32, // 38: finance.Finance.ReverseInvoice:output_type -> finance.ReverseInvoiceResp
-	34, // 39: finance.Finance.ListInvoice:output_type -> finance.ListInvoiceResp
-	37, // 40: finance.Finance.CreateReconcileTask:output_type -> finance.CreateReconcileTaskResp
-	39, // 41: finance.Finance.ResolveReconcileTask:output_type -> finance.ResolveReconcileTaskResp
-	41, // 42: finance.Finance.ListReconcileTask:output_type -> finance.ListReconcileTaskResp
-	24, // [24:43] is the sub-list for method output_type
-	5,  // [5:24] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	43, // 5: finance.RunRebateSettlementResp.results:type_name -> finance.RebateSettlementResult
+	45, // 6: finance.ListRebateSettlementResp.list:type_name -> finance.RebateSettlementItem
+	50, // 7: finance.ReconcileRebateResp.diffs:type_name -> finance.RebateDiffItem
+	0,  // 8: finance.Finance.Ping:input_type -> finance.PingReq
+	2,  // 9: finance.Finance.CreatePayment:input_type -> finance.CreatePaymentReq
+	4,  // 10: finance.Finance.ConfirmPayment:input_type -> finance.ConfirmPaymentReq
+	6,  // 11: finance.Finance.ApprovePayment:input_type -> finance.ApprovePaymentReq
+	8,  // 12: finance.Finance.SettlePayment:input_type -> finance.SettlePaymentReq
+	11, // 13: finance.Finance.GetPayment:input_type -> finance.GetPaymentReq
+	13, // 14: finance.Finance.ListPayment:input_type -> finance.ListPaymentReq
+	15, // 15: finance.Finance.WechatPayURL:input_type -> finance.WechatPayURLReq
+	17, // 16: finance.Finance.WechatCallback:input_type -> finance.WechatCallbackReq
+	19, // 17: finance.Finance.AlipayPayURL:input_type -> finance.AlipayPayURLReq
+	21, // 18: finance.Finance.AlipayCallback:input_type -> finance.AlipayCallbackReq
+	24, // 19: finance.Finance.CreateRefund:input_type -> finance.CreateRefundReq
+	26, // 20: finance.Finance.ListRefund:input_type -> finance.ListRefundReq
+	29, // 21: finance.Finance.IssueInvoice:input_type -> finance.IssueInvoiceReq
+	31, // 22: finance.Finance.ReverseInvoice:input_type -> finance.ReverseInvoiceReq
+	33, // 23: finance.Finance.ListInvoice:input_type -> finance.ListInvoiceReq
+	36, // 24: finance.Finance.CreateReconcileTask:input_type -> finance.CreateReconcileTaskReq
+	38, // 25: finance.Finance.ResolveReconcileTask:input_type -> finance.ResolveReconcileTaskReq
+	40, // 26: finance.Finance.ListReconcileTask:input_type -> finance.ListReconcileTaskReq
+	42, // 27: finance.Finance.RunRebateSettlement:input_type -> finance.RunRebateSettlementReq
+	46, // 28: finance.Finance.ListRebateSettlement:input_type -> finance.ListRebateSettlementReq
+	48, // 29: finance.Finance.ConfirmRebateSettlement:input_type -> finance.ConfirmRebateSettlementReq
+	51, // 30: finance.Finance.ReconcileRebate:input_type -> finance.ReconcileRebateReq
+	1,  // 31: finance.Finance.Ping:output_type -> finance.PingResp
+	3,  // 32: finance.Finance.CreatePayment:output_type -> finance.CreatePaymentResp
+	5,  // 33: finance.Finance.ConfirmPayment:output_type -> finance.ConfirmPaymentResp
+	7,  // 34: finance.Finance.ApprovePayment:output_type -> finance.ApprovePaymentResp
+	9,  // 35: finance.Finance.SettlePayment:output_type -> finance.SettlePaymentResp
+	12, // 36: finance.Finance.GetPayment:output_type -> finance.GetPaymentResp
+	14, // 37: finance.Finance.ListPayment:output_type -> finance.ListPaymentResp
+	16, // 38: finance.Finance.WechatPayURL:output_type -> finance.WechatPayURLResp
+	18, // 39: finance.Finance.WechatCallback:output_type -> finance.WechatCallbackResp
+	20, // 40: finance.Finance.AlipayPayURL:output_type -> finance.AlipayPayURLResp
+	22, // 41: finance.Finance.AlipayCallback:output_type -> finance.AlipayCallbackResp
+	25, // 42: finance.Finance.CreateRefund:output_type -> finance.CreateRefundResp
+	27, // 43: finance.Finance.ListRefund:output_type -> finance.ListRefundResp
+	30, // 44: finance.Finance.IssueInvoice:output_type -> finance.IssueInvoiceResp
+	32, // 45: finance.Finance.ReverseInvoice:output_type -> finance.ReverseInvoiceResp
+	34, // 46: finance.Finance.ListInvoice:output_type -> finance.ListInvoiceResp
+	37, // 47: finance.Finance.CreateReconcileTask:output_type -> finance.CreateReconcileTaskResp
+	39, // 48: finance.Finance.ResolveReconcileTask:output_type -> finance.ResolveReconcileTaskResp
+	41, // 49: finance.Finance.ListReconcileTask:output_type -> finance.ListReconcileTaskResp
+	44, // 50: finance.Finance.RunRebateSettlement:output_type -> finance.RunRebateSettlementResp
+	47, // 51: finance.Finance.ListRebateSettlement:output_type -> finance.ListRebateSettlementResp
+	49, // 52: finance.Finance.ConfirmRebateSettlement:output_type -> finance.ConfirmRebateSettlementResp
+	52, // 53: finance.Finance.ReconcileRebate:output_type -> finance.ReconcileRebateResp
+	31, // [31:54] is the sub-list for method output_type
+	8,  // [8:31] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_services_finance_pb_finance_proto_init() }
@@ -2820,7 +3553,7 @@ func file_services_finance_pb_finance_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_finance_pb_finance_proto_rawDesc), len(file_services_finance_pb_finance_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   42,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

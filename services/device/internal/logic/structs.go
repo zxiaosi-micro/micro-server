@@ -199,3 +199,65 @@ type GetDeviceBySnLogic struct {
 func NewGetDeviceBySnLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetDeviceBySnLogic {
 	return &GetDeviceBySnLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
 }
+
+// ---- 退役评估（S10-01 梯次利用 + 回收）----
+
+type CreateRetirementAssessmentLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewCreateRetirementAssessmentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateRetirementAssessmentLogic {
+	return &CreateRetirementAssessmentLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}
+
+type SubmitRetirementResultLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewSubmitRetirementResultLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SubmitRetirementResultLogic {
+	return &SubmitRetirementResultLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}
+
+type DecideRetirementLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewDecideRetirementLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DecideRetirementLogic {
+	return &DecideRetirementLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}
+
+type ListRetirementAssessmentLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewListRetirementAssessmentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListRetirementAssessmentLogic {
+	return &ListRetirementAssessmentLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}
+
+type CreateRecycleOrderLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewCreateRecycleOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateRecycleOrderLogic {
+	return &CreateRecycleOrderLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}
+
+type ListRecycleOrderLogic struct {
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+	logx.Logger
+}
+
+func NewListRecycleOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListRecycleOrderLogic {
+	return &ListRecycleOrderLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
+}

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v3.19.4
-// source: pb/analytics.proto
+// source: services/analytics/pb/analytics.proto
 
 package pb
 
@@ -29,7 +29,7 @@ type PingReq struct {
 
 func (x *PingReq) Reset() {
 	*x = PingReq{}
-	mi := &file_pb_analytics_proto_msgTypes[0]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -41,7 +41,7 @@ func (x *PingReq) String() string {
 func (*PingReq) ProtoMessage() {}
 
 func (x *PingReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[0]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,7 +54,7 @@ func (x *PingReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingReq.ProtoReflect.Descriptor instead.
 func (*PingReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{0}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{0}
 }
 
 type PingResp struct {
@@ -66,7 +66,7 @@ type PingResp struct {
 
 func (x *PingResp) Reset() {
 	*x = PingResp{}
-	mi := &file_pb_analytics_proto_msgTypes[1]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -78,7 +78,7 @@ func (x *PingResp) String() string {
 func (*PingResp) ProtoMessage() {}
 
 func (x *PingResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[1]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -91,7 +91,7 @@ func (x *PingResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingResp.ProtoReflect.Descriptor instead.
 func (*PingResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{1}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PingResp) GetPong() string {
@@ -115,7 +115,7 @@ type GetReportReq struct {
 
 func (x *GetReportReq) Reset() {
 	*x = GetReportReq{}
-	mi := &file_pb_analytics_proto_msgTypes[2]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -127,7 +127,7 @@ func (x *GetReportReq) String() string {
 func (*GetReportReq) ProtoMessage() {}
 
 func (x *GetReportReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[2]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -140,7 +140,7 @@ func (x *GetReportReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReportReq.ProtoReflect.Descriptor instead.
 func (*GetReportReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{2}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetReportReq) GetReportType() string {
@@ -199,7 +199,7 @@ type ReportRow struct {
 
 func (x *ReportRow) Reset() {
 	*x = ReportRow{}
-	mi := &file_pb_analytics_proto_msgTypes[3]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -211,7 +211,7 @@ func (x *ReportRow) String() string {
 func (*ReportRow) ProtoMessage() {}
 
 func (x *ReportRow) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[3]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -224,7 +224,7 @@ func (x *ReportRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportRow.ProtoReflect.Descriptor instead.
 func (*ReportRow) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{3}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ReportRow) GetStatDate() string {
@@ -272,7 +272,7 @@ type GetReportResp struct {
 
 func (x *GetReportResp) Reset() {
 	*x = GetReportResp{}
-	mi := &file_pb_analytics_proto_msgTypes[4]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -284,7 +284,7 @@ func (x *GetReportResp) String() string {
 func (*GetReportResp) ProtoMessage() {}
 
 func (x *GetReportResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[4]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -297,7 +297,7 @@ func (x *GetReportResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReportResp.ProtoReflect.Descriptor instead.
 func (*GetReportResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{4}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetReportResp) GetRows() []*ReportRow {
@@ -323,7 +323,7 @@ type ListMetricDictReq struct {
 
 func (x *ListMetricDictReq) Reset() {
 	*x = ListMetricDictReq{}
-	mi := &file_pb_analytics_proto_msgTypes[5]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -335,7 +335,7 @@ func (x *ListMetricDictReq) String() string {
 func (*ListMetricDictReq) ProtoMessage() {}
 
 func (x *ListMetricDictReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[5]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -348,7 +348,7 @@ func (x *ListMetricDictReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetricDictReq.ProtoReflect.Descriptor instead.
 func (*ListMetricDictReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{5}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListMetricDictReq) GetReportType() string {
@@ -374,7 +374,7 @@ type MetricDictItem struct {
 
 func (x *MetricDictItem) Reset() {
 	*x = MetricDictItem{}
-	mi := &file_pb_analytics_proto_msgTypes[6]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -386,7 +386,7 @@ func (x *MetricDictItem) String() string {
 func (*MetricDictItem) ProtoMessage() {}
 
 func (x *MetricDictItem) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[6]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -399,7 +399,7 @@ func (x *MetricDictItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricDictItem.ProtoReflect.Descriptor instead.
 func (*MetricDictItem) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{6}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MetricDictItem) GetMetricCode() string {
@@ -468,7 +468,7 @@ type ListMetricDictResp struct {
 
 func (x *ListMetricDictResp) Reset() {
 	*x = ListMetricDictResp{}
-	mi := &file_pb_analytics_proto_msgTypes[7]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +480,7 @@ func (x *ListMetricDictResp) String() string {
 func (*ListMetricDictResp) ProtoMessage() {}
 
 func (x *ListMetricDictResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[7]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +493,7 @@ func (x *ListMetricDictResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetricDictResp.ProtoReflect.Descriptor instead.
 func (*ListMetricDictResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{7}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListMetricDictResp) GetList() []*MetricDictItem {
@@ -518,7 +518,7 @@ type ListWatermarkReq struct {
 
 func (x *ListWatermarkReq) Reset() {
 	*x = ListWatermarkReq{}
-	mi := &file_pb_analytics_proto_msgTypes[8]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -530,7 +530,7 @@ func (x *ListWatermarkReq) String() string {
 func (*ListWatermarkReq) ProtoMessage() {}
 
 func (x *ListWatermarkReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[8]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +543,7 @@ func (x *ListWatermarkReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWatermarkReq.ProtoReflect.Descriptor instead.
 func (*ListWatermarkReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{8}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{8}
 }
 
 type WatermarkItem struct {
@@ -560,7 +560,7 @@ type WatermarkItem struct {
 
 func (x *WatermarkItem) Reset() {
 	*x = WatermarkItem{}
-	mi := &file_pb_analytics_proto_msgTypes[9]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -572,7 +572,7 @@ func (x *WatermarkItem) String() string {
 func (*WatermarkItem) ProtoMessage() {}
 
 func (x *WatermarkItem) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[9]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -585,7 +585,7 @@ func (x *WatermarkItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatermarkItem.ProtoReflect.Descriptor instead.
 func (*WatermarkItem) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{9}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *WatermarkItem) GetTopic() string {
@@ -640,7 +640,7 @@ type ListWatermarkResp struct {
 
 func (x *ListWatermarkResp) Reset() {
 	*x = ListWatermarkResp{}
-	mi := &file_pb_analytics_proto_msgTypes[10]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -652,7 +652,7 @@ func (x *ListWatermarkResp) String() string {
 func (*ListWatermarkResp) ProtoMessage() {}
 
 func (x *ListWatermarkResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[10]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -665,7 +665,7 @@ func (x *ListWatermarkResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWatermarkResp.ProtoReflect.Descriptor instead.
 func (*ListWatermarkResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{10}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListWatermarkResp) GetList() []*WatermarkItem {
@@ -694,7 +694,7 @@ type RequestExportReq struct {
 
 func (x *RequestExportReq) Reset() {
 	*x = RequestExportReq{}
-	mi := &file_pb_analytics_proto_msgTypes[11]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -706,7 +706,7 @@ func (x *RequestExportReq) String() string {
 func (*RequestExportReq) ProtoMessage() {}
 
 func (x *RequestExportReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[11]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -719,7 +719,7 @@ func (x *RequestExportReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestExportReq.ProtoReflect.Descriptor instead.
 func (*RequestExportReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{11}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RequestExportReq) GetReportType() string {
@@ -759,7 +759,7 @@ type RequestExportResp struct {
 
 func (x *RequestExportResp) Reset() {
 	*x = RequestExportResp{}
-	mi := &file_pb_analytics_proto_msgTypes[12]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +771,7 @@ func (x *RequestExportResp) String() string {
 func (*RequestExportResp) ProtoMessage() {}
 
 func (x *RequestExportResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[12]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +784,7 @@ func (x *RequestExportResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestExportResp.ProtoReflect.Descriptor instead.
 func (*RequestExportResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{12}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RequestExportResp) GetExportId() string {
@@ -803,7 +803,7 @@ type GetExportTaskReq struct {
 
 func (x *GetExportTaskReq) Reset() {
 	*x = GetExportTaskReq{}
-	mi := &file_pb_analytics_proto_msgTypes[13]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -815,7 +815,7 @@ func (x *GetExportTaskReq) String() string {
 func (*GetExportTaskReq) ProtoMessage() {}
 
 func (x *GetExportTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[13]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,7 +828,7 @@ func (x *GetExportTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExportTaskReq.ProtoReflect.Descriptor instead.
 func (*GetExportTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{13}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetExportTaskReq) GetExportId() string {
@@ -859,7 +859,7 @@ type ExportTaskItem struct {
 
 func (x *ExportTaskItem) Reset() {
 	*x = ExportTaskItem{}
-	mi := &file_pb_analytics_proto_msgTypes[14]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -871,7 +871,7 @@ func (x *ExportTaskItem) String() string {
 func (*ExportTaskItem) ProtoMessage() {}
 
 func (x *ExportTaskItem) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[14]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -884,7 +884,7 @@ func (x *ExportTaskItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportTaskItem.ProtoReflect.Descriptor instead.
 func (*ExportTaskItem) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{14}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ExportTaskItem) GetExportId() string {
@@ -987,7 +987,7 @@ type GetExportTaskResp struct {
 
 func (x *GetExportTaskResp) Reset() {
 	*x = GetExportTaskResp{}
-	mi := &file_pb_analytics_proto_msgTypes[15]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -999,7 +999,7 @@ func (x *GetExportTaskResp) String() string {
 func (*GetExportTaskResp) ProtoMessage() {}
 
 func (x *GetExportTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[15]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1012,7 +1012,7 @@ func (x *GetExportTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExportTaskResp.ProtoReflect.Descriptor instead.
 func (*GetExportTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{15}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetExportTaskResp) GetTask() *ExportTaskItem {
@@ -1033,7 +1033,7 @@ type ListExportTaskReq struct {
 
 func (x *ListExportTaskReq) Reset() {
 	*x = ListExportTaskReq{}
-	mi := &file_pb_analytics_proto_msgTypes[16]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1045,7 +1045,7 @@ func (x *ListExportTaskReq) String() string {
 func (*ListExportTaskReq) ProtoMessage() {}
 
 func (x *ListExportTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[16]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1058,7 +1058,7 @@ func (x *ListExportTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListExportTaskReq.ProtoReflect.Descriptor instead.
 func (*ListExportTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{16}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListExportTaskReq) GetStatus() string {
@@ -1092,7 +1092,7 @@ type ListExportTaskResp struct {
 
 func (x *ListExportTaskResp) Reset() {
 	*x = ListExportTaskResp{}
-	mi := &file_pb_analytics_proto_msgTypes[17]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1104,7 +1104,7 @@ func (x *ListExportTaskResp) String() string {
 func (*ListExportTaskResp) ProtoMessage() {}
 
 func (x *ListExportTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[17]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1117,7 +1117,7 @@ func (x *ListExportTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListExportTaskResp.ProtoReflect.Descriptor instead.
 func (*ListExportTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{17}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListExportTaskResp) GetList() []*ExportTaskItem {
@@ -1143,7 +1143,7 @@ type RunReconReq struct {
 
 func (x *RunReconReq) Reset() {
 	*x = RunReconReq{}
-	mi := &file_pb_analytics_proto_msgTypes[18]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1155,7 +1155,7 @@ func (x *RunReconReq) String() string {
 func (*RunReconReq) ProtoMessage() {}
 
 func (x *RunReconReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[18]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1168,7 +1168,7 @@ func (x *RunReconReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunReconReq.ProtoReflect.Descriptor instead.
 func (*RunReconReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{18}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *RunReconReq) GetReconDate() string {
@@ -1187,7 +1187,7 @@ type RunReconResp struct {
 
 func (x *RunReconResp) Reset() {
 	*x = RunReconResp{}
-	mi := &file_pb_analytics_proto_msgTypes[19]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1199,7 +1199,7 @@ func (x *RunReconResp) String() string {
 func (*RunReconResp) ProtoMessage() {}
 
 func (x *RunReconResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[19]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1212,7 +1212,7 @@ func (x *RunReconResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunReconResp.ProtoReflect.Descriptor instead.
 func (*RunReconResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{19}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *RunReconResp) GetDiffTotal() int64 {
@@ -1230,7 +1230,7 @@ type RebuildReadModelReq struct {
 
 func (x *RebuildReadModelReq) Reset() {
 	*x = RebuildReadModelReq{}
-	mi := &file_pb_analytics_proto_msgTypes[20]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1242,7 +1242,7 @@ func (x *RebuildReadModelReq) String() string {
 func (*RebuildReadModelReq) ProtoMessage() {}
 
 func (x *RebuildReadModelReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[20]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1255,7 +1255,7 @@ func (x *RebuildReadModelReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebuildReadModelReq.ProtoReflect.Descriptor instead.
 func (*RebuildReadModelReq) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{20}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{20}
 }
 
 type RebuildReadModelResp struct {
@@ -1267,7 +1267,7 @@ type RebuildReadModelResp struct {
 
 func (x *RebuildReadModelResp) Reset() {
 	*x = RebuildReadModelResp{}
-	mi := &file_pb_analytics_proto_msgTypes[21]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1279,7 +1279,7 @@ func (x *RebuildReadModelResp) String() string {
 func (*RebuildReadModelResp) ProtoMessage() {}
 
 func (x *RebuildReadModelResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_analytics_proto_msgTypes[21]
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1292,7 +1292,7 @@ func (x *RebuildReadModelResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebuildReadModelResp.ProtoReflect.Descriptor instead.
 func (*RebuildReadModelResp) Descriptor() ([]byte, []int) {
-	return file_pb_analytics_proto_rawDescGZIP(), []int{21}
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *RebuildReadModelResp) GetRebuildVersion() string {
@@ -1302,11 +1302,682 @@ func (x *RebuildReadModelResp) GetRebuildVersion() string {
 	return ""
 }
 
-var File_pb_analytics_proto protoreflect.FileDescriptor
+type ListBIWhitelistReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_pb_analytics_proto_rawDesc = "" +
+func (x *ListBIWhitelistReq) Reset() {
+	*x = ListBIWhitelistReq{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListBIWhitelistReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListBIWhitelistReq) ProtoMessage() {}
+
+func (x *ListBIWhitelistReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListBIWhitelistReq.ProtoReflect.Descriptor instead.
+func (*ListBIWhitelistReq) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{22}
+}
+
+// BIWhitelistColumn 白名单列元数据（前端据此渲染查询构建器）。
+type BIWhitelistColumn struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Column        string                 `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`   // 列名
+	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`       // DIM 维度/METRIC 度量/BOTH
+	Aggs          string                 `protobuf:"bytes,3,opt,name=aggs,proto3" json:"aggs,omitempty"`       // 允许聚合（逗号分隔 SUM/COUNT/AVG/MIN/MAX；空=不可聚合）
+	Ops           string                 `protobuf:"bytes,4,opt,name=ops,proto3" json:"ops,omitempty"`         // 允许过滤操作符（逗号分隔 EQ/NE/LT/LTE/GT/GTE/LIKE/IN；空=不可过滤）
+	Comment       string                 `protobuf:"bytes,5,opt,name=comment,proto3" json:"comment,omitempty"` // 业务口径注释
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BIWhitelistColumn) Reset() {
+	*x = BIWhitelistColumn{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BIWhitelistColumn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BIWhitelistColumn) ProtoMessage() {}
+
+func (x *BIWhitelistColumn) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BIWhitelistColumn.ProtoReflect.Descriptor instead.
+func (*BIWhitelistColumn) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *BIWhitelistColumn) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *BIWhitelistColumn) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *BIWhitelistColumn) GetAggs() string {
+	if x != nil {
+		return x.Aggs
+	}
+	return ""
+}
+
+func (x *BIWhitelistColumn) GetOps() string {
+	if x != nil {
+		return x.Ops
+	}
+	return ""
+}
+
+func (x *BIWhitelistColumn) GetComment() string {
+	if x != nil {
+		return x.Comment
+	}
+	return ""
+}
+
+type BIWhitelistTable struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Table         string                 `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"` // 表名（dw_ 前缀）
+	Comment       string                 `protobuf:"bytes,2,opt,name=comment,proto3" json:"comment,omitempty"`
+	Columns       []*BIWhitelistColumn   `protobuf:"bytes,3,rep,name=columns,proto3" json:"columns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BIWhitelistTable) Reset() {
+	*x = BIWhitelistTable{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BIWhitelistTable) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BIWhitelistTable) ProtoMessage() {}
+
+func (x *BIWhitelistTable) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BIWhitelistTable.ProtoReflect.Descriptor instead.
+func (*BIWhitelistTable) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *BIWhitelistTable) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
+func (x *BIWhitelistTable) GetComment() string {
+	if x != nil {
+		return x.Comment
+	}
+	return ""
+}
+
+func (x *BIWhitelistTable) GetColumns() []*BIWhitelistColumn {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+type ListBIWhitelistResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tables        []*BIWhitelistTable    `protobuf:"bytes,1,rep,name=tables,proto3" json:"tables,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListBIWhitelistResp) Reset() {
+	*x = ListBIWhitelistResp{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListBIWhitelistResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListBIWhitelistResp) ProtoMessage() {}
+
+func (x *ListBIWhitelistResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListBIWhitelistResp.ProtoReflect.Descriptor instead.
+func (*ListBIWhitelistResp) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ListBIWhitelistResp) GetTables() []*BIWhitelistTable {
+	if x != nil {
+		return x.Tables
+	}
+	return nil
+}
+
+// BIFilter 过滤（列/操作符走白名单映射，值一律占位符绑定——参数化防注入）。
+type BIFilter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Column        string                 `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
+	Op            string                 `protobuf:"bytes,2,opt,name=op,proto3" json:"op,omitempty"`         // EQ/NE/LT/LTE/GT/GTE/LIKE/IN
+	Values        []string               `protobuf:"bytes,3,rep,name=values,proto3" json:"values,omitempty"` // IN 多值；其余取首值
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BIFilter) Reset() {
+	*x = BIFilter{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BIFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BIFilter) ProtoMessage() {}
+
+func (x *BIFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BIFilter.ProtoReflect.Descriptor instead.
+func (*BIFilter) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *BIFilter) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *BIFilter) GetOp() string {
+	if x != nil {
+		return x.Op
+	}
+	return ""
+}
+
+func (x *BIFilter) GetValues() []string {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+type RunBIQueryReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Table         string                 `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`                    // 白名单表
+	Dimensions    []string               `protobuf:"bytes,2,rep,name=dimensions,proto3" json:"dimensions,omitempty"`          // group by 维度（≤8）
+	Metrics       []string               `protobuf:"bytes,3,rep,name=metrics,proto3" json:"metrics,omitempty"`                // 聚合 "AGG:col"（COUNT:* 全表计数；≤8）
+	Filters       []*BIFilter            `protobuf:"bytes,4,rep,name=filters,proto3" json:"filters,omitempty"`                // ≤10
+	OrderBy       string                 `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"` // 维度列或指标别名（agg:col）
+	OrderDesc     bool                   `protobuf:"varint,6,opt,name=order_desc,json=orderDesc,proto3" json:"order_desc,omitempty"`
+	Page          int32                  `protobuf:"varint,7,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int32                  `protobuf:"varint,8,opt,name=size,proto3" json:"size,omitempty"` // 上限 200
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunBIQueryReq) Reset() {
+	*x = RunBIQueryReq{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunBIQueryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunBIQueryReq) ProtoMessage() {}
+
+func (x *RunBIQueryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunBIQueryReq.ProtoReflect.Descriptor instead.
+func (*RunBIQueryReq) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *RunBIQueryReq) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
+func (x *RunBIQueryReq) GetDimensions() []string {
+	if x != nil {
+		return x.Dimensions
+	}
+	return nil
+}
+
+func (x *RunBIQueryReq) GetMetrics() []string {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+func (x *RunBIQueryReq) GetFilters() []*BIFilter {
+	if x != nil {
+		return x.Filters
+	}
+	return nil
+}
+
+func (x *RunBIQueryReq) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+func (x *RunBIQueryReq) GetOrderDesc() bool {
+	if x != nil {
+		return x.OrderDesc
+	}
+	return false
+}
+
+func (x *RunBIQueryReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *RunBIQueryReq) GetSize() int32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+// BIQueryRow 行值（与 columns 一一对应；DECIMAL/时间一律 string 防精度丢失）。
+type BIQueryRow struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Values        []string               `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BIQueryRow) Reset() {
+	*x = BIQueryRow{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BIQueryRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BIQueryRow) ProtoMessage() {}
+
+func (x *BIQueryRow) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BIQueryRow.ProtoReflect.Descriptor instead.
+func (*BIQueryRow) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *BIQueryRow) GetValues() []string {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+type RunBIQueryResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Columns       []string               `protobuf:"bytes,1,rep,name=columns,proto3" json:"columns,omitempty"`
+	Rows          []*BIQueryRow          `protobuf:"bytes,2,rep,name=rows,proto3" json:"rows,omitempty"`
+	Total         int64                  `protobuf:"varint,3,opt,name=total,proto3" json:"total,omitempty"` // 分组总数（非分组查询恒 1）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunBIQueryResp) Reset() {
+	*x = RunBIQueryResp{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunBIQueryResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunBIQueryResp) ProtoMessage() {}
+
+func (x *RunBIQueryResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunBIQueryResp.ProtoReflect.Descriptor instead.
+func (*RunBIQueryResp) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *RunBIQueryResp) GetColumns() []string {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+func (x *RunBIQueryResp) GetRows() []*BIQueryRow {
+	if x != nil {
+		return x.Rows
+	}
+	return nil
+}
+
+func (x *RunBIQueryResp) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type RunDwEtlReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DateStart     string                 `protobuf:"bytes,1,opt,name=date_start,json=dateStart,proto3" json:"date_start,omitempty"` // yyyy-MM-dd（含）
+	DateEnd       string                 `protobuf:"bytes,2,opt,name=date_end,json=dateEnd,proto3" json:"date_end,omitempty"`       // 含；空 = 单日 start
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunDwEtlReq) Reset() {
+	*x = RunDwEtlReq{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunDwEtlReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunDwEtlReq) ProtoMessage() {}
+
+func (x *RunDwEtlReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunDwEtlReq.ProtoReflect.Descriptor instead.
+func (*RunDwEtlReq) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *RunDwEtlReq) GetDateStart() string {
+	if x != nil {
+		return x.DateStart
+	}
+	return ""
+}
+
+func (x *RunDwEtlReq) GetDateEnd() string {
+	if x != nil {
+		return x.DateEnd
+	}
+	return ""
+}
+
+type DwEtlDayResult struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EtlDate         string                 `protobuf:"bytes,1,opt,name=etl_date,json=etlDate,proto3" json:"etl_date,omitempty"`
+	DimDateRows     int64                  `protobuf:"varint,2,opt,name=dim_date_rows,json=dimDateRows,proto3" json:"dim_date_rows,omitempty"`
+	DimTenantRows   int64                  `protobuf:"varint,3,opt,name=dim_tenant_rows,json=dimTenantRows,proto3" json:"dim_tenant_rows,omitempty"`
+	DimPartyRows    int64                  `protobuf:"varint,4,opt,name=dim_party_rows,json=dimPartyRows,proto3" json:"dim_party_rows,omitempty"`
+	FactOrderRows   int64                  `protobuf:"varint,5,opt,name=fact_order_rows,json=factOrderRows,proto3" json:"fact_order_rows,omitempty"`
+	FactPaymentRows int64                  `protobuf:"varint,6,opt,name=fact_payment_rows,json=factPaymentRows,proto3" json:"fact_payment_rows,omitempty"`
+	CostMs          int64                  `protobuf:"varint,7,opt,name=cost_ms,json=costMs,proto3" json:"cost_ms,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DwEtlDayResult) Reset() {
+	*x = DwEtlDayResult{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DwEtlDayResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DwEtlDayResult) ProtoMessage() {}
+
+func (x *DwEtlDayResult) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DwEtlDayResult.ProtoReflect.Descriptor instead.
+func (*DwEtlDayResult) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *DwEtlDayResult) GetEtlDate() string {
+	if x != nil {
+		return x.EtlDate
+	}
+	return ""
+}
+
+func (x *DwEtlDayResult) GetDimDateRows() int64 {
+	if x != nil {
+		return x.DimDateRows
+	}
+	return 0
+}
+
+func (x *DwEtlDayResult) GetDimTenantRows() int64 {
+	if x != nil {
+		return x.DimTenantRows
+	}
+	return 0
+}
+
+func (x *DwEtlDayResult) GetDimPartyRows() int64 {
+	if x != nil {
+		return x.DimPartyRows
+	}
+	return 0
+}
+
+func (x *DwEtlDayResult) GetFactOrderRows() int64 {
+	if x != nil {
+		return x.FactOrderRows
+	}
+	return 0
+}
+
+func (x *DwEtlDayResult) GetFactPaymentRows() int64 {
+	if x != nil {
+		return x.FactPaymentRows
+	}
+	return 0
+}
+
+func (x *DwEtlDayResult) GetCostMs() int64 {
+	if x != nil {
+		return x.CostMs
+	}
+	return 0
+}
+
+type RunDwEtlResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Days          []*DwEtlDayResult      `protobuf:"bytes,1,rep,name=days,proto3" json:"days,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunDwEtlResp) Reset() {
+	*x = RunDwEtlResp{}
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunDwEtlResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunDwEtlResp) ProtoMessage() {}
+
+func (x *RunDwEtlResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_analytics_pb_analytics_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunDwEtlResp.ProtoReflect.Descriptor instead.
+func (*RunDwEtlResp) Descriptor() ([]byte, []int) {
+	return file_services_analytics_pb_analytics_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *RunDwEtlResp) GetDays() []*DwEtlDayResult {
+	if x != nil {
+		return x.Days
+	}
+	return nil
+}
+
+var File_services_analytics_pb_analytics_proto protoreflect.FileDescriptor
+
+const file_services_analytics_pb_analytics_proto_rawDesc = "" +
 	"\n" +
-	"\x12pb/analytics.proto\x12\tanalytics\"\t\n" +
+	"%services/analytics/pb/analytics.proto\x12\tanalytics\"\t\n" +
 	"\aPingReq\"\x1e\n" +
 	"\bPingResp\x12\x12\n" +
 	"\x04pong\x18\x01 \x01(\tR\x04pong\"\xc5\x01\n" +
@@ -1408,7 +2079,57 @@ const file_pb_analytics_proto_rawDesc = "" +
 	"diff_total\x18\x01 \x01(\x03R\tdiffTotal\"\x15\n" +
 	"\x13RebuildReadModelReq\"?\n" +
 	"\x14RebuildReadModelResp\x12'\n" +
-	"\x0frebuild_version\x18\x01 \x01(\tR\x0erebuildVersion2\x90\x05\n" +
+	"\x0frebuild_version\x18\x01 \x01(\tR\x0erebuildVersion\"\x14\n" +
+	"\x12ListBIWhitelistReq\"\x7f\n" +
+	"\x11BIWhitelistColumn\x12\x16\n" +
+	"\x06column\x18\x01 \x01(\tR\x06column\x12\x12\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x12\n" +
+	"\x04aggs\x18\x03 \x01(\tR\x04aggs\x12\x10\n" +
+	"\x03ops\x18\x04 \x01(\tR\x03ops\x12\x18\n" +
+	"\acomment\x18\x05 \x01(\tR\acomment\"z\n" +
+	"\x10BIWhitelistTable\x12\x14\n" +
+	"\x05table\x18\x01 \x01(\tR\x05table\x12\x18\n" +
+	"\acomment\x18\x02 \x01(\tR\acomment\x126\n" +
+	"\acolumns\x18\x03 \x03(\v2\x1c.analytics.BIWhitelistColumnR\acolumns\"J\n" +
+	"\x13ListBIWhitelistResp\x123\n" +
+	"\x06tables\x18\x01 \x03(\v2\x1b.analytics.BIWhitelistTableR\x06tables\"J\n" +
+	"\bBIFilter\x12\x16\n" +
+	"\x06column\x18\x01 \x01(\tR\x06column\x12\x0e\n" +
+	"\x02op\x18\x02 \x01(\tR\x02op\x12\x16\n" +
+	"\x06values\x18\x03 \x03(\tR\x06values\"\xf0\x01\n" +
+	"\rRunBIQueryReq\x12\x14\n" +
+	"\x05table\x18\x01 \x01(\tR\x05table\x12\x1e\n" +
+	"\n" +
+	"dimensions\x18\x02 \x03(\tR\n" +
+	"dimensions\x12\x18\n" +
+	"\ametrics\x18\x03 \x03(\tR\ametrics\x12-\n" +
+	"\afilters\x18\x04 \x03(\v2\x13.analytics.BIFilterR\afilters\x12\x19\n" +
+	"\border_by\x18\x05 \x01(\tR\aorderBy\x12\x1d\n" +
+	"\n" +
+	"order_desc\x18\x06 \x01(\bR\torderDesc\x12\x12\n" +
+	"\x04page\x18\a \x01(\x05R\x04page\x12\x12\n" +
+	"\x04size\x18\b \x01(\x05R\x04size\"$\n" +
+	"\n" +
+	"BIQueryRow\x12\x16\n" +
+	"\x06values\x18\x01 \x03(\tR\x06values\"k\n" +
+	"\x0eRunBIQueryResp\x12\x18\n" +
+	"\acolumns\x18\x01 \x03(\tR\acolumns\x12)\n" +
+	"\x04rows\x18\x02 \x03(\v2\x15.analytics.BIQueryRowR\x04rows\x12\x14\n" +
+	"\x05total\x18\x03 \x01(\x03R\x05total\"G\n" +
+	"\vRunDwEtlReq\x12\x1d\n" +
+	"\n" +
+	"date_start\x18\x01 \x01(\tR\tdateStart\x12\x19\n" +
+	"\bdate_end\x18\x02 \x01(\tR\adateEnd\"\x8a\x02\n" +
+	"\x0eDwEtlDayResult\x12\x19\n" +
+	"\betl_date\x18\x01 \x01(\tR\aetlDate\x12\"\n" +
+	"\rdim_date_rows\x18\x02 \x01(\x03R\vdimDateRows\x12&\n" +
+	"\x0fdim_tenant_rows\x18\x03 \x01(\x03R\rdimTenantRows\x12$\n" +
+	"\x0edim_party_rows\x18\x04 \x01(\x03R\fdimPartyRows\x12&\n" +
+	"\x0ffact_order_rows\x18\x05 \x01(\x03R\rfactOrderRows\x12*\n" +
+	"\x11fact_payment_rows\x18\x06 \x01(\x03R\x0ffactPaymentRows\x12\x17\n" +
+	"\acost_ms\x18\a \x01(\x03R\x06costMs\"=\n" +
+	"\fRunDwEtlResp\x12-\n" +
+	"\x04days\x18\x01 \x03(\v2\x19.analytics.DwEtlDayResultR\x04days2\xe2\x06\n" +
 	"\tAnalytics\x12/\n" +
 	"\x04Ping\x12\x12.analytics.PingReq\x1a\x13.analytics.PingResp\x12>\n" +
 	"\tGetReport\x12\x17.analytics.GetReportReq\x1a\x18.analytics.GetReportResp\x12M\n" +
@@ -1418,22 +2139,26 @@ const file_pb_analytics_proto_rawDesc = "" +
 	"\rGetExportTask\x12\x1b.analytics.GetExportTaskReq\x1a\x1c.analytics.GetExportTaskResp\x12M\n" +
 	"\x0eListExportTask\x12\x1c.analytics.ListExportTaskReq\x1a\x1d.analytics.ListExportTaskResp\x12;\n" +
 	"\bRunRecon\x12\x16.analytics.RunReconReq\x1a\x17.analytics.RunReconResp\x12S\n" +
-	"\x10RebuildReadModel\x12\x1e.analytics.RebuildReadModelReq\x1a\x1f.analytics.RebuildReadModelRespB\x06Z\x04./pbb\x06proto3"
+	"\x10RebuildReadModel\x12\x1e.analytics.RebuildReadModelReq\x1a\x1f.analytics.RebuildReadModelResp\x12P\n" +
+	"\x0fListBIWhitelist\x12\x1d.analytics.ListBIWhitelistReq\x1a\x1e.analytics.ListBIWhitelistResp\x12A\n" +
+	"\n" +
+	"RunBIQuery\x12\x18.analytics.RunBIQueryReq\x1a\x19.analytics.RunBIQueryResp\x12;\n" +
+	"\bRunDwEtl\x12\x16.analytics.RunDwEtlReq\x1a\x17.analytics.RunDwEtlRespB\x06Z\x04./pbb\x06proto3"
 
 var (
-	file_pb_analytics_proto_rawDescOnce sync.Once
-	file_pb_analytics_proto_rawDescData []byte
+	file_services_analytics_pb_analytics_proto_rawDescOnce sync.Once
+	file_services_analytics_pb_analytics_proto_rawDescData []byte
 )
 
-func file_pb_analytics_proto_rawDescGZIP() []byte {
-	file_pb_analytics_proto_rawDescOnce.Do(func() {
-		file_pb_analytics_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_pb_analytics_proto_rawDesc), len(file_pb_analytics_proto_rawDesc)))
+func file_services_analytics_pb_analytics_proto_rawDescGZIP() []byte {
+	file_services_analytics_pb_analytics_proto_rawDescOnce.Do(func() {
+		file_services_analytics_pb_analytics_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_services_analytics_pb_analytics_proto_rawDesc), len(file_services_analytics_pb_analytics_proto_rawDesc)))
 	})
-	return file_pb_analytics_proto_rawDescData
+	return file_services_analytics_pb_analytics_proto_rawDescData
 }
 
-var file_pb_analytics_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
-var file_pb_analytics_proto_goTypes = []any{
+var file_services_analytics_pb_analytics_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
+var file_services_analytics_pb_analytics_proto_goTypes = []any{
 	(*PingReq)(nil),              // 0: analytics.PingReq
 	(*PingResp)(nil),             // 1: analytics.PingResp
 	(*GetReportReq)(nil),         // 2: analytics.GetReportReq
@@ -1456,60 +2181,82 @@ var file_pb_analytics_proto_goTypes = []any{
 	(*RunReconResp)(nil),         // 19: analytics.RunReconResp
 	(*RebuildReadModelReq)(nil),  // 20: analytics.RebuildReadModelReq
 	(*RebuildReadModelResp)(nil), // 21: analytics.RebuildReadModelResp
-	nil,                          // 22: analytics.ReportRow.MetricsEntry
+	(*ListBIWhitelistReq)(nil),   // 22: analytics.ListBIWhitelistReq
+	(*BIWhitelistColumn)(nil),    // 23: analytics.BIWhitelistColumn
+	(*BIWhitelistTable)(nil),     // 24: analytics.BIWhitelistTable
+	(*ListBIWhitelistResp)(nil),  // 25: analytics.ListBIWhitelistResp
+	(*BIFilter)(nil),             // 26: analytics.BIFilter
+	(*RunBIQueryReq)(nil),        // 27: analytics.RunBIQueryReq
+	(*BIQueryRow)(nil),           // 28: analytics.BIQueryRow
+	(*RunBIQueryResp)(nil),       // 29: analytics.RunBIQueryResp
+	(*RunDwEtlReq)(nil),          // 30: analytics.RunDwEtlReq
+	(*DwEtlDayResult)(nil),       // 31: analytics.DwEtlDayResult
+	(*RunDwEtlResp)(nil),         // 32: analytics.RunDwEtlResp
+	nil,                          // 33: analytics.ReportRow.MetricsEntry
 }
-var file_pb_analytics_proto_depIdxs = []int32{
-	22, // 0: analytics.ReportRow.metrics:type_name -> analytics.ReportRow.MetricsEntry
+var file_services_analytics_pb_analytics_proto_depIdxs = []int32{
+	33, // 0: analytics.ReportRow.metrics:type_name -> analytics.ReportRow.MetricsEntry
 	3,  // 1: analytics.GetReportResp.rows:type_name -> analytics.ReportRow
 	6,  // 2: analytics.ListMetricDictResp.list:type_name -> analytics.MetricDictItem
 	9,  // 3: analytics.ListWatermarkResp.list:type_name -> analytics.WatermarkItem
 	14, // 4: analytics.GetExportTaskResp.task:type_name -> analytics.ExportTaskItem
 	14, // 5: analytics.ListExportTaskResp.list:type_name -> analytics.ExportTaskItem
-	0,  // 6: analytics.Analytics.Ping:input_type -> analytics.PingReq
-	2,  // 7: analytics.Analytics.GetReport:input_type -> analytics.GetReportReq
-	5,  // 8: analytics.Analytics.ListMetricDict:input_type -> analytics.ListMetricDictReq
-	8,  // 9: analytics.Analytics.ListWatermark:input_type -> analytics.ListWatermarkReq
-	11, // 10: analytics.Analytics.RequestExport:input_type -> analytics.RequestExportReq
-	13, // 11: analytics.Analytics.GetExportTask:input_type -> analytics.GetExportTaskReq
-	16, // 12: analytics.Analytics.ListExportTask:input_type -> analytics.ListExportTaskReq
-	18, // 13: analytics.Analytics.RunRecon:input_type -> analytics.RunReconReq
-	20, // 14: analytics.Analytics.RebuildReadModel:input_type -> analytics.RebuildReadModelReq
-	1,  // 15: analytics.Analytics.Ping:output_type -> analytics.PingResp
-	4,  // 16: analytics.Analytics.GetReport:output_type -> analytics.GetReportResp
-	7,  // 17: analytics.Analytics.ListMetricDict:output_type -> analytics.ListMetricDictResp
-	10, // 18: analytics.Analytics.ListWatermark:output_type -> analytics.ListWatermarkResp
-	12, // 19: analytics.Analytics.RequestExport:output_type -> analytics.RequestExportResp
-	15, // 20: analytics.Analytics.GetExportTask:output_type -> analytics.GetExportTaskResp
-	17, // 21: analytics.Analytics.ListExportTask:output_type -> analytics.ListExportTaskResp
-	19, // 22: analytics.Analytics.RunRecon:output_type -> analytics.RunReconResp
-	21, // 23: analytics.Analytics.RebuildReadModel:output_type -> analytics.RebuildReadModelResp
-	15, // [15:24] is the sub-list for method output_type
-	6,  // [6:15] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	23, // 6: analytics.BIWhitelistTable.columns:type_name -> analytics.BIWhitelistColumn
+	24, // 7: analytics.ListBIWhitelistResp.tables:type_name -> analytics.BIWhitelistTable
+	26, // 8: analytics.RunBIQueryReq.filters:type_name -> analytics.BIFilter
+	28, // 9: analytics.RunBIQueryResp.rows:type_name -> analytics.BIQueryRow
+	31, // 10: analytics.RunDwEtlResp.days:type_name -> analytics.DwEtlDayResult
+	0,  // 11: analytics.Analytics.Ping:input_type -> analytics.PingReq
+	2,  // 12: analytics.Analytics.GetReport:input_type -> analytics.GetReportReq
+	5,  // 13: analytics.Analytics.ListMetricDict:input_type -> analytics.ListMetricDictReq
+	8,  // 14: analytics.Analytics.ListWatermark:input_type -> analytics.ListWatermarkReq
+	11, // 15: analytics.Analytics.RequestExport:input_type -> analytics.RequestExportReq
+	13, // 16: analytics.Analytics.GetExportTask:input_type -> analytics.GetExportTaskReq
+	16, // 17: analytics.Analytics.ListExportTask:input_type -> analytics.ListExportTaskReq
+	18, // 18: analytics.Analytics.RunRecon:input_type -> analytics.RunReconReq
+	20, // 19: analytics.Analytics.RebuildReadModel:input_type -> analytics.RebuildReadModelReq
+	22, // 20: analytics.Analytics.ListBIWhitelist:input_type -> analytics.ListBIWhitelistReq
+	27, // 21: analytics.Analytics.RunBIQuery:input_type -> analytics.RunBIQueryReq
+	30, // 22: analytics.Analytics.RunDwEtl:input_type -> analytics.RunDwEtlReq
+	1,  // 23: analytics.Analytics.Ping:output_type -> analytics.PingResp
+	4,  // 24: analytics.Analytics.GetReport:output_type -> analytics.GetReportResp
+	7,  // 25: analytics.Analytics.ListMetricDict:output_type -> analytics.ListMetricDictResp
+	10, // 26: analytics.Analytics.ListWatermark:output_type -> analytics.ListWatermarkResp
+	12, // 27: analytics.Analytics.RequestExport:output_type -> analytics.RequestExportResp
+	15, // 28: analytics.Analytics.GetExportTask:output_type -> analytics.GetExportTaskResp
+	17, // 29: analytics.Analytics.ListExportTask:output_type -> analytics.ListExportTaskResp
+	19, // 30: analytics.Analytics.RunRecon:output_type -> analytics.RunReconResp
+	21, // 31: analytics.Analytics.RebuildReadModel:output_type -> analytics.RebuildReadModelResp
+	25, // 32: analytics.Analytics.ListBIWhitelist:output_type -> analytics.ListBIWhitelistResp
+	29, // 33: analytics.Analytics.RunBIQuery:output_type -> analytics.RunBIQueryResp
+	32, // 34: analytics.Analytics.RunDwEtl:output_type -> analytics.RunDwEtlResp
+	23, // [23:35] is the sub-list for method output_type
+	11, // [11:23] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
-func init() { file_pb_analytics_proto_init() }
-func file_pb_analytics_proto_init() {
-	if File_pb_analytics_proto != nil {
+func init() { file_services_analytics_pb_analytics_proto_init() }
+func file_services_analytics_pb_analytics_proto_init() {
+	if File_services_analytics_pb_analytics_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pb_analytics_proto_rawDesc), len(file_pb_analytics_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_analytics_pb_analytics_proto_rawDesc), len(file_services_analytics_pb_analytics_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_pb_analytics_proto_goTypes,
-		DependencyIndexes: file_pb_analytics_proto_depIdxs,
-		MessageInfos:      file_pb_analytics_proto_msgTypes,
+		GoTypes:           file_services_analytics_pb_analytics_proto_goTypes,
+		DependencyIndexes: file_services_analytics_pb_analytics_proto_depIdxs,
+		MessageInfos:      file_services_analytics_pb_analytics_proto_msgTypes,
 	}.Build()
-	File_pb_analytics_proto = out.File
-	file_pb_analytics_proto_goTypes = nil
-	file_pb_analytics_proto_depIdxs = nil
+	File_services_analytics_pb_analytics_proto = out.File
+	file_services_analytics_pb_analytics_proto_goTypes = nil
+	file_services_analytics_pb_analytics_proto_depIdxs = nil
 }

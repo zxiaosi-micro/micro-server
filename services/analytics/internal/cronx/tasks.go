@@ -33,4 +33,13 @@ func RegisterAll(sc *svc.ServiceContext) {
 			return nil
 		},
 	})
+	Register(Task{
+		Name:     "dw_etl_daily",
+		Interval: time.Hour,
+		Run: func(ctx context.Context) error {
+			// 数仓日调度（S10-02）：昨日批次缺失即补跑（服务重启自愈；ODKU/IGNORE 幂等）。
+			// K8s CronJob 候选形态（ADR-09 阶段二）：届时 CronJob 调 RunDwEtl RPC，本任务退化为兜底。
+			return logic.RunDwEtlMissing(ctx, sc)
+		},
+	})
 }

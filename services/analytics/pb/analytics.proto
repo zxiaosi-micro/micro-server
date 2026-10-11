@@ -29,6 +29,13 @@ service Analytics {
   rpc RunRecon(RunReconReq) returns (RunReconResp);
   // 读模型全量重建：台账/聚合表清空 + 消费组版本号 +1（重启后新组从头回放）
   rpc RebuildReadModel(RebuildReadModelReq) returns (RebuildReadModelResp);
+
+  // ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+  rpc ListBIWhitelist(ListBIWhitelistReq) returns (ListBIWhitelistResp);
+  rpc RunBIQuery(RunBIQueryReq) returns (RunBIQueryResp);
+
+  // ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+  rpc RunDwEtl(RunDwEtlReq) returns (RunDwEtlResp);
 }
 
 message PingReq {}
@@ -163,4 +170,77 @@ message RebuildReadModelReq {}
 
 message RebuildReadModelResp {
   string rebuild_version = 1; // 递增后的版本号（重启后生效：新消费组从头回放）
+}
+
+// ---------- BI 自助（S10-02） ----------
+
+message ListBIWhitelistReq {}
+
+// BIWhitelistColumn 白名单列元数据（前端据此渲染查询构建器）。
+message BIWhitelistColumn {
+  string column = 1;  // 列名
+  string kind = 2;    // DIM 维度/METRIC 度量/BOTH
+  string aggs = 3;    // 允许聚合（逗号分隔 SUM/COUNT/AVG/MIN/MAX；空=不可聚合）
+  string ops = 4;     // 允许过滤操作符（逗号分隔 EQ/NE/LT/LTE/GT/GTE/LIKE/IN；空=不可过滤）
+  string comment = 5; // 业务口径注释
+}
+
+message BIWhitelistTable {
+  string table = 1;   // 表名（dw_ 前缀）
+  string comment = 2;
+  repeated BIWhitelistColumn columns = 3;
+}
+
+message ListBIWhitelistResp {
+  repeated BIWhitelistTable tables = 1;
+}
+
+// BIFilter 过滤（列/操作符走白名单映射，值一律占位符绑定——参数化防注入）。
+message BIFilter {
+  string column = 1;
+  string op = 2;              // EQ/NE/LT/LTE/GT/GTE/LIKE/IN
+  repeated string values = 3; // IN 多值；其余取首值
+}
+
+message RunBIQueryReq {
+  string table = 1;               // 白名单表
+  repeated string dimensions = 2; // group by 维度（≤8）
+  repeated string metrics = 3;    // 聚合 "AGG:col"（COUNT:* 全表计数；≤8）
+  repeated BIFilter filters = 4;  // ≤10
+  string order_by = 5;            // 维度列或指标别名（agg:col）
+  bool order_desc = 6;
+  int32 page = 7;
+  int32 size = 8;                 // 上限 200
+}
+
+// BIQueryRow 行值（与 columns 一一对应；DECIMAL/时间一律 string 防精度丢失）。
+message BIQueryRow {
+  repeated string values = 1;
+}
+
+message RunBIQueryResp {
+  repeated string columns = 1;
+  repeated BIQueryRow rows = 2;
+  int64 total = 3; // 分组总数（非分组查询恒 1）
+}
+
+// ---------- 数仓 ETL（S10-02） ----------
+
+message RunDwEtlReq {
+  string date_start = 1; // yyyy-MM-dd（含）
+  string date_end = 2;   // 含；空 = 单日 start
+}
+
+message DwEtlDayResult {
+  string etl_date = 1;
+  int64 dim_date_rows = 2;
+  int64 dim_tenant_rows = 3;
+  int64 dim_party_rows = 4;
+  int64 fact_order_rows = 5;
+  int64 fact_payment_rows = 6;
+  int64 cost_ms = 7;
+}
+
+message RunDwEtlResp {
+  repeated DwEtlDayResult days = 1;
 }

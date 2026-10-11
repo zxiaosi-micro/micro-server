@@ -12,6 +12,7 @@ type Models struct {
 	Meta      MetaModel
 	Export    ExportTaskModel
 	Recon     ReconModel
+	Dw        DwModel
 }
 
 func NewModels(conn sqlx.SqlConn) *Models {
@@ -23,5 +24,6 @@ func NewModels(conn sqlx.SqlConn) *Models {
 		Meta:      NewMetaModel(conn),
 		Export:    NewExportTaskModel(conn),
 		Recon:     NewReconModel(conn),
+		Dw:        NewDwModel(conn),
 	}
 }

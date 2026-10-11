@@ -36,6 +36,8 @@ type Config struct {
 		AlipayPublicKey string `json:",optional"` // 支付宝公钥 PEM（回调验签）
 		Gateway         string `json:",default=https://openapi.alipay.com/gateway.do"`
 	} `json:",optional"`
+	// PartyRpc 经销商返利规则源（party.ListParty/GetDealerExt；S10-03，未配置 = 返利结算不可用）。
+	PartyRpc zrpc.RpcClientConf `json:",optional"`
 	// ConfigKey configcenter etcd key（ADR-10）。
 	ConfigKey string `json:",optional"`
 }

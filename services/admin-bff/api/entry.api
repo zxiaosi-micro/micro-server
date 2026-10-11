@@ -1967,6 +1967,70 @@ service AdminBffApi {
 	post /shipments/:no/confirm-signed (ShipmentSignReq) returns (SimpleResp)
 }
 
+// ---- 经销商返利（S10-03） ----
+type RebateRunReq {
+	Period  string `json:"period"` // yyyy-MM
+	PartyId string `json:"party_id,optional"`
+}
+
+type RebateRunResult {
+	PartyId      string `json:"party_id"`
+	Amount       string `json:"amount"`
+	BaseAmount   string `json:"base_amount"`
+	Rate         string `json:"rate"`
+	PaymentCount int64  `json:"payment_count"`
+}
+
+type RebateRunResp {
+	Results []RebateRunResult `json:"results"`
+}
+
+type RebateListReq {
+	Period  string `form:"period,optional"`
+	Status  string `form:"status,optional"`
+	PartyId string `form:"party_id,optional"`
+	Page    int    `form:"page,optional"`
+	Size    int    `form:"size,optional"`
+}
+
+type RebateSettlementItem {
+	SettlementId string `json:"settlement_id"`
+	Period       string `json:"period"`
+	PartyId      string `json:"party_id"`
+	Amount       string `json:"amount"`
+	Status       string `json:"status"`
+	RuleSnapshot string `json:"rule_snapshot"`
+	CreatedAt    int64  `json:"created_at"`
+	UpdatedAt    int64  `json:"updated_at"`
+}
+
+type RebateListResp {
+	List  []RebateSettlementItem `json:"list"`
+	Total int64                  `json:"total"`
+}
+
+type RebateConfirmReq {
+	Id     string `path:"id"`
+	Action string `json:"action"` // CONFIRM/PAID
+	Remark string `json:"remark,optional"`
+}
+
+type RebateReconcileReq {
+	Period string `json:"period"`
+}
+
+type RebateDiffItem {
+	SettlementId     string `json:"settlement_id"`
+	PartyId          string `json:"party_id"`
+	StoredAmount     string `json:"stored_amount"`
+	RecomputedAmount string `json:"recomputed_amount,optional"`
+}
+
+type RebateReconcileResp {
+	DiffCount int64            `json:"diff_count"`
+	Diffs     []RebateDiffItem `json:"diffs"`
+}
+
 // ---- 支付路由 ----
 @server (
 	prefix:     /api/v1
@@ -2017,6 +2081,22 @@ service AdminBffApi {
 	@doc "对账任务处理(仅 REPLAY/IGNORE, perm: finance:reconcile:resolve)"
 	@handler resolveReconcileTask
 	post /reconcile-tasks/:id/resolve (ReconcileResolveReq) returns (SimpleResp)
+
+	@doc "返利月度结算(规则快照可追溯, perm: finance:rebate:settle)"
+	@handler runRebateSettlement
+	post /rebate-settlements/run (RebateRunReq) returns (RebateRunResp)
+
+	@doc "返利结算列表(perm: finance:rebate:list)"
+	@handler listRebateSettlements
+	get /rebate-settlements (RebateListReq) returns (RebateListResp)
+
+	@doc "返利结算确认/打款(PENDING→CONFIRMED→PAID, perm: finance:rebate:confirm)"
+	@handler confirmRebateSettlement
+	post /rebate-settlements/:id/confirm (RebateConfirmReq) returns (SimpleResp)
+
+	@doc "返利月度对账(差异为 0 验收, perm: finance:rebate:list)"
+	@handler reconcileRebate
+	post /rebate-settlements/reconcile (RebateReconcileReq) returns (RebateReconcileResp)
 }
 
 // ---- 合同质保路由 ----
@@ -2516,6 +2596,128 @@ type DeviceStationResp {
 	Role        string `json:"role"`
 }
 
+// ---- 退役评估（S10-01 梯次利用 + 回收） ----
+type RetirementCreateReq {
+	Id                 string `path:"id"`
+	InspectionTicketNo string `json:"inspection_ticket_no,optional"`
+	Remark             string `json:"remark,optional"`
+}
+
+type RetirementCreateResp {
+	AssessmentId string `json:"assessment_id"`
+	AssessmentNo string `json:"assessment_no"`
+	Round        int    `json:"round"`
+}
+
+type RetirementSafetyItem {
+	Item string `json:"item"`
+	Pass bool   `json:"pass"`
+}
+
+type RetirementSubmitReq {
+	Id             string                 `path:"id"`
+	Soh            string                 `json:"soh"`
+	CycleCount     int                    `json:"cycle_count"`
+	ResistanceMohm string                 `json:"resistance_mohm,optional"`
+	ConsistencyOk  bool                   `json:"consistency_ok"`
+	SafetyItems    []RetirementSafetyItem `json:"safety_items,optional"`
+	MeasuredAt     int64                  `json:"measured_at,optional"`
+	Source         string                 `json:"source,optional"`
+}
+
+type RetirementSubmitResp {
+	Grade  string `json:"grade"`
+	Reason string `json:"reason"`
+}
+
+type RetirementDecideReq {
+	Id              string `path:"id"`
+	Target          string `json:"target,optional"` // RESALE/DERATE/RECYCLE（空=按评级默认）
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value,optional"`
+	Remark          string `json:"remark,optional"`
+}
+
+type RetirementDecideResp {
+	Grade        string `json:"grade"`
+	Disposition  string `json:"disposition"`
+	RecycleNo    string `json:"recycle_no,optional"`
+	TraceCode    string `json:"trace_code,optional"`
+	DeviceStatus string `json:"device_status"`
+}
+
+type RetirementItem {
+	AssessmentId       string `json:"assessment_id"`
+	AssessmentNo       string `json:"assessment_no"`
+	DeviceId           string `json:"device_id"`
+	Sn                 string `json:"sn"`
+	Round              int    `json:"round"`
+	Soh                string `json:"soh"`
+	CycleCount         int    `json:"cycle_count"`
+	ResistanceMohm     string `json:"resistance_mohm,optional"`
+	ConsistencyOk      bool   `json:"consistency_ok"`
+	SafetyJson         string `json:"safety_json,optional"`
+	Grade              string `json:"grade,optional"`
+	Disposition        string `json:"disposition"`
+	InspectionTicketNo string `json:"inspection_ticket_no,optional"`
+	Remark             string `json:"remark,optional"`
+	CreatedAt          int64  `json:"created_at"`
+}
+
+type RetirementListReq {
+	Keyword     string `form:"keyword,optional"`
+	Grade       string `form:"grade,optional"`
+	Disposition string `form:"disposition,optional"`
+	Page        int    `form:"page,optional"`
+	Size        int    `form:"size,optional"`
+}
+
+type RetirementListResp {
+	List  []RetirementItem `json:"list"`
+	Total int64            `json:"total"`
+}
+
+type RecycleCreateReq {
+	Id              string `path:"id"`
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value,optional"`
+	EvidenceFileId  string `json:"evidence_file_id,optional"`
+	Remark          string `json:"remark,optional"`
+}
+
+type RecycleCreateResp {
+	RecycleId string `json:"recycle_id"`
+	RecycleNo string `json:"recycle_no"`
+	TraceCode string `json:"trace_code"`
+}
+
+type RecycleItem {
+	RecycleId       string `json:"recycle_id"`
+	RecycleNo       string `json:"recycle_no"`
+	AssessmentId    string `json:"assessment_id"`
+	DeviceId        string `json:"device_id"`
+	Sn              string `json:"sn"`
+	RecyclerPartyId string `json:"recycler_party_id,optional"`
+	ResidualValue   string `json:"residual_value"`
+	TraceCode       string `json:"trace_code"`
+	EvidenceFileId  string `json:"evidence_file_id,optional"`
+	Status          string `json:"status"`
+	Remark          string `json:"remark,optional"`
+	CreatedAt       int64  `json:"created_at"`
+}
+
+type RecycleListReq {
+	Keyword string `form:"keyword,optional"`
+	Status  string `form:"status,optional"`
+	Page    int    `form:"page,optional"`
+	Size    int    `form:"size,optional"`
+}
+
+type RecycleListResp {
+	List  []RecycleItem `json:"list"`
+	Total int64         `json:"total"`
+}
+
 @server (
 	prefix:     /api/v1
 	group:      device
@@ -2589,6 +2791,30 @@ service AdminBffApi {
 	@doc "OTA 任务回滚(perm: asset:ota:rollback)"
 	@handler rollbackOtaTask
 	post /ota-tasks/:id/rollback (OtaTaskRollbackReq) returns (OtaTaskRollbackResp)
+
+	@doc "发起退役评估(复用 ops 检测工单, perm: asset:device:retire)"
+	@handler createRetirementAssessment
+	post /devices/:id/retirement (RetirementCreateReq) returns (RetirementCreateResp)
+
+	@doc "退役检测结果录入(录入即评级 A/B/C, perm: asset:device:retire)"
+	@handler submitRetirementResult
+	post /retirements/:id/result (RetirementSubmitReq) returns (RetirementSubmitResp)
+
+	@doc "退役评级处置(A→二次销售/B→降容备电/C→报废回收, perm: asset:device:retire)"
+	@handler decideRetirement
+	post /retirements/:id/decide (RetirementDecideReq) returns (RetirementDecideResp)
+
+	@doc "退役评估列表(perm: asset:device:retire)"
+	@handler listRetirements
+	get /retirements (RetirementListReq) returns (RetirementListResp)
+
+	@doc "回收单补建(C 级评估漏建补录, perm: asset:device:retire)"
+	@handler createRecycleOrder
+	post /retirements/:id/recycle (RecycleCreateReq) returns (RecycleCreateResp)
+
+	@doc "回收单列表(溯源码留痕, perm: asset:device:retire)"
+	@handler listRecycleOrders
+	get /recycle-orders (RecycleListReq) returns (RecycleListResp)
 }
 
 @server (
@@ -3402,6 +3628,71 @@ type RebuildResp {
 	RebuildVersion string `json:"rebuild_version"`
 }
 
+// ---- BI 自助 + 数仓 ETL（S10-02） ----
+type BIWhitelistColumn {
+	Column  string `json:"column"`
+	Kind    string `json:"kind"` // DIM/METRIC/BOTH
+	Aggs    string `json:"aggs"`
+	Ops     string `json:"ops"`
+	Comment string `json:"comment"`
+}
+
+type BIWhitelistTable {
+	Table   string              `json:"table"`
+	Comment string              `json:"comment"`
+	Columns []BIWhitelistColumn `json:"columns"`
+}
+
+type BIWhitelistResp {
+	Tables []BIWhitelistTable `json:"tables"`
+}
+
+type BIFilterIn {
+	Column string   `json:"column"`
+	Op     string   `json:"op"`
+	Values []string `json:"values"`
+}
+
+type BIRunReq {
+	Table      string       `json:"table"`
+	Dimensions []string     `json:"dimensions,optional"`
+	Metrics    []string     `json:"metrics,optional"`
+	Filters    []BIFilterIn `json:"filters,optional"`
+	OrderBy    string       `json:"order_by,optional"`
+	OrderDesc  bool         `json:"order_desc,optional"`
+	Page       int          `json:"page,optional"`
+	Size       int          `json:"size,optional"`
+}
+
+type BIQueryRow {
+	Values []string `json:"values"`
+}
+
+type BIRunResp {
+	Columns []string     `json:"columns"`
+	Rows    []BIQueryRow `json:"rows"`
+	Total   int64        `json:"total"`
+}
+
+type DwEtlRunReq {
+	DateStart string `json:"date_start"`
+	DateEnd   string `json:"date_end,optional"`
+}
+
+type DwEtlDay {
+	EtlDate         string `json:"etl_date"`
+	DimDateRows     int64  `json:"dim_date_rows"`
+	DimTenantRows   int64  `json:"dim_tenant_rows"`
+	DimPartyRows    int64  `json:"dim_party_rows"`
+	FactOrderRows   int64  `json:"fact_order_rows"`
+	FactPaymentRows int64  `json:"fact_payment_rows"`
+	CostMs          int64  `json:"cost_ms"`
+}
+
+type DwEtlRunResp {
+	Days []DwEtlDay `json:"days"`
+}
+
 @server (
 	prefix:     /api/v1
 	group:      analytics
@@ -3439,5 +3730,17 @@ service AdminBffApi {
 	@doc "导出产物下载(受控流式, perm: analytics:export:list)"
 	@handler downloadExport
 	get /exports/:id/download (ExportDownloadReq) returns (ExportDownloadResp)
+
+	@doc "BI 白名单元数据(查询构建器数据源, perm: analytics:bi:query)"
+	@handler listBIWhitelist
+	get /bi/whitelist returns (BIWhitelistResp)
+
+	@doc "BI 自助查询(白名单引擎, perm: analytics:bi:query)"
+	@handler runBIQuery
+	post /bi/query (BIRunReq) returns (BIRunResp)
+
+	@doc "数仓 ETL 手动触发/补历史(重跑幂等, perm: analytics:recon:run)"
+	@handler runDwEtl
+	post /dw/etl (DwEtlRunReq) returns (DwEtlRunResp)
 }
 

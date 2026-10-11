@@ -51,6 +51,14 @@ service Device {
   rpc GetOtaTask(GetOtaTaskReq) returns (GetOtaTaskResp);
   rpc ListOtaTask(ListOtaTaskReq) returns (ListOtaTaskResp);
   rpc RollbackOtaTask(RollbackOtaTaskReq) returns (RollbackOtaTaskResp);
+
+  // ---- 退役评估（S10-01 梯次利用 + 回收；评级定稿：A 二次销售/B 降容备电/C 报废回收）----
+  rpc CreateRetirementAssessment(CreateRetirementAssessmentReq) returns (CreateRetirementAssessmentResp);
+  rpc SubmitRetirementResult(SubmitRetirementResultReq) returns (SubmitRetirementResultResp);
+  rpc DecideRetirement(DecideRetirementReq) returns (DecideRetirementResp);
+  rpc ListRetirementAssessment(ListRetirementAssessmentReq) returns (ListRetirementAssessmentResp);
+  rpc CreateRecycleOrder(CreateRecycleOrderReq) returns (CreateRecycleOrderResp);
+  rpc ListRecycleOrder(ListRecycleOrderReq) returns (ListRecycleOrderResp);
 }
 
 message PingReq {}
@@ -300,3 +308,124 @@ message RollbackOtaTaskReq {
   string reason = 2;
 }
 message RollbackOtaTaskResp { int64 rolled_back = 1; }
+
+// ---------- 退役评估（S10-01） ----------
+
+message CreateRetirementAssessmentReq {
+  int64 device_id = 1;
+  string inspection_ticket_no = 2; // 检测工单号（复用 ops 体系录入，可空）
+  string remark = 3;
+}
+message CreateRetirementAssessmentResp {
+  int64 assessment_id = 1;
+  string assessment_no = 2;
+  int32 round = 3; // 评估轮次
+}
+
+// SafetyItem 安全检测项（任一不过 → C 级）。
+message SafetyItem {
+  string item = 1; // 过充/短路/绝缘/热失控/…
+  bool pass = 2;
+}
+
+// SubmitRetirementResultReq 检测结果录入（ops 检测工单执行回填；录入即判定 A/B/C）。
+message SubmitRetirementResultReq {
+  int64 assessment_id = 1;
+  string soh = 2;             // DECIMAL 字符串（0~100）
+  int32 cycle_count = 3;      // 循环数
+  string resistance_mohm = 4; // 内阻 mΩ DECIMAL 字符串（可空）
+  bool consistency_ok = 5;    // 一致性达标（压差/温差阈值内）
+  repeated SafetyItem safety_items = 6;
+  int64 measured_at = 7; // 检测时刻 UnixMilli（0=now）
+  string source = 8;     // MANUAL/TELEMETRY/BENCH（默认 MANUAL）
+}
+message SubmitRetirementResultResp {
+  string grade = 1;  // A/B/C 判定结果
+  string reason = 2; // 判定依据
+}
+
+// DecideRetirementReq 评级处置：A→RESALE（RETIRED→IN_STOCK 二次销售，新单新质保）/
+// B→DERATE（降容备电，终态 RETIRED）/ C→RECYCLE（RETIRED→SCRAPPED + 回收单溯源）。
+message DecideRetirementReq {
+  int64 assessment_id = 1;
+  string target = 2;            // RESALE/DERATE/RECYCLE（空=按 grade 默认分支）
+  string recycler_party_id = 3; // RECYCLE 回收商（party RECYCLER，可空）
+  string residual_value = 4;    // RECYCLE 残值 DECIMAL 字符串（可空=0）
+  string remark = 5;
+}
+message DecideRetirementResp {
+  string grade = 1;
+  string disposition = 2;   // RESALE/DERATE/RECYCLED
+  string recycle_no = 3;    // RECYCLE 时返回回收单号
+  string trace_code = 4;    // RECYCLE 时返回监管溯源码
+  string device_status = 5; // 处置后设备状态
+}
+
+message RetirementAssessmentView {
+  int64 assessment_id = 1;
+  string assessment_no = 2;
+  int64 device_id = 3;
+  string sn = 4;
+  int32 round = 5;
+  string soh = 6;
+  int32 cycle_count = 7;
+  string resistance_mohm = 8;
+  bool consistency_ok = 9;
+  string safety_json = 10;
+  string grade = 11;
+  string disposition = 12;
+  string inspection_ticket_no = 13;
+  string remark = 14;
+  int64 created_at = 15;
+}
+
+message ListRetirementAssessmentReq {
+  string keyword = 1;      // 评估单号/SN 模糊
+  string grade = 2;        // A/B/C（空=全部）
+  string disposition = 3;  // 空=全部
+  int32 page = 4;
+  int32 size = 5;
+}
+message ListRetirementAssessmentResp {
+  repeated RetirementAssessmentView list = 1;
+  int64 total = 2;
+}
+
+message CreateRecycleOrderReq {
+  int64 assessment_id = 1;
+  string recycler_party_id = 2; // 回收商（E8 string 传输）
+  string residual_value = 3;    // 残值 DECIMAL 字符串
+  string evidence_file_id = 4;  // 凭证文件（file 服务）
+  string remark = 5;
+}
+message CreateRecycleOrderResp {
+  int64 recycle_id = 1;
+  string recycle_no = 2;
+  string trace_code = 3; // 监管溯源码（全局唯一）
+}
+
+message RecycleOrderView {
+  int64 recycle_id = 1;
+  string recycle_no = 2;
+  int64 assessment_id = 3;
+  int64 device_id = 4;
+  string sn = 5;
+  string recycler_party_id = 6;
+  string residual_value = 7;
+  string trace_code = 8;
+  string evidence_file_id = 9;
+  string status = 10; // CREATED/TRANSFERRED/SETTLED
+  string remark = 11;
+  int64 created_at = 12;
+}
+
+message ListRecycleOrderReq {
+  string keyword = 1; // 回收单号/SN/溯源码 模糊
+  string status = 2;  // 空=全部
+  int32 page = 3;
+  int32 size = 4;
+}
+message ListRecycleOrderResp {
+  repeated RecycleOrderView list = 1;
+  int64 total = 2;
+}

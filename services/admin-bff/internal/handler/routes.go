@@ -37,6 +37,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authz},
 			[]rest.Route{
 				{
+					// BI 自助查询(白名单引擎, perm: analytics:bi:query)
+					Method:  http.MethodPost,
+					Path:    "/bi/query",
+					Handler: analytics.RunBIQueryHandler(serverCtx),
+				},
+				{
+					// BI 白名单元数据(查询构建器数据源, perm: analytics:bi:query)
+					Method:  http.MethodGet,
+					Path:    "/bi/whitelist",
+					Handler: analytics.ListBIWhitelistHandler(serverCtx),
+				},
+				{
+					// 数仓 ETL 手动触发/补历史(重跑幂等, perm: analytics:recon:run)
+					Method:  http.MethodPost,
+					Path:    "/dw/etl",
+					Handler: analytics.RunDwEtlHandler(serverCtx),
+				},
+				{
 					// 发起导出(异步事件管道, perm: analytics:export:create)
 					Method:  http.MethodPost,
 					Path:    "/exports",
@@ -370,6 +388,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: device.ProvisionDeviceHandler(serverCtx),
 				},
 				{
+					// 发起退役评估(复用 ops 检测工单, perm: asset:device:retire)
+					Method:  http.MethodPost,
+					Path:    "/devices/:id/retirement",
+					Handler: device.CreateRetirementAssessmentHandler(serverCtx),
+				},
+				{
 					// 设备影子(最近遥测, perm: asset:device:list)
 					Method:  http.MethodGet,
 					Path:    "/devices/:id/shadow",
@@ -441,6 +465,36 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/ota-tasks/:id/rollback",
 					Handler: device.RollbackOtaTaskHandler(serverCtx),
 				},
+				{
+					// 回收单列表(溯源码留痕, perm: asset:device:retire)
+					Method:  http.MethodGet,
+					Path:    "/recycle-orders",
+					Handler: device.ListRecycleOrdersHandler(serverCtx),
+				},
+				{
+					// 退役评估列表(perm: asset:device:retire)
+					Method:  http.MethodGet,
+					Path:    "/retirements",
+					Handler: device.ListRetirementsHandler(serverCtx),
+				},
+				{
+					// 退役评级处置(A→二次销售/B→降容备电/C→报废回收, perm: asset:device:retire)
+					Method:  http.MethodPost,
+					Path:    "/retirements/:id/decide",
+					Handler: device.DecideRetirementHandler(serverCtx),
+				},
+				{
+					// 回收单补建(C 级评估漏建补录, perm: asset:device:retire)
+					Method:  http.MethodPost,
+					Path:    "/retirements/:id/recycle",
+					Handler: device.CreateRecycleOrderHandler(serverCtx),
+				},
+				{
+					// 退役检测结果录入(录入即评级 A/B/C, perm: asset:device:retire)
+					Method:  http.MethodPost,
+					Path:    "/retirements/:id/result",
+					Handler: device.SubmitRetirementResultHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithPrefix("/api/v1"),
@@ -491,6 +545,30 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/payments/:no/settle",
 					Handler: finance.SettlePaymentHandler(serverCtx),
+				},
+				{
+					// 返利结算列表(perm: finance:rebate:list)
+					Method:  http.MethodGet,
+					Path:    "/rebate-settlements",
+					Handler: finance.ListRebateSettlementsHandler(serverCtx),
+				},
+				{
+					// 返利结算确认/打款(PENDING→CONFIRMED→PAID, perm: finance:rebate:confirm)
+					Method:  http.MethodPost,
+					Path:    "/rebate-settlements/:id/confirm",
+					Handler: finance.ConfirmRebateSettlementHandler(serverCtx),
+				},
+				{
+					// 返利月度对账(差异为 0 验收, perm: finance:rebate:list)
+					Method:  http.MethodPost,
+					Path:    "/rebate-settlements/reconcile",
+					Handler: finance.ReconcileRebateHandler(serverCtx),
+				},
+				{
+					// 返利月度结算(规则快照可追溯, perm: finance:rebate:settle)
+					Method:  http.MethodPost,
+					Path:    "/rebate-settlements/run",
+					Handler: finance.RunRebateSettlementHandler(serverCtx),
 				},
 				{
 					// 对账任务列表(perm: finance:reconcile:list)

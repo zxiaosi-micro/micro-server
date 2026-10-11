@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
+	"micro-server/services/analytics/pb"
 	"micro-server/services/analytics/internal/logic"
 	"micro-server/services/analytics/internal/svc"
-	"micro-server/services/analytics/pb"
 )
 
 type AnalyticsServer struct {
@@ -72,4 +72,21 @@ func (s *AnalyticsServer) RunRecon(ctx context.Context, in *pb.RunReconReq) (*pb
 func (s *AnalyticsServer) RebuildReadModel(ctx context.Context, in *pb.RebuildReadModelReq) (*pb.RebuildReadModelResp, error) {
 	l := logic.NewRebuildReadModelLogic(ctx, s.svcCtx)
 	return l.RebuildReadModel(in)
+}
+
+// ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+func (s *AnalyticsServer) ListBIWhitelist(ctx context.Context, in *pb.ListBIWhitelistReq) (*pb.ListBIWhitelistResp, error) {
+	l := logic.NewListBIWhitelistLogic(ctx, s.svcCtx)
+	return l.ListBIWhitelist(in)
+}
+
+func (s *AnalyticsServer) RunBIQuery(ctx context.Context, in *pb.RunBIQueryReq) (*pb.RunBIQueryResp, error) {
+	l := logic.NewRunBIQueryLogic(ctx, s.svcCtx)
+	return l.RunBIQuery(in)
+}
+
+// ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+func (s *AnalyticsServer) RunDwEtl(ctx context.Context, in *pb.RunDwEtlReq) (*pb.RunDwEtlResp, error) {
+	l := logic.NewRunDwEtlLogic(ctx, s.svcCtx)
+	return l.RunDwEtl(in)
 }

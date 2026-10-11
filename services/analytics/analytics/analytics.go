@@ -14,11 +14,18 @@ import (
 )
 
 type (
+	BIFilter             = pb.BIFilter
+	BIQueryRow           = pb.BIQueryRow
+	BIWhitelistColumn    = pb.BIWhitelistColumn
+	BIWhitelistTable     = pb.BIWhitelistTable
+	DwEtlDayResult       = pb.DwEtlDayResult
 	ExportTaskItem       = pb.ExportTaskItem
 	GetExportTaskReq     = pb.GetExportTaskReq
 	GetExportTaskResp    = pb.GetExportTaskResp
 	GetReportReq         = pb.GetReportReq
 	GetReportResp        = pb.GetReportResp
+	ListBIWhitelistReq   = pb.ListBIWhitelistReq
+	ListBIWhitelistResp  = pb.ListBIWhitelistResp
 	ListExportTaskReq    = pb.ListExportTaskReq
 	ListExportTaskResp   = pb.ListExportTaskResp
 	ListMetricDictReq    = pb.ListMetricDictReq
@@ -33,6 +40,10 @@ type (
 	ReportRow            = pb.ReportRow
 	RequestExportReq     = pb.RequestExportReq
 	RequestExportResp    = pb.RequestExportResp
+	RunBIQueryReq        = pb.RunBIQueryReq
+	RunBIQueryResp       = pb.RunBIQueryResp
+	RunDwEtlReq          = pb.RunDwEtlReq
+	RunDwEtlResp         = pb.RunDwEtlResp
 	RunReconReq          = pb.RunReconReq
 	RunReconResp         = pb.RunReconResp
 	WatermarkItem        = pb.WatermarkItem
@@ -53,6 +64,11 @@ type (
 		RunRecon(ctx context.Context, in *RunReconReq, opts ...grpc.CallOption) (*RunReconResp, error)
 		// 读模型全量重建：台账/聚合表清空 + 消费组版本号 +1（重启后新组从头回放）
 		RebuildReadModel(ctx context.Context, in *RebuildReadModelReq, opts ...grpc.CallOption) (*RebuildReadModelResp, error)
+		// ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+		ListBIWhitelist(ctx context.Context, in *ListBIWhitelistReq, opts ...grpc.CallOption) (*ListBIWhitelistResp, error)
+		RunBIQuery(ctx context.Context, in *RunBIQueryReq, opts ...grpc.CallOption) (*RunBIQueryResp, error)
+		// ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+		RunDwEtl(ctx context.Context, in *RunDwEtlReq, opts ...grpc.CallOption) (*RunDwEtlResp, error)
 	}
 
 	defaultAnalytics struct {
@@ -115,4 +131,21 @@ func (m *defaultAnalytics) RunRecon(ctx context.Context, in *RunReconReq, opts .
 func (m *defaultAnalytics) RebuildReadModel(ctx context.Context, in *RebuildReadModelReq, opts ...grpc.CallOption) (*RebuildReadModelResp, error) {
 	client := pb.NewAnalyticsClient(m.cli.Conn())
 	return client.RebuildReadModel(ctx, in, opts...)
+}
+
+// ---- BI 自助（S10-02：白名单查询引擎，参数化防注入）----
+func (m *defaultAnalytics) ListBIWhitelist(ctx context.Context, in *ListBIWhitelistReq, opts ...grpc.CallOption) (*ListBIWhitelistResp, error) {
+	client := pb.NewAnalyticsClient(m.cli.Conn())
+	return client.ListBIWhitelist(ctx, in, opts...)
+}
+
+func (m *defaultAnalytics) RunBIQuery(ctx context.Context, in *RunBIQueryReq, opts ...grpc.CallOption) (*RunBIQueryResp, error) {
+	client := pb.NewAnalyticsClient(m.cli.Conn())
+	return client.RunBIQuery(ctx, in, opts...)
+}
+
+// ---- 数仓 ETL（S10-02：星型模型日调度，重跑幂等；K8s CronJob 候选 ADR-09，阶段二部署形态）----
+func (m *defaultAnalytics) RunDwEtl(ctx context.Context, in *RunDwEtlReq, opts ...grpc.CallOption) (*RunDwEtlResp, error) {
+	client := pb.NewAnalyticsClient(m.cli.Conn())
+	return client.RunDwEtl(ctx, in, opts...)
 }

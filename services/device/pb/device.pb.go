@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v3.19.4
-// source: pb/device.proto
+// source: services/device/pb/device.proto
 
 package pb
 
@@ -29,7 +29,7 @@ type PingReq struct {
 
 func (x *PingReq) Reset() {
 	*x = PingReq{}
-	mi := &file_pb_device_proto_msgTypes[0]
+	mi := &file_services_device_pb_device_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -41,7 +41,7 @@ func (x *PingReq) String() string {
 func (*PingReq) ProtoMessage() {}
 
 func (x *PingReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[0]
+	mi := &file_services_device_pb_device_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,7 +54,7 @@ func (x *PingReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingReq.ProtoReflect.Descriptor instead.
 func (*PingReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{0}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{0}
 }
 
 type PingResp struct {
@@ -66,7 +66,7 @@ type PingResp struct {
 
 func (x *PingResp) Reset() {
 	*x = PingResp{}
-	mi := &file_pb_device_proto_msgTypes[1]
+	mi := &file_services_device_pb_device_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -78,7 +78,7 @@ func (x *PingResp) String() string {
 func (*PingResp) ProtoMessage() {}
 
 func (x *PingResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[1]
+	mi := &file_services_device_pb_device_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -91,7 +91,7 @@ func (x *PingResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingResp.ProtoReflect.Descriptor instead.
 func (*PingResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{1}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PingResp) GetPong() string {
@@ -113,7 +113,7 @@ type ImportDeviceItem struct {
 
 func (x *ImportDeviceItem) Reset() {
 	*x = ImportDeviceItem{}
-	mi := &file_pb_device_proto_msgTypes[2]
+	mi := &file_services_device_pb_device_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -125,7 +125,7 @@ func (x *ImportDeviceItem) String() string {
 func (*ImportDeviceItem) ProtoMessage() {}
 
 func (x *ImportDeviceItem) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[2]
+	mi := &file_services_device_pb_device_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -138,7 +138,7 @@ func (x *ImportDeviceItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportDeviceItem.ProtoReflect.Descriptor instead.
 func (*ImportDeviceItem) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{2}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ImportDeviceItem) GetSn() string {
@@ -179,7 +179,7 @@ type ImportSNReq struct {
 
 func (x *ImportSNReq) Reset() {
 	*x = ImportSNReq{}
-	mi := &file_pb_device_proto_msgTypes[3]
+	mi := &file_services_device_pb_device_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -191,7 +191,7 @@ func (x *ImportSNReq) String() string {
 func (*ImportSNReq) ProtoMessage() {}
 
 func (x *ImportSNReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[3]
+	mi := &file_services_device_pb_device_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -204,7 +204,7 @@ func (x *ImportSNReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportSNReq.ProtoReflect.Descriptor instead.
 func (*ImportSNReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{3}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ImportSNReq) GetItems() []*ImportDeviceItem {
@@ -231,7 +231,7 @@ type SecretRow struct {
 
 func (x *SecretRow) Reset() {
 	*x = SecretRow{}
-	mi := &file_pb_device_proto_msgTypes[4]
+	mi := &file_services_device_pb_device_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -243,7 +243,7 @@ func (x *SecretRow) String() string {
 func (*SecretRow) ProtoMessage() {}
 
 func (x *SecretRow) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[4]
+	mi := &file_services_device_pb_device_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -256,7 +256,7 @@ func (x *SecretRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecretRow.ProtoReflect.Descriptor instead.
 func (*SecretRow) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{4}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SecretRow) GetSn() string {
@@ -284,7 +284,7 @@ type ImportSNResp struct {
 
 func (x *ImportSNResp) Reset() {
 	*x = ImportSNResp{}
-	mi := &file_pb_device_proto_msgTypes[5]
+	mi := &file_services_device_pb_device_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +296,7 @@ func (x *ImportSNResp) String() string {
 func (*ImportSNResp) ProtoMessage() {}
 
 func (x *ImportSNResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[5]
+	mi := &file_services_device_pb_device_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +309,7 @@ func (x *ImportSNResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportSNResp.ProtoReflect.Descriptor instead.
 func (*ImportSNResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{5}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ImportSNResp) GetImported() int64 {
@@ -342,7 +342,7 @@ type GetDeviceReq struct {
 
 func (x *GetDeviceReq) Reset() {
 	*x = GetDeviceReq{}
-	mi := &file_pb_device_proto_msgTypes[6]
+	mi := &file_services_device_pb_device_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +354,7 @@ func (x *GetDeviceReq) String() string {
 func (*GetDeviceReq) ProtoMessage() {}
 
 func (x *GetDeviceReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[6]
+	mi := &file_services_device_pb_device_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +367,7 @@ func (x *GetDeviceReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceReq.ProtoReflect.Descriptor instead.
 func (*GetDeviceReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{6}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetDeviceReq) GetDeviceId() int64 {
@@ -386,7 +386,7 @@ type GetDeviceBySnReq struct {
 
 func (x *GetDeviceBySnReq) Reset() {
 	*x = GetDeviceBySnReq{}
-	mi := &file_pb_device_proto_msgTypes[7]
+	mi := &file_services_device_pb_device_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +398,7 @@ func (x *GetDeviceBySnReq) String() string {
 func (*GetDeviceBySnReq) ProtoMessage() {}
 
 func (x *GetDeviceBySnReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[7]
+	mi := &file_services_device_pb_device_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +411,7 @@ func (x *GetDeviceBySnReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceBySnReq.ProtoReflect.Descriptor instead.
 func (*GetDeviceBySnReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{7}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetDeviceBySnReq) GetSn() string {
@@ -440,7 +440,7 @@ type DeviceView struct {
 
 func (x *DeviceView) Reset() {
 	*x = DeviceView{}
-	mi := &file_pb_device_proto_msgTypes[8]
+	mi := &file_services_device_pb_device_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -452,7 +452,7 @@ func (x *DeviceView) String() string {
 func (*DeviceView) ProtoMessage() {}
 
 func (x *DeviceView) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[8]
+	mi := &file_services_device_pb_device_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -465,7 +465,7 @@ func (x *DeviceView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceView.ProtoReflect.Descriptor instead.
 func (*DeviceView) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{8}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeviceView) GetDeviceId() int64 {
@@ -554,7 +554,7 @@ type GetDeviceResp struct {
 
 func (x *GetDeviceResp) Reset() {
 	*x = GetDeviceResp{}
-	mi := &file_pb_device_proto_msgTypes[9]
+	mi := &file_services_device_pb_device_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -566,7 +566,7 @@ func (x *GetDeviceResp) String() string {
 func (*GetDeviceResp) ProtoMessage() {}
 
 func (x *GetDeviceResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[9]
+	mi := &file_services_device_pb_device_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +579,7 @@ func (x *GetDeviceResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceResp.ProtoReflect.Descriptor instead.
 func (*GetDeviceResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{9}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetDeviceResp) GetDevice() *DeviceView {
@@ -603,7 +603,7 @@ type ListDeviceReq struct {
 
 func (x *ListDeviceReq) Reset() {
 	*x = ListDeviceReq{}
-	mi := &file_pb_device_proto_msgTypes[10]
+	mi := &file_services_device_pb_device_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -615,7 +615,7 @@ func (x *ListDeviceReq) String() string {
 func (*ListDeviceReq) ProtoMessage() {}
 
 func (x *ListDeviceReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[10]
+	mi := &file_services_device_pb_device_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -628,7 +628,7 @@ func (x *ListDeviceReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceReq.ProtoReflect.Descriptor instead.
 func (*ListDeviceReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{10}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListDeviceReq) GetKeyword() string {
@@ -683,7 +683,7 @@ type ListDeviceResp struct {
 
 func (x *ListDeviceResp) Reset() {
 	*x = ListDeviceResp{}
-	mi := &file_pb_device_proto_msgTypes[11]
+	mi := &file_services_device_pb_device_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +695,7 @@ func (x *ListDeviceResp) String() string {
 func (*ListDeviceResp) ProtoMessage() {}
 
 func (x *ListDeviceResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[11]
+	mi := &file_services_device_pb_device_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -708,7 +708,7 @@ func (x *ListDeviceResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceResp.ProtoReflect.Descriptor instead.
 func (*ListDeviceResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{11}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListDeviceResp) GetList() []*DeviceView {
@@ -734,7 +734,7 @@ type ListByOrderNoReq struct {
 
 func (x *ListByOrderNoReq) Reset() {
 	*x = ListByOrderNoReq{}
-	mi := &file_pb_device_proto_msgTypes[12]
+	mi := &file_services_device_pb_device_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -746,7 +746,7 @@ func (x *ListByOrderNoReq) String() string {
 func (*ListByOrderNoReq) ProtoMessage() {}
 
 func (x *ListByOrderNoReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[12]
+	mi := &file_services_device_pb_device_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -759,7 +759,7 @@ func (x *ListByOrderNoReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListByOrderNoReq.ProtoReflect.Descriptor instead.
 func (*ListByOrderNoReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{12}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListByOrderNoReq) GetOrderNo() string {
@@ -778,7 +778,7 @@ type ListByOrderNoResp struct {
 
 func (x *ListByOrderNoResp) Reset() {
 	*x = ListByOrderNoResp{}
-	mi := &file_pb_device_proto_msgTypes[13]
+	mi := &file_services_device_pb_device_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -790,7 +790,7 @@ func (x *ListByOrderNoResp) String() string {
 func (*ListByOrderNoResp) ProtoMessage() {}
 
 func (x *ListByOrderNoResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[13]
+	mi := &file_services_device_pb_device_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -803,7 +803,7 @@ func (x *ListByOrderNoResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListByOrderNoResp.ProtoReflect.Descriptor instead.
 func (*ListByOrderNoResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{13}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListByOrderNoResp) GetList() []*DeviceView {
@@ -824,7 +824,7 @@ type TransitionReq struct {
 
 func (x *TransitionReq) Reset() {
 	*x = TransitionReq{}
-	mi := &file_pb_device_proto_msgTypes[14]
+	mi := &file_services_device_pb_device_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -836,7 +836,7 @@ func (x *TransitionReq) String() string {
 func (*TransitionReq) ProtoMessage() {}
 
 func (x *TransitionReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[14]
+	mi := &file_services_device_pb_device_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -849,7 +849,7 @@ func (x *TransitionReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransitionReq.ProtoReflect.Descriptor instead.
 func (*TransitionReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{14}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *TransitionReq) GetDeviceId() int64 {
@@ -881,7 +881,7 @@ type TransitionResp struct {
 
 func (x *TransitionResp) Reset() {
 	*x = TransitionResp{}
-	mi := &file_pb_device_proto_msgTypes[15]
+	mi := &file_services_device_pb_device_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -893,7 +893,7 @@ func (x *TransitionResp) String() string {
 func (*TransitionResp) ProtoMessage() {}
 
 func (x *TransitionResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[15]
+	mi := &file_services_device_pb_device_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -906,7 +906,7 @@ func (x *TransitionResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransitionResp.ProtoReflect.Descriptor instead.
 func (*TransitionResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{15}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{15}
 }
 
 type ActivateReq struct {
@@ -920,7 +920,7 @@ type ActivateReq struct {
 
 func (x *ActivateReq) Reset() {
 	*x = ActivateReq{}
-	mi := &file_pb_device_proto_msgTypes[16]
+	mi := &file_services_device_pb_device_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -932,7 +932,7 @@ func (x *ActivateReq) String() string {
 func (*ActivateReq) ProtoMessage() {}
 
 func (x *ActivateReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[16]
+	mi := &file_services_device_pb_device_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -945,7 +945,7 @@ func (x *ActivateReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivateReq.ProtoReflect.Descriptor instead.
 func (*ActivateReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{16}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ActivateReq) GetDeviceId() int64 {
@@ -977,7 +977,7 @@ type ActivateResp struct {
 
 func (x *ActivateResp) Reset() {
 	*x = ActivateResp{}
-	mi := &file_pb_device_proto_msgTypes[17]
+	mi := &file_services_device_pb_device_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -989,7 +989,7 @@ func (x *ActivateResp) String() string {
 func (*ActivateResp) ProtoMessage() {}
 
 func (x *ActivateResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[17]
+	mi := &file_services_device_pb_device_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1002,7 +1002,7 @@ func (x *ActivateResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivateResp.ProtoReflect.Descriptor instead.
 func (*ActivateResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{17}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{17}
 }
 
 type ProvisionCredentialReq struct {
@@ -1014,7 +1014,7 @@ type ProvisionCredentialReq struct {
 
 func (x *ProvisionCredentialReq) Reset() {
 	*x = ProvisionCredentialReq{}
-	mi := &file_pb_device_proto_msgTypes[18]
+	mi := &file_services_device_pb_device_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1026,7 +1026,7 @@ func (x *ProvisionCredentialReq) String() string {
 func (*ProvisionCredentialReq) ProtoMessage() {}
 
 func (x *ProvisionCredentialReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[18]
+	mi := &file_services_device_pb_device_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1039,7 +1039,7 @@ func (x *ProvisionCredentialReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProvisionCredentialReq.ProtoReflect.Descriptor instead.
 func (*ProvisionCredentialReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{18}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ProvisionCredentialReq) GetSn() string {
@@ -1058,7 +1058,7 @@ type ProvisionCredentialResp struct {
 
 func (x *ProvisionCredentialResp) Reset() {
 	*x = ProvisionCredentialResp{}
-	mi := &file_pb_device_proto_msgTypes[19]
+	mi := &file_services_device_pb_device_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1070,7 +1070,7 @@ func (x *ProvisionCredentialResp) String() string {
 func (*ProvisionCredentialResp) ProtoMessage() {}
 
 func (x *ProvisionCredentialResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[19]
+	mi := &file_services_device_pb_device_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1083,7 +1083,7 @@ func (x *ProvisionCredentialResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProvisionCredentialResp.ProtoReflect.Descriptor instead.
 func (*ProvisionCredentialResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{19}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ProvisionCredentialResp) GetSecret() string {
@@ -1102,7 +1102,7 @@ type GetDeviceShadowReq struct {
 
 func (x *GetDeviceShadowReq) Reset() {
 	*x = GetDeviceShadowReq{}
-	mi := &file_pb_device_proto_msgTypes[20]
+	mi := &file_services_device_pb_device_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1114,7 +1114,7 @@ func (x *GetDeviceShadowReq) String() string {
 func (*GetDeviceShadowReq) ProtoMessage() {}
 
 func (x *GetDeviceShadowReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[20]
+	mi := &file_services_device_pb_device_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1127,7 +1127,7 @@ func (x *GetDeviceShadowReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceShadowReq.ProtoReflect.Descriptor instead.
 func (*GetDeviceShadowReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{20}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *GetDeviceShadowReq) GetSn() string {
@@ -1147,7 +1147,7 @@ type ShadowMetric struct {
 
 func (x *ShadowMetric) Reset() {
 	*x = ShadowMetric{}
-	mi := &file_pb_device_proto_msgTypes[21]
+	mi := &file_services_device_pb_device_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1159,7 +1159,7 @@ func (x *ShadowMetric) String() string {
 func (*ShadowMetric) ProtoMessage() {}
 
 func (x *ShadowMetric) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[21]
+	mi := &file_services_device_pb_device_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1172,7 +1172,7 @@ func (x *ShadowMetric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShadowMetric.ProtoReflect.Descriptor instead.
 func (*ShadowMetric) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{21}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ShadowMetric) GetKey() string {
@@ -1201,7 +1201,7 @@ type GetDeviceShadowResp struct {
 
 func (x *GetDeviceShadowResp) Reset() {
 	*x = GetDeviceShadowResp{}
-	mi := &file_pb_device_proto_msgTypes[22]
+	mi := &file_services_device_pb_device_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1213,7 +1213,7 @@ func (x *GetDeviceShadowResp) String() string {
 func (*GetDeviceShadowResp) ProtoMessage() {}
 
 func (x *GetDeviceShadowResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[22]
+	mi := &file_services_device_pb_device_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1226,7 +1226,7 @@ func (x *GetDeviceShadowResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceShadowResp.ProtoReflect.Descriptor instead.
 func (*GetDeviceShadowResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{22}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetDeviceShadowResp) GetSn() string {
@@ -1270,7 +1270,7 @@ type SendCommandReq struct {
 
 func (x *SendCommandReq) Reset() {
 	*x = SendCommandReq{}
-	mi := &file_pb_device_proto_msgTypes[23]
+	mi := &file_services_device_pb_device_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1282,7 +1282,7 @@ func (x *SendCommandReq) String() string {
 func (*SendCommandReq) ProtoMessage() {}
 
 func (x *SendCommandReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[23]
+	mi := &file_services_device_pb_device_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1295,7 +1295,7 @@ func (x *SendCommandReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendCommandReq.ProtoReflect.Descriptor instead.
 func (*SendCommandReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{23}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SendCommandReq) GetDeviceId() int64 {
@@ -1342,7 +1342,7 @@ type SendCommandResp struct {
 
 func (x *SendCommandResp) Reset() {
 	*x = SendCommandResp{}
-	mi := &file_pb_device_proto_msgTypes[24]
+	mi := &file_services_device_pb_device_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1354,7 +1354,7 @@ func (x *SendCommandResp) String() string {
 func (*SendCommandResp) ProtoMessage() {}
 
 func (x *SendCommandResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[24]
+	mi := &file_services_device_pb_device_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1367,7 +1367,7 @@ func (x *SendCommandResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendCommandResp.ProtoReflect.Descriptor instead.
 func (*SendCommandResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{24}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SendCommandResp) GetCmdId() int64 {
@@ -1396,7 +1396,7 @@ type CmdView struct {
 
 func (x *CmdView) Reset() {
 	*x = CmdView{}
-	mi := &file_pb_device_proto_msgTypes[25]
+	mi := &file_services_device_pb_device_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1408,7 +1408,7 @@ func (x *CmdView) String() string {
 func (*CmdView) ProtoMessage() {}
 
 func (x *CmdView) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[25]
+	mi := &file_services_device_pb_device_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1421,7 +1421,7 @@ func (x *CmdView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CmdView.ProtoReflect.Descriptor instead.
 func (*CmdView) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{25}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *CmdView) GetCmdId() int64 {
@@ -1514,7 +1514,7 @@ type ListCmdReq struct {
 
 func (x *ListCmdReq) Reset() {
 	*x = ListCmdReq{}
-	mi := &file_pb_device_proto_msgTypes[26]
+	mi := &file_services_device_pb_device_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1526,7 +1526,7 @@ func (x *ListCmdReq) String() string {
 func (*ListCmdReq) ProtoMessage() {}
 
 func (x *ListCmdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[26]
+	mi := &file_services_device_pb_device_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1539,7 +1539,7 @@ func (x *ListCmdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCmdReq.ProtoReflect.Descriptor instead.
 func (*ListCmdReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{26}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListCmdReq) GetDeviceId() int64 {
@@ -1587,7 +1587,7 @@ type ListCmdResp struct {
 
 func (x *ListCmdResp) Reset() {
 	*x = ListCmdResp{}
-	mi := &file_pb_device_proto_msgTypes[27]
+	mi := &file_services_device_pb_device_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1599,7 +1599,7 @@ func (x *ListCmdResp) String() string {
 func (*ListCmdResp) ProtoMessage() {}
 
 func (x *ListCmdResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[27]
+	mi := &file_services_device_pb_device_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1612,7 +1612,7 @@ func (x *ListCmdResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCmdResp.ProtoReflect.Descriptor instead.
 func (*ListCmdResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{27}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListCmdResp) GetList() []*CmdView {
@@ -1642,7 +1642,7 @@ type TopologyNode struct {
 
 func (x *TopologyNode) Reset() {
 	*x = TopologyNode{}
-	mi := &file_pb_device_proto_msgTypes[28]
+	mi := &file_services_device_pb_device_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1654,7 +1654,7 @@ func (x *TopologyNode) String() string {
 func (*TopologyNode) ProtoMessage() {}
 
 func (x *TopologyNode) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[28]
+	mi := &file_services_device_pb_device_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1667,7 +1667,7 @@ func (x *TopologyNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyNode.ProtoReflect.Descriptor instead.
 func (*TopologyNode) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{28}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *TopologyNode) GetNodeId() int64 {
@@ -1714,7 +1714,7 @@ type GetDeviceTopologyReq struct {
 
 func (x *GetDeviceTopologyReq) Reset() {
 	*x = GetDeviceTopologyReq{}
-	mi := &file_pb_device_proto_msgTypes[29]
+	mi := &file_services_device_pb_device_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1726,7 +1726,7 @@ func (x *GetDeviceTopologyReq) String() string {
 func (*GetDeviceTopologyReq) ProtoMessage() {}
 
 func (x *GetDeviceTopologyReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[29]
+	mi := &file_services_device_pb_device_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1739,7 +1739,7 @@ func (x *GetDeviceTopologyReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceTopologyReq.ProtoReflect.Descriptor instead.
 func (*GetDeviceTopologyReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{29}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetDeviceTopologyReq) GetDeviceId() int64 {
@@ -1758,7 +1758,7 @@ type GetDeviceTopologyResp struct {
 
 func (x *GetDeviceTopologyResp) Reset() {
 	*x = GetDeviceTopologyResp{}
-	mi := &file_pb_device_proto_msgTypes[30]
+	mi := &file_services_device_pb_device_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1770,7 +1770,7 @@ func (x *GetDeviceTopologyResp) String() string {
 func (*GetDeviceTopologyResp) ProtoMessage() {}
 
 func (x *GetDeviceTopologyResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[30]
+	mi := &file_services_device_pb_device_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1783,7 +1783,7 @@ func (x *GetDeviceTopologyResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceTopologyResp.ProtoReflect.Descriptor instead.
 func (*GetDeviceTopologyResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{30}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetDeviceTopologyResp) GetNodes() []*TopologyNode {
@@ -1805,7 +1805,7 @@ type SaveTopologyNode struct {
 
 func (x *SaveTopologyNode) Reset() {
 	*x = SaveTopologyNode{}
-	mi := &file_pb_device_proto_msgTypes[31]
+	mi := &file_services_device_pb_device_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1817,7 +1817,7 @@ func (x *SaveTopologyNode) String() string {
 func (*SaveTopologyNode) ProtoMessage() {}
 
 func (x *SaveTopologyNode) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[31]
+	mi := &file_services_device_pb_device_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1830,7 +1830,7 @@ func (x *SaveTopologyNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveTopologyNode.ProtoReflect.Descriptor instead.
 func (*SaveTopologyNode) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{31}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *SaveTopologyNode) GetParentRef() int64 {
@@ -1871,7 +1871,7 @@ type SaveDeviceTopologyReq struct {
 
 func (x *SaveDeviceTopologyReq) Reset() {
 	*x = SaveDeviceTopologyReq{}
-	mi := &file_pb_device_proto_msgTypes[32]
+	mi := &file_services_device_pb_device_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1883,7 +1883,7 @@ func (x *SaveDeviceTopologyReq) String() string {
 func (*SaveDeviceTopologyReq) ProtoMessage() {}
 
 func (x *SaveDeviceTopologyReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[32]
+	mi := &file_services_device_pb_device_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1896,7 +1896,7 @@ func (x *SaveDeviceTopologyReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveDeviceTopologyReq.ProtoReflect.Descriptor instead.
 func (*SaveDeviceTopologyReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{32}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *SaveDeviceTopologyReq) GetDeviceId() int64 {
@@ -1921,7 +1921,7 @@ type SaveDeviceTopologyResp struct {
 
 func (x *SaveDeviceTopologyResp) Reset() {
 	*x = SaveDeviceTopologyResp{}
-	mi := &file_pb_device_proto_msgTypes[33]
+	mi := &file_services_device_pb_device_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1933,7 +1933,7 @@ func (x *SaveDeviceTopologyResp) String() string {
 func (*SaveDeviceTopologyResp) ProtoMessage() {}
 
 func (x *SaveDeviceTopologyResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[33]
+	mi := &file_services_device_pb_device_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1946,7 +1946,7 @@ func (x *SaveDeviceTopologyResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveDeviceTopologyResp.ProtoReflect.Descriptor instead.
 func (*SaveDeviceTopologyResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{33}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{33}
 }
 
 type SaveFirmwareReq struct {
@@ -1964,7 +1964,7 @@ type SaveFirmwareReq struct {
 
 func (x *SaveFirmwareReq) Reset() {
 	*x = SaveFirmwareReq{}
-	mi := &file_pb_device_proto_msgTypes[34]
+	mi := &file_services_device_pb_device_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1976,7 +1976,7 @@ func (x *SaveFirmwareReq) String() string {
 func (*SaveFirmwareReq) ProtoMessage() {}
 
 func (x *SaveFirmwareReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[34]
+	mi := &file_services_device_pb_device_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1989,7 +1989,7 @@ func (x *SaveFirmwareReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveFirmwareReq.ProtoReflect.Descriptor instead.
 func (*SaveFirmwareReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{34}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SaveFirmwareReq) GetProductKey() string {
@@ -2050,7 +2050,7 @@ type SaveFirmwareResp struct {
 
 func (x *SaveFirmwareResp) Reset() {
 	*x = SaveFirmwareResp{}
-	mi := &file_pb_device_proto_msgTypes[35]
+	mi := &file_services_device_pb_device_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2062,7 +2062,7 @@ func (x *SaveFirmwareResp) String() string {
 func (*SaveFirmwareResp) ProtoMessage() {}
 
 func (x *SaveFirmwareResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[35]
+	mi := &file_services_device_pb_device_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2075,7 +2075,7 @@ func (x *SaveFirmwareResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveFirmwareResp.ProtoReflect.Descriptor instead.
 func (*SaveFirmwareResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{35}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *SaveFirmwareResp) GetFirmwareId() int64 {
@@ -2102,7 +2102,7 @@ type FirmwareView struct {
 
 func (x *FirmwareView) Reset() {
 	*x = FirmwareView{}
-	mi := &file_pb_device_proto_msgTypes[36]
+	mi := &file_services_device_pb_device_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2114,7 +2114,7 @@ func (x *FirmwareView) String() string {
 func (*FirmwareView) ProtoMessage() {}
 
 func (x *FirmwareView) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[36]
+	mi := &file_services_device_pb_device_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2127,7 +2127,7 @@ func (x *FirmwareView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirmwareView.ProtoReflect.Descriptor instead.
 func (*FirmwareView) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{36}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *FirmwareView) GetFirmwareId() int64 {
@@ -2204,7 +2204,7 @@ type ListFirmwareReq struct {
 
 func (x *ListFirmwareReq) Reset() {
 	*x = ListFirmwareReq{}
-	mi := &file_pb_device_proto_msgTypes[37]
+	mi := &file_services_device_pb_device_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2216,7 +2216,7 @@ func (x *ListFirmwareReq) String() string {
 func (*ListFirmwareReq) ProtoMessage() {}
 
 func (x *ListFirmwareReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[37]
+	mi := &file_services_device_pb_device_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2229,7 +2229,7 @@ func (x *ListFirmwareReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFirmwareReq.ProtoReflect.Descriptor instead.
 func (*ListFirmwareReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{37}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ListFirmwareReq) GetProductKey() string {
@@ -2263,7 +2263,7 @@ type ListFirmwareResp struct {
 
 func (x *ListFirmwareResp) Reset() {
 	*x = ListFirmwareResp{}
-	mi := &file_pb_device_proto_msgTypes[38]
+	mi := &file_services_device_pb_device_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2275,7 +2275,7 @@ func (x *ListFirmwareResp) String() string {
 func (*ListFirmwareResp) ProtoMessage() {}
 
 func (x *ListFirmwareResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[38]
+	mi := &file_services_device_pb_device_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2288,7 +2288,7 @@ func (x *ListFirmwareResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFirmwareResp.ProtoReflect.Descriptor instead.
 func (*ListFirmwareResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{38}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ListFirmwareResp) GetList() []*FirmwareView {
@@ -2319,7 +2319,7 @@ type CreateOtaTaskReq struct {
 
 func (x *CreateOtaTaskReq) Reset() {
 	*x = CreateOtaTaskReq{}
-	mi := &file_pb_device_proto_msgTypes[39]
+	mi := &file_services_device_pb_device_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2331,7 +2331,7 @@ func (x *CreateOtaTaskReq) String() string {
 func (*CreateOtaTaskReq) ProtoMessage() {}
 
 func (x *CreateOtaTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[39]
+	mi := &file_services_device_pb_device_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2344,7 +2344,7 @@ func (x *CreateOtaTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOtaTaskReq.ProtoReflect.Descriptor instead.
 func (*CreateOtaTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{39}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CreateOtaTaskReq) GetName() string {
@@ -2398,7 +2398,7 @@ type CreateOtaTaskResp struct {
 
 func (x *CreateOtaTaskResp) Reset() {
 	*x = CreateOtaTaskResp{}
-	mi := &file_pb_device_proto_msgTypes[40]
+	mi := &file_services_device_pb_device_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2410,7 +2410,7 @@ func (x *CreateOtaTaskResp) String() string {
 func (*CreateOtaTaskResp) ProtoMessage() {}
 
 func (x *CreateOtaTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[40]
+	mi := &file_services_device_pb_device_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2423,7 +2423,7 @@ func (x *CreateOtaTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateOtaTaskResp.ProtoReflect.Descriptor instead.
 func (*CreateOtaTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{40}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CreateOtaTaskResp) GetTaskId() int64 {
@@ -2450,7 +2450,7 @@ type OtaDeviceView struct {
 
 func (x *OtaDeviceView) Reset() {
 	*x = OtaDeviceView{}
-	mi := &file_pb_device_proto_msgTypes[41]
+	mi := &file_services_device_pb_device_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2462,7 +2462,7 @@ func (x *OtaDeviceView) String() string {
 func (*OtaDeviceView) ProtoMessage() {}
 
 func (x *OtaDeviceView) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[41]
+	mi := &file_services_device_pb_device_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2475,7 +2475,7 @@ func (x *OtaDeviceView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtaDeviceView.ProtoReflect.Descriptor instead.
 func (*OtaDeviceView) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{41}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *OtaDeviceView) GetId() int64 {
@@ -2563,7 +2563,7 @@ type OtaTaskView struct {
 
 func (x *OtaTaskView) Reset() {
 	*x = OtaTaskView{}
-	mi := &file_pb_device_proto_msgTypes[42]
+	mi := &file_services_device_pb_device_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2575,7 +2575,7 @@ func (x *OtaTaskView) String() string {
 func (*OtaTaskView) ProtoMessage() {}
 
 func (x *OtaTaskView) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[42]
+	mi := &file_services_device_pb_device_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2588,7 +2588,7 @@ func (x *OtaTaskView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtaTaskView.ProtoReflect.Descriptor instead.
 func (*OtaTaskView) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{42}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *OtaTaskView) GetTaskId() int64 {
@@ -2699,7 +2699,7 @@ type GetOtaTaskReq struct {
 
 func (x *GetOtaTaskReq) Reset() {
 	*x = GetOtaTaskReq{}
-	mi := &file_pb_device_proto_msgTypes[43]
+	mi := &file_services_device_pb_device_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2711,7 +2711,7 @@ func (x *GetOtaTaskReq) String() string {
 func (*GetOtaTaskReq) ProtoMessage() {}
 
 func (x *GetOtaTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[43]
+	mi := &file_services_device_pb_device_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2724,7 +2724,7 @@ func (x *GetOtaTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOtaTaskReq.ProtoReflect.Descriptor instead.
 func (*GetOtaTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{43}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *GetOtaTaskReq) GetTaskId() int64 {
@@ -2751,7 +2751,7 @@ type GetOtaTaskResp struct {
 
 func (x *GetOtaTaskResp) Reset() {
 	*x = GetOtaTaskResp{}
-	mi := &file_pb_device_proto_msgTypes[44]
+	mi := &file_services_device_pb_device_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2763,7 +2763,7 @@ func (x *GetOtaTaskResp) String() string {
 func (*GetOtaTaskResp) ProtoMessage() {}
 
 func (x *GetOtaTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[44]
+	mi := &file_services_device_pb_device_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2776,7 +2776,7 @@ func (x *GetOtaTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOtaTaskResp.ProtoReflect.Descriptor instead.
 func (*GetOtaTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{44}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *GetOtaTaskResp) GetTask() *OtaTaskView {
@@ -2805,7 +2805,7 @@ type ListOtaTaskReq struct {
 
 func (x *ListOtaTaskReq) Reset() {
 	*x = ListOtaTaskReq{}
-	mi := &file_pb_device_proto_msgTypes[45]
+	mi := &file_services_device_pb_device_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2817,7 +2817,7 @@ func (x *ListOtaTaskReq) String() string {
 func (*ListOtaTaskReq) ProtoMessage() {}
 
 func (x *ListOtaTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[45]
+	mi := &file_services_device_pb_device_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2830,7 +2830,7 @@ func (x *ListOtaTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOtaTaskReq.ProtoReflect.Descriptor instead.
 func (*ListOtaTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{45}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ListOtaTaskReq) GetStatus() string {
@@ -2871,7 +2871,7 @@ type ListOtaTaskResp struct {
 
 func (x *ListOtaTaskResp) Reset() {
 	*x = ListOtaTaskResp{}
-	mi := &file_pb_device_proto_msgTypes[46]
+	mi := &file_services_device_pb_device_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2883,7 +2883,7 @@ func (x *ListOtaTaskResp) String() string {
 func (*ListOtaTaskResp) ProtoMessage() {}
 
 func (x *ListOtaTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[46]
+	mi := &file_services_device_pb_device_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2896,7 +2896,7 @@ func (x *ListOtaTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOtaTaskResp.ProtoReflect.Descriptor instead.
 func (*ListOtaTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{46}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ListOtaTaskResp) GetList() []*OtaTaskView {
@@ -2923,7 +2923,7 @@ type RollbackOtaTaskReq struct {
 
 func (x *RollbackOtaTaskReq) Reset() {
 	*x = RollbackOtaTaskReq{}
-	mi := &file_pb_device_proto_msgTypes[47]
+	mi := &file_services_device_pb_device_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2935,7 +2935,7 @@ func (x *RollbackOtaTaskReq) String() string {
 func (*RollbackOtaTaskReq) ProtoMessage() {}
 
 func (x *RollbackOtaTaskReq) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[47]
+	mi := &file_services_device_pb_device_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2948,7 +2948,7 @@ func (x *RollbackOtaTaskReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackOtaTaskReq.ProtoReflect.Descriptor instead.
 func (*RollbackOtaTaskReq) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{47}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *RollbackOtaTaskReq) GetTaskId() int64 {
@@ -2974,7 +2974,7 @@ type RollbackOtaTaskResp struct {
 
 func (x *RollbackOtaTaskResp) Reset() {
 	*x = RollbackOtaTaskResp{}
-	mi := &file_pb_device_proto_msgTypes[48]
+	mi := &file_services_device_pb_device_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2986,7 +2986,7 @@ func (x *RollbackOtaTaskResp) String() string {
 func (*RollbackOtaTaskResp) ProtoMessage() {}
 
 func (x *RollbackOtaTaskResp) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_device_proto_msgTypes[48]
+	mi := &file_services_device_pb_device_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2999,7 +2999,7 @@ func (x *RollbackOtaTaskResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackOtaTaskResp.ProtoReflect.Descriptor instead.
 func (*RollbackOtaTaskResp) Descriptor() ([]byte, []int) {
-	return file_pb_device_proto_rawDescGZIP(), []int{48}
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *RollbackOtaTaskResp) GetRolledBack() int64 {
@@ -3009,11 +3009,1163 @@ func (x *RollbackOtaTaskResp) GetRolledBack() int64 {
 	return 0
 }
 
-var File_pb_device_proto protoreflect.FileDescriptor
+type CreateRetirementAssessmentReq struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	DeviceId           int64                  `protobuf:"varint,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	InspectionTicketNo string                 `protobuf:"bytes,2,opt,name=inspection_ticket_no,json=inspectionTicketNo,proto3" json:"inspection_ticket_no,omitempty"` // 检测工单号（复用 ops 体系录入，可空）
+	Remark             string                 `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
 
-const file_pb_device_proto_rawDesc = "" +
+func (x *CreateRetirementAssessmentReq) Reset() {
+	*x = CreateRetirementAssessmentReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRetirementAssessmentReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRetirementAssessmentReq) ProtoMessage() {}
+
+func (x *CreateRetirementAssessmentReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRetirementAssessmentReq.ProtoReflect.Descriptor instead.
+func (*CreateRetirementAssessmentReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *CreateRetirementAssessmentReq) GetDeviceId() int64 {
+	if x != nil {
+		return x.DeviceId
+	}
+	return 0
+}
+
+func (x *CreateRetirementAssessmentReq) GetInspectionTicketNo() string {
+	if x != nil {
+		return x.InspectionTicketNo
+	}
+	return ""
+}
+
+func (x *CreateRetirementAssessmentReq) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+type CreateRetirementAssessmentResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AssessmentId  int64                  `protobuf:"varint,1,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	AssessmentNo  string                 `protobuf:"bytes,2,opt,name=assessment_no,json=assessmentNo,proto3" json:"assessment_no,omitempty"`
+	Round         int32                  `protobuf:"varint,3,opt,name=round,proto3" json:"round,omitempty"` // 评估轮次
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRetirementAssessmentResp) Reset() {
+	*x = CreateRetirementAssessmentResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRetirementAssessmentResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRetirementAssessmentResp) ProtoMessage() {}
+
+func (x *CreateRetirementAssessmentResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRetirementAssessmentResp.ProtoReflect.Descriptor instead.
+func (*CreateRetirementAssessmentResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *CreateRetirementAssessmentResp) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *CreateRetirementAssessmentResp) GetAssessmentNo() string {
+	if x != nil {
+		return x.AssessmentNo
+	}
+	return ""
+}
+
+func (x *CreateRetirementAssessmentResp) GetRound() int32 {
+	if x != nil {
+		return x.Round
+	}
+	return 0
+}
+
+// SafetyItem 安全检测项（任一不过 → C 级）。
+type SafetyItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Item          string                 `protobuf:"bytes,1,opt,name=item,proto3" json:"item,omitempty"` // 过充/短路/绝缘/热失控/…
+	Pass          bool                   `protobuf:"varint,2,opt,name=pass,proto3" json:"pass,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SafetyItem) Reset() {
+	*x = SafetyItem{}
+	mi := &file_services_device_pb_device_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SafetyItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SafetyItem) ProtoMessage() {}
+
+func (x *SafetyItem) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SafetyItem.ProtoReflect.Descriptor instead.
+func (*SafetyItem) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *SafetyItem) GetItem() string {
+	if x != nil {
+		return x.Item
+	}
+	return ""
+}
+
+func (x *SafetyItem) GetPass() bool {
+	if x != nil {
+		return x.Pass
+	}
+	return false
+}
+
+// SubmitRetirementResultReq 检测结果录入（ops 检测工单执行回填；录入即判定 A/B/C）。
+type SubmitRetirementResultReq struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AssessmentId   int64                  `protobuf:"varint,1,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	Soh            string                 `protobuf:"bytes,2,opt,name=soh,proto3" json:"soh,omitempty"`                                             // DECIMAL 字符串（0~100）
+	CycleCount     int32                  `protobuf:"varint,3,opt,name=cycle_count,json=cycleCount,proto3" json:"cycle_count,omitempty"`            // 循环数
+	ResistanceMohm string                 `protobuf:"bytes,4,opt,name=resistance_mohm,json=resistanceMohm,proto3" json:"resistance_mohm,omitempty"` // 内阻 mΩ DECIMAL 字符串（可空）
+	ConsistencyOk  bool                   `protobuf:"varint,5,opt,name=consistency_ok,json=consistencyOk,proto3" json:"consistency_ok,omitempty"`   // 一致性达标（压差/温差阈值内）
+	SafetyItems    []*SafetyItem          `protobuf:"bytes,6,rep,name=safety_items,json=safetyItems,proto3" json:"safety_items,omitempty"`
+	MeasuredAt     int64                  `protobuf:"varint,7,opt,name=measured_at,json=measuredAt,proto3" json:"measured_at,omitempty"` // 检测时刻 UnixMilli（0=now）
+	Source         string                 `protobuf:"bytes,8,opt,name=source,proto3" json:"source,omitempty"`                            // MANUAL/TELEMETRY/BENCH（默认 MANUAL）
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SubmitRetirementResultReq) Reset() {
+	*x = SubmitRetirementResultReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitRetirementResultReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitRetirementResultReq) ProtoMessage() {}
+
+func (x *SubmitRetirementResultReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitRetirementResultReq.ProtoReflect.Descriptor instead.
+func (*SubmitRetirementResultReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *SubmitRetirementResultReq) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *SubmitRetirementResultReq) GetSoh() string {
+	if x != nil {
+		return x.Soh
+	}
+	return ""
+}
+
+func (x *SubmitRetirementResultReq) GetCycleCount() int32 {
+	if x != nil {
+		return x.CycleCount
+	}
+	return 0
+}
+
+func (x *SubmitRetirementResultReq) GetResistanceMohm() string {
+	if x != nil {
+		return x.ResistanceMohm
+	}
+	return ""
+}
+
+func (x *SubmitRetirementResultReq) GetConsistencyOk() bool {
+	if x != nil {
+		return x.ConsistencyOk
+	}
+	return false
+}
+
+func (x *SubmitRetirementResultReq) GetSafetyItems() []*SafetyItem {
+	if x != nil {
+		return x.SafetyItems
+	}
+	return nil
+}
+
+func (x *SubmitRetirementResultReq) GetMeasuredAt() int64 {
+	if x != nil {
+		return x.MeasuredAt
+	}
+	return 0
+}
+
+func (x *SubmitRetirementResultReq) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+type SubmitRetirementResultResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Grade         string                 `protobuf:"bytes,1,opt,name=grade,proto3" json:"grade,omitempty"`   // A/B/C 判定结果
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"` // 判定依据
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitRetirementResultResp) Reset() {
+	*x = SubmitRetirementResultResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitRetirementResultResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitRetirementResultResp) ProtoMessage() {}
+
+func (x *SubmitRetirementResultResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitRetirementResultResp.ProtoReflect.Descriptor instead.
+func (*SubmitRetirementResultResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *SubmitRetirementResultResp) GetGrade() string {
+	if x != nil {
+		return x.Grade
+	}
+	return ""
+}
+
+func (x *SubmitRetirementResultResp) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+// DecideRetirementReq 评级处置：A→RESALE（RETIRED→IN_STOCK 二次销售，新单新质保）/
+// B→DERATE（降容备电，终态 RETIRED）/ C→RECYCLE（RETIRED→SCRAPPED + 回收单溯源）。
+type DecideRetirementReq struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	AssessmentId    int64                  `protobuf:"varint,1,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	Target          string                 `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`                                            // RESALE/DERATE/RECYCLE（空=按 grade 默认分支）
+	RecyclerPartyId string                 `protobuf:"bytes,3,opt,name=recycler_party_id,json=recyclerPartyId,proto3" json:"recycler_party_id,omitempty"` // RECYCLE 回收商（party RECYCLER，可空）
+	ResidualValue   string                 `protobuf:"bytes,4,opt,name=residual_value,json=residualValue,proto3" json:"residual_value,omitempty"`         // RECYCLE 残值 DECIMAL 字符串（可空=0）
+	Remark          string                 `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DecideRetirementReq) Reset() {
+	*x = DecideRetirementReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecideRetirementReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecideRetirementReq) ProtoMessage() {}
+
+func (x *DecideRetirementReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecideRetirementReq.ProtoReflect.Descriptor instead.
+func (*DecideRetirementReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *DecideRetirementReq) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *DecideRetirementReq) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *DecideRetirementReq) GetRecyclerPartyId() string {
+	if x != nil {
+		return x.RecyclerPartyId
+	}
+	return ""
+}
+
+func (x *DecideRetirementReq) GetResidualValue() string {
+	if x != nil {
+		return x.ResidualValue
+	}
+	return ""
+}
+
+func (x *DecideRetirementReq) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+type DecideRetirementResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Grade         string                 `protobuf:"bytes,1,opt,name=grade,proto3" json:"grade,omitempty"`
+	Disposition   string                 `protobuf:"bytes,2,opt,name=disposition,proto3" json:"disposition,omitempty"`                       // RESALE/DERATE/RECYCLED
+	RecycleNo     string                 `protobuf:"bytes,3,opt,name=recycle_no,json=recycleNo,proto3" json:"recycle_no,omitempty"`          // RECYCLE 时返回回收单号
+	TraceCode     string                 `protobuf:"bytes,4,opt,name=trace_code,json=traceCode,proto3" json:"trace_code,omitempty"`          // RECYCLE 时返回监管溯源码
+	DeviceStatus  string                 `protobuf:"bytes,5,opt,name=device_status,json=deviceStatus,proto3" json:"device_status,omitempty"` // 处置后设备状态
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecideRetirementResp) Reset() {
+	*x = DecideRetirementResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecideRetirementResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecideRetirementResp) ProtoMessage() {}
+
+func (x *DecideRetirementResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecideRetirementResp.ProtoReflect.Descriptor instead.
+func (*DecideRetirementResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *DecideRetirementResp) GetGrade() string {
+	if x != nil {
+		return x.Grade
+	}
+	return ""
+}
+
+func (x *DecideRetirementResp) GetDisposition() string {
+	if x != nil {
+		return x.Disposition
+	}
+	return ""
+}
+
+func (x *DecideRetirementResp) GetRecycleNo() string {
+	if x != nil {
+		return x.RecycleNo
+	}
+	return ""
+}
+
+func (x *DecideRetirementResp) GetTraceCode() string {
+	if x != nil {
+		return x.TraceCode
+	}
+	return ""
+}
+
+func (x *DecideRetirementResp) GetDeviceStatus() string {
+	if x != nil {
+		return x.DeviceStatus
+	}
+	return ""
+}
+
+type RetirementAssessmentView struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	AssessmentId       int64                  `protobuf:"varint,1,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	AssessmentNo       string                 `protobuf:"bytes,2,opt,name=assessment_no,json=assessmentNo,proto3" json:"assessment_no,omitempty"`
+	DeviceId           int64                  `protobuf:"varint,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Sn                 string                 `protobuf:"bytes,4,opt,name=sn,proto3" json:"sn,omitempty"`
+	Round              int32                  `protobuf:"varint,5,opt,name=round,proto3" json:"round,omitempty"`
+	Soh                string                 `protobuf:"bytes,6,opt,name=soh,proto3" json:"soh,omitempty"`
+	CycleCount         int32                  `protobuf:"varint,7,opt,name=cycle_count,json=cycleCount,proto3" json:"cycle_count,omitempty"`
+	ResistanceMohm     string                 `protobuf:"bytes,8,opt,name=resistance_mohm,json=resistanceMohm,proto3" json:"resistance_mohm,omitempty"`
+	ConsistencyOk      bool                   `protobuf:"varint,9,opt,name=consistency_ok,json=consistencyOk,proto3" json:"consistency_ok,omitempty"`
+	SafetyJson         string                 `protobuf:"bytes,10,opt,name=safety_json,json=safetyJson,proto3" json:"safety_json,omitempty"`
+	Grade              string                 `protobuf:"bytes,11,opt,name=grade,proto3" json:"grade,omitempty"`
+	Disposition        string                 `protobuf:"bytes,12,opt,name=disposition,proto3" json:"disposition,omitempty"`
+	InspectionTicketNo string                 `protobuf:"bytes,13,opt,name=inspection_ticket_no,json=inspectionTicketNo,proto3" json:"inspection_ticket_no,omitempty"`
+	Remark             string                 `protobuf:"bytes,14,opt,name=remark,proto3" json:"remark,omitempty"`
+	CreatedAt          int64                  `protobuf:"varint,15,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *RetirementAssessmentView) Reset() {
+	*x = RetirementAssessmentView{}
+	mi := &file_services_device_pb_device_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetirementAssessmentView) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetirementAssessmentView) ProtoMessage() {}
+
+func (x *RetirementAssessmentView) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetirementAssessmentView.ProtoReflect.Descriptor instead.
+func (*RetirementAssessmentView) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *RetirementAssessmentView) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *RetirementAssessmentView) GetAssessmentNo() string {
+	if x != nil {
+		return x.AssessmentNo
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetDeviceId() int64 {
+	if x != nil {
+		return x.DeviceId
+	}
+	return 0
+}
+
+func (x *RetirementAssessmentView) GetSn() string {
+	if x != nil {
+		return x.Sn
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetRound() int32 {
+	if x != nil {
+		return x.Round
+	}
+	return 0
+}
+
+func (x *RetirementAssessmentView) GetSoh() string {
+	if x != nil {
+		return x.Soh
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetCycleCount() int32 {
+	if x != nil {
+		return x.CycleCount
+	}
+	return 0
+}
+
+func (x *RetirementAssessmentView) GetResistanceMohm() string {
+	if x != nil {
+		return x.ResistanceMohm
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetConsistencyOk() bool {
+	if x != nil {
+		return x.ConsistencyOk
+	}
+	return false
+}
+
+func (x *RetirementAssessmentView) GetSafetyJson() string {
+	if x != nil {
+		return x.SafetyJson
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetGrade() string {
+	if x != nil {
+		return x.Grade
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetDisposition() string {
+	if x != nil {
+		return x.Disposition
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetInspectionTicketNo() string {
+	if x != nil {
+		return x.InspectionTicketNo
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+func (x *RetirementAssessmentView) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+type ListRetirementAssessmentReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Keyword       string                 `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"`         // 评估单号/SN 模糊
+	Grade         string                 `protobuf:"bytes,2,opt,name=grade,proto3" json:"grade,omitempty"`             // A/B/C（空=全部）
+	Disposition   string                 `protobuf:"bytes,3,opt,name=disposition,proto3" json:"disposition,omitempty"` // 空=全部
+	Page          int32                  `protobuf:"varint,4,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int32                  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRetirementAssessmentReq) Reset() {
+	*x = ListRetirementAssessmentReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRetirementAssessmentReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRetirementAssessmentReq) ProtoMessage() {}
+
+func (x *ListRetirementAssessmentReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRetirementAssessmentReq.ProtoReflect.Descriptor instead.
+func (*ListRetirementAssessmentReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{57}
+}
+
+func (x *ListRetirementAssessmentReq) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
+}
+
+func (x *ListRetirementAssessmentReq) GetGrade() string {
+	if x != nil {
+		return x.Grade
+	}
+	return ""
+}
+
+func (x *ListRetirementAssessmentReq) GetDisposition() string {
+	if x != nil {
+		return x.Disposition
+	}
+	return ""
+}
+
+func (x *ListRetirementAssessmentReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListRetirementAssessmentReq) GetSize() int32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type ListRetirementAssessmentResp struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	List          []*RetirementAssessmentView `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                       `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRetirementAssessmentResp) Reset() {
+	*x = ListRetirementAssessmentResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRetirementAssessmentResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRetirementAssessmentResp) ProtoMessage() {}
+
+func (x *ListRetirementAssessmentResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRetirementAssessmentResp.ProtoReflect.Descriptor instead.
+func (*ListRetirementAssessmentResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *ListRetirementAssessmentResp) GetList() []*RetirementAssessmentView {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *ListRetirementAssessmentResp) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type CreateRecycleOrderReq struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	AssessmentId    int64                  `protobuf:"varint,1,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	RecyclerPartyId string                 `protobuf:"bytes,2,opt,name=recycler_party_id,json=recyclerPartyId,proto3" json:"recycler_party_id,omitempty"` // 回收商（E8 string 传输）
+	ResidualValue   string                 `protobuf:"bytes,3,opt,name=residual_value,json=residualValue,proto3" json:"residual_value,omitempty"`         // 残值 DECIMAL 字符串
+	EvidenceFileId  string                 `protobuf:"bytes,4,opt,name=evidence_file_id,json=evidenceFileId,proto3" json:"evidence_file_id,omitempty"`    // 凭证文件（file 服务）
+	Remark          string                 `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateRecycleOrderReq) Reset() {
+	*x = CreateRecycleOrderReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRecycleOrderReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRecycleOrderReq) ProtoMessage() {}
+
+func (x *CreateRecycleOrderReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRecycleOrderReq.ProtoReflect.Descriptor instead.
+func (*CreateRecycleOrderReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *CreateRecycleOrderReq) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *CreateRecycleOrderReq) GetRecyclerPartyId() string {
+	if x != nil {
+		return x.RecyclerPartyId
+	}
+	return ""
+}
+
+func (x *CreateRecycleOrderReq) GetResidualValue() string {
+	if x != nil {
+		return x.ResidualValue
+	}
+	return ""
+}
+
+func (x *CreateRecycleOrderReq) GetEvidenceFileId() string {
+	if x != nil {
+		return x.EvidenceFileId
+	}
+	return ""
+}
+
+func (x *CreateRecycleOrderReq) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+type CreateRecycleOrderResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RecycleId     int64                  `protobuf:"varint,1,opt,name=recycle_id,json=recycleId,proto3" json:"recycle_id,omitempty"`
+	RecycleNo     string                 `protobuf:"bytes,2,opt,name=recycle_no,json=recycleNo,proto3" json:"recycle_no,omitempty"`
+	TraceCode     string                 `protobuf:"bytes,3,opt,name=trace_code,json=traceCode,proto3" json:"trace_code,omitempty"` // 监管溯源码（全局唯一）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRecycleOrderResp) Reset() {
+	*x = CreateRecycleOrderResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRecycleOrderResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRecycleOrderResp) ProtoMessage() {}
+
+func (x *CreateRecycleOrderResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRecycleOrderResp.ProtoReflect.Descriptor instead.
+func (*CreateRecycleOrderResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *CreateRecycleOrderResp) GetRecycleId() int64 {
+	if x != nil {
+		return x.RecycleId
+	}
+	return 0
+}
+
+func (x *CreateRecycleOrderResp) GetRecycleNo() string {
+	if x != nil {
+		return x.RecycleNo
+	}
+	return ""
+}
+
+func (x *CreateRecycleOrderResp) GetTraceCode() string {
+	if x != nil {
+		return x.TraceCode
+	}
+	return ""
+}
+
+type RecycleOrderView struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	RecycleId       int64                  `protobuf:"varint,1,opt,name=recycle_id,json=recycleId,proto3" json:"recycle_id,omitempty"`
+	RecycleNo       string                 `protobuf:"bytes,2,opt,name=recycle_no,json=recycleNo,proto3" json:"recycle_no,omitempty"`
+	AssessmentId    int64                  `protobuf:"varint,3,opt,name=assessment_id,json=assessmentId,proto3" json:"assessment_id,omitempty"`
+	DeviceId        int64                  `protobuf:"varint,4,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Sn              string                 `protobuf:"bytes,5,opt,name=sn,proto3" json:"sn,omitempty"`
+	RecyclerPartyId string                 `protobuf:"bytes,6,opt,name=recycler_party_id,json=recyclerPartyId,proto3" json:"recycler_party_id,omitempty"`
+	ResidualValue   string                 `protobuf:"bytes,7,opt,name=residual_value,json=residualValue,proto3" json:"residual_value,omitempty"`
+	TraceCode       string                 `protobuf:"bytes,8,opt,name=trace_code,json=traceCode,proto3" json:"trace_code,omitempty"`
+	EvidenceFileId  string                 `protobuf:"bytes,9,opt,name=evidence_file_id,json=evidenceFileId,proto3" json:"evidence_file_id,omitempty"`
+	Status          string                 `protobuf:"bytes,10,opt,name=status,proto3" json:"status,omitempty"` // CREATED/TRANSFERRED/SETTLED
+	Remark          string                 `protobuf:"bytes,11,opt,name=remark,proto3" json:"remark,omitempty"`
+	CreatedAt       int64                  `protobuf:"varint,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *RecycleOrderView) Reset() {
+	*x = RecycleOrderView{}
+	mi := &file_services_device_pb_device_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RecycleOrderView) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RecycleOrderView) ProtoMessage() {}
+
+func (x *RecycleOrderView) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RecycleOrderView.ProtoReflect.Descriptor instead.
+func (*RecycleOrderView) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *RecycleOrderView) GetRecycleId() int64 {
+	if x != nil {
+		return x.RecycleId
+	}
+	return 0
+}
+
+func (x *RecycleOrderView) GetRecycleNo() string {
+	if x != nil {
+		return x.RecycleNo
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetAssessmentId() int64 {
+	if x != nil {
+		return x.AssessmentId
+	}
+	return 0
+}
+
+func (x *RecycleOrderView) GetDeviceId() int64 {
+	if x != nil {
+		return x.DeviceId
+	}
+	return 0
+}
+
+func (x *RecycleOrderView) GetSn() string {
+	if x != nil {
+		return x.Sn
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetRecyclerPartyId() string {
+	if x != nil {
+		return x.RecyclerPartyId
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetResidualValue() string {
+	if x != nil {
+		return x.ResidualValue
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetTraceCode() string {
+	if x != nil {
+		return x.TraceCode
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetEvidenceFileId() string {
+	if x != nil {
+		return x.EvidenceFileId
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetRemark() string {
+	if x != nil {
+		return x.Remark
+	}
+	return ""
+}
+
+func (x *RecycleOrderView) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+type ListRecycleOrderReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Keyword       string                 `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"` // 回收单号/SN/溯源码 模糊
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`   // 空=全部
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int32                  `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRecycleOrderReq) Reset() {
+	*x = ListRecycleOrderReq{}
+	mi := &file_services_device_pb_device_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRecycleOrderReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRecycleOrderReq) ProtoMessage() {}
+
+func (x *ListRecycleOrderReq) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRecycleOrderReq.ProtoReflect.Descriptor instead.
+func (*ListRecycleOrderReq) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *ListRecycleOrderReq) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
+}
+
+func (x *ListRecycleOrderReq) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ListRecycleOrderReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListRecycleOrderReq) GetSize() int32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+type ListRecycleOrderResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*RecycleOrderView    `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRecycleOrderResp) Reset() {
+	*x = ListRecycleOrderResp{}
+	mi := &file_services_device_pb_device_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRecycleOrderResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRecycleOrderResp) ProtoMessage() {}
+
+func (x *ListRecycleOrderResp) ProtoReflect() protoreflect.Message {
+	mi := &file_services_device_pb_device_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRecycleOrderResp.ProtoReflect.Descriptor instead.
+func (*ListRecycleOrderResp) Descriptor() ([]byte, []int) {
+	return file_services_device_pb_device_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *ListRecycleOrderResp) GetList() []*RecycleOrderView {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *ListRecycleOrderResp) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+var File_services_device_pb_device_proto protoreflect.FileDescriptor
+
+const file_services_device_pb_device_proto_rawDesc = "" +
 	"\n" +
-	"\x0fpb/device.proto\x12\x06device\"\t\n" +
+	"\x1fservices/device/pb/device.proto\x12\x06device\"\t\n" +
 	"\aPingReq\"\x1e\n" +
 	"\bPingResp\x12\x12\n" +
 	"\x04pong\x18\x01 \x01(\tR\x04pong\"t\n" +
@@ -3251,8 +4403,115 @@ const file_pb_device_proto_rawDesc = "" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"6\n" +
 	"\x13RollbackOtaTaskResp\x12\x1f\n" +
 	"\vrolled_back\x18\x01 \x01(\x03R\n" +
-	"rolledBack2\xb1\n" +
+	"rolledBack\"\x86\x01\n" +
+	"\x1dCreateRetirementAssessmentReq\x12\x1b\n" +
+	"\tdevice_id\x18\x01 \x01(\x03R\bdeviceId\x120\n" +
+	"\x14inspection_ticket_no\x18\x02 \x01(\tR\x12inspectionTicketNo\x12\x16\n" +
+	"\x06remark\x18\x03 \x01(\tR\x06remark\"\x80\x01\n" +
+	"\x1eCreateRetirementAssessmentResp\x12#\n" +
+	"\rassessment_id\x18\x01 \x01(\x03R\fassessmentId\x12#\n" +
+	"\rassessment_no\x18\x02 \x01(\tR\fassessmentNo\x12\x14\n" +
+	"\x05round\x18\x03 \x01(\x05R\x05round\"4\n" +
 	"\n" +
+	"SafetyItem\x12\x12\n" +
+	"\x04item\x18\x01 \x01(\tR\x04item\x12\x12\n" +
+	"\x04pass\x18\x02 \x01(\bR\x04pass\"\xb3\x02\n" +
+	"\x19SubmitRetirementResultReq\x12#\n" +
+	"\rassessment_id\x18\x01 \x01(\x03R\fassessmentId\x12\x10\n" +
+	"\x03soh\x18\x02 \x01(\tR\x03soh\x12\x1f\n" +
+	"\vcycle_count\x18\x03 \x01(\x05R\n" +
+	"cycleCount\x12'\n" +
+	"\x0fresistance_mohm\x18\x04 \x01(\tR\x0eresistanceMohm\x12%\n" +
+	"\x0econsistency_ok\x18\x05 \x01(\bR\rconsistencyOk\x125\n" +
+	"\fsafety_items\x18\x06 \x03(\v2\x12.device.SafetyItemR\vsafetyItems\x12\x1f\n" +
+	"\vmeasured_at\x18\a \x01(\x03R\n" +
+	"measuredAt\x12\x16\n" +
+	"\x06source\x18\b \x01(\tR\x06source\"J\n" +
+	"\x1aSubmitRetirementResultResp\x12\x14\n" +
+	"\x05grade\x18\x01 \x01(\tR\x05grade\x12\x16\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"\xbd\x01\n" +
+	"\x13DecideRetirementReq\x12#\n" +
+	"\rassessment_id\x18\x01 \x01(\x03R\fassessmentId\x12\x16\n" +
+	"\x06target\x18\x02 \x01(\tR\x06target\x12*\n" +
+	"\x11recycler_party_id\x18\x03 \x01(\tR\x0frecyclerPartyId\x12%\n" +
+	"\x0eresidual_value\x18\x04 \x01(\tR\rresidualValue\x12\x16\n" +
+	"\x06remark\x18\x05 \x01(\tR\x06remark\"\xb1\x01\n" +
+	"\x14DecideRetirementResp\x12\x14\n" +
+	"\x05grade\x18\x01 \x01(\tR\x05grade\x12 \n" +
+	"\vdisposition\x18\x02 \x01(\tR\vdisposition\x12\x1d\n" +
+	"\n" +
+	"recycle_no\x18\x03 \x01(\tR\trecycleNo\x12\x1d\n" +
+	"\n" +
+	"trace_code\x18\x04 \x01(\tR\ttraceCode\x12#\n" +
+	"\rdevice_status\x18\x05 \x01(\tR\fdeviceStatus\"\xec\x03\n" +
+	"\x18RetirementAssessmentView\x12#\n" +
+	"\rassessment_id\x18\x01 \x01(\x03R\fassessmentId\x12#\n" +
+	"\rassessment_no\x18\x02 \x01(\tR\fassessmentNo\x12\x1b\n" +
+	"\tdevice_id\x18\x03 \x01(\x03R\bdeviceId\x12\x0e\n" +
+	"\x02sn\x18\x04 \x01(\tR\x02sn\x12\x14\n" +
+	"\x05round\x18\x05 \x01(\x05R\x05round\x12\x10\n" +
+	"\x03soh\x18\x06 \x01(\tR\x03soh\x12\x1f\n" +
+	"\vcycle_count\x18\a \x01(\x05R\n" +
+	"cycleCount\x12'\n" +
+	"\x0fresistance_mohm\x18\b \x01(\tR\x0eresistanceMohm\x12%\n" +
+	"\x0econsistency_ok\x18\t \x01(\bR\rconsistencyOk\x12\x1f\n" +
+	"\vsafety_json\x18\n" +
+	" \x01(\tR\n" +
+	"safetyJson\x12\x14\n" +
+	"\x05grade\x18\v \x01(\tR\x05grade\x12 \n" +
+	"\vdisposition\x18\f \x01(\tR\vdisposition\x120\n" +
+	"\x14inspection_ticket_no\x18\r \x01(\tR\x12inspectionTicketNo\x12\x16\n" +
+	"\x06remark\x18\x0e \x01(\tR\x06remark\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x0f \x01(\x03R\tcreatedAt\"\x97\x01\n" +
+	"\x1bListRetirementAssessmentReq\x12\x18\n" +
+	"\akeyword\x18\x01 \x01(\tR\akeyword\x12\x14\n" +
+	"\x05grade\x18\x02 \x01(\tR\x05grade\x12 \n" +
+	"\vdisposition\x18\x03 \x01(\tR\vdisposition\x12\x12\n" +
+	"\x04page\x18\x04 \x01(\x05R\x04page\x12\x12\n" +
+	"\x04size\x18\x05 \x01(\x05R\x04size\"j\n" +
+	"\x1cListRetirementAssessmentResp\x124\n" +
+	"\x04list\x18\x01 \x03(\v2 .device.RetirementAssessmentViewR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xd1\x01\n" +
+	"\x15CreateRecycleOrderReq\x12#\n" +
+	"\rassessment_id\x18\x01 \x01(\x03R\fassessmentId\x12*\n" +
+	"\x11recycler_party_id\x18\x02 \x01(\tR\x0frecyclerPartyId\x12%\n" +
+	"\x0eresidual_value\x18\x03 \x01(\tR\rresidualValue\x12(\n" +
+	"\x10evidence_file_id\x18\x04 \x01(\tR\x0eevidenceFileId\x12\x16\n" +
+	"\x06remark\x18\x05 \x01(\tR\x06remark\"u\n" +
+	"\x16CreateRecycleOrderResp\x12\x1d\n" +
+	"\n" +
+	"recycle_id\x18\x01 \x01(\x03R\trecycleId\x12\x1d\n" +
+	"\n" +
+	"recycle_no\x18\x02 \x01(\tR\trecycleNo\x12\x1d\n" +
+	"\n" +
+	"trace_code\x18\x03 \x01(\tR\ttraceCode\"\x8d\x03\n" +
+	"\x10RecycleOrderView\x12\x1d\n" +
+	"\n" +
+	"recycle_id\x18\x01 \x01(\x03R\trecycleId\x12\x1d\n" +
+	"\n" +
+	"recycle_no\x18\x02 \x01(\tR\trecycleNo\x12#\n" +
+	"\rassessment_id\x18\x03 \x01(\x03R\fassessmentId\x12\x1b\n" +
+	"\tdevice_id\x18\x04 \x01(\x03R\bdeviceId\x12\x0e\n" +
+	"\x02sn\x18\x05 \x01(\tR\x02sn\x12*\n" +
+	"\x11recycler_party_id\x18\x06 \x01(\tR\x0frecyclerPartyId\x12%\n" +
+	"\x0eresidual_value\x18\a \x01(\tR\rresidualValue\x12\x1d\n" +
+	"\n" +
+	"trace_code\x18\b \x01(\tR\ttraceCode\x12(\n" +
+	"\x10evidence_file_id\x18\t \x01(\tR\x0eevidenceFileId\x12\x16\n" +
+	"\x06status\x18\n" +
+	" \x01(\tR\x06status\x12\x16\n" +
+	"\x06remark\x18\v \x01(\tR\x06remark\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\f \x01(\x03R\tcreatedAt\"o\n" +
+	"\x13ListRecycleOrderReq\x12\x18\n" +
+	"\akeyword\x18\x01 \x01(\tR\akeyword\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\x05R\x04size\"Z\n" +
+	"\x14ListRecycleOrderResp\x12,\n" +
+	"\x04list\x18\x01 \x03(\v2\x18.device.RecycleOrderViewR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total2\xd9\x0e\n" +
 	"\x06Device\x12)\n" +
 	"\x04Ping\x12\x0f.device.PingReq\x1a\x10.device.PingResp\x125\n" +
 	"\bImportSN\x12\x13.device.ImportSNReq\x1a\x14.device.ImportSNResp\x128\n" +
@@ -3276,73 +4535,94 @@ const file_pb_device_proto_rawDesc = "" +
 	"\n" +
 	"GetOtaTask\x12\x15.device.GetOtaTaskReq\x1a\x16.device.GetOtaTaskResp\x12>\n" +
 	"\vListOtaTask\x12\x16.device.ListOtaTaskReq\x1a\x17.device.ListOtaTaskResp\x12J\n" +
-	"\x0fRollbackOtaTask\x12\x1a.device.RollbackOtaTaskReq\x1a\x1b.device.RollbackOtaTaskRespB\x06Z\x04./pbb\x06proto3"
+	"\x0fRollbackOtaTask\x12\x1a.device.RollbackOtaTaskReq\x1a\x1b.device.RollbackOtaTaskResp\x12k\n" +
+	"\x1aCreateRetirementAssessment\x12%.device.CreateRetirementAssessmentReq\x1a&.device.CreateRetirementAssessmentResp\x12_\n" +
+	"\x16SubmitRetirementResult\x12!.device.SubmitRetirementResultReq\x1a\".device.SubmitRetirementResultResp\x12M\n" +
+	"\x10DecideRetirement\x12\x1b.device.DecideRetirementReq\x1a\x1c.device.DecideRetirementResp\x12e\n" +
+	"\x18ListRetirementAssessment\x12#.device.ListRetirementAssessmentReq\x1a$.device.ListRetirementAssessmentResp\x12S\n" +
+	"\x12CreateRecycleOrder\x12\x1d.device.CreateRecycleOrderReq\x1a\x1e.device.CreateRecycleOrderResp\x12M\n" +
+	"\x10ListRecycleOrder\x12\x1b.device.ListRecycleOrderReq\x1a\x1c.device.ListRecycleOrderRespB\x06Z\x04./pbb\x06proto3"
 
 var (
-	file_pb_device_proto_rawDescOnce sync.Once
-	file_pb_device_proto_rawDescData []byte
+	file_services_device_pb_device_proto_rawDescOnce sync.Once
+	file_services_device_pb_device_proto_rawDescData []byte
 )
 
-func file_pb_device_proto_rawDescGZIP() []byte {
-	file_pb_device_proto_rawDescOnce.Do(func() {
-		file_pb_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_pb_device_proto_rawDesc), len(file_pb_device_proto_rawDesc)))
+func file_services_device_pb_device_proto_rawDescGZIP() []byte {
+	file_services_device_pb_device_proto_rawDescOnce.Do(func() {
+		file_services_device_pb_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_services_device_pb_device_proto_rawDesc), len(file_services_device_pb_device_proto_rawDesc)))
 	})
-	return file_pb_device_proto_rawDescData
+	return file_services_device_pb_device_proto_rawDescData
 }
 
-var file_pb_device_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
-var file_pb_device_proto_goTypes = []any{
-	(*PingReq)(nil),                 // 0: device.PingReq
-	(*PingResp)(nil),                // 1: device.PingResp
-	(*ImportDeviceItem)(nil),        // 2: device.ImportDeviceItem
-	(*ImportSNReq)(nil),             // 3: device.ImportSNReq
-	(*SecretRow)(nil),               // 4: device.SecretRow
-	(*ImportSNResp)(nil),            // 5: device.ImportSNResp
-	(*GetDeviceReq)(nil),            // 6: device.GetDeviceReq
-	(*GetDeviceBySnReq)(nil),        // 7: device.GetDeviceBySnReq
-	(*DeviceView)(nil),              // 8: device.DeviceView
-	(*GetDeviceResp)(nil),           // 9: device.GetDeviceResp
-	(*ListDeviceReq)(nil),           // 10: device.ListDeviceReq
-	(*ListDeviceResp)(nil),          // 11: device.ListDeviceResp
-	(*ListByOrderNoReq)(nil),        // 12: device.ListByOrderNoReq
-	(*ListByOrderNoResp)(nil),       // 13: device.ListByOrderNoResp
-	(*TransitionReq)(nil),           // 14: device.TransitionReq
-	(*TransitionResp)(nil),          // 15: device.TransitionResp
-	(*ActivateReq)(nil),             // 16: device.ActivateReq
-	(*ActivateResp)(nil),            // 17: device.ActivateResp
-	(*ProvisionCredentialReq)(nil),  // 18: device.ProvisionCredentialReq
-	(*ProvisionCredentialResp)(nil), // 19: device.ProvisionCredentialResp
-	(*GetDeviceShadowReq)(nil),      // 20: device.GetDeviceShadowReq
-	(*ShadowMetric)(nil),            // 21: device.ShadowMetric
-	(*GetDeviceShadowResp)(nil),     // 22: device.GetDeviceShadowResp
-	(*SendCommandReq)(nil),          // 23: device.SendCommandReq
-	(*SendCommandResp)(nil),         // 24: device.SendCommandResp
-	(*CmdView)(nil),                 // 25: device.CmdView
-	(*ListCmdReq)(nil),              // 26: device.ListCmdReq
-	(*ListCmdResp)(nil),             // 27: device.ListCmdResp
-	(*TopologyNode)(nil),            // 28: device.TopologyNode
-	(*GetDeviceTopologyReq)(nil),    // 29: device.GetDeviceTopologyReq
-	(*GetDeviceTopologyResp)(nil),   // 30: device.GetDeviceTopologyResp
-	(*SaveTopologyNode)(nil),        // 31: device.SaveTopologyNode
-	(*SaveDeviceTopologyReq)(nil),   // 32: device.SaveDeviceTopologyReq
-	(*SaveDeviceTopologyResp)(nil),  // 33: device.SaveDeviceTopologyResp
-	(*SaveFirmwareReq)(nil),         // 34: device.SaveFirmwareReq
-	(*SaveFirmwareResp)(nil),        // 35: device.SaveFirmwareResp
-	(*FirmwareView)(nil),            // 36: device.FirmwareView
-	(*ListFirmwareReq)(nil),         // 37: device.ListFirmwareReq
-	(*ListFirmwareResp)(nil),        // 38: device.ListFirmwareResp
-	(*CreateOtaTaskReq)(nil),        // 39: device.CreateOtaTaskReq
-	(*CreateOtaTaskResp)(nil),       // 40: device.CreateOtaTaskResp
-	(*OtaDeviceView)(nil),           // 41: device.OtaDeviceView
-	(*OtaTaskView)(nil),             // 42: device.OtaTaskView
-	(*GetOtaTaskReq)(nil),           // 43: device.GetOtaTaskReq
-	(*GetOtaTaskResp)(nil),          // 44: device.GetOtaTaskResp
-	(*ListOtaTaskReq)(nil),          // 45: device.ListOtaTaskReq
-	(*ListOtaTaskResp)(nil),         // 46: device.ListOtaTaskResp
-	(*RollbackOtaTaskReq)(nil),      // 47: device.RollbackOtaTaskReq
-	(*RollbackOtaTaskResp)(nil),     // 48: device.RollbackOtaTaskResp
+var file_services_device_pb_device_proto_msgTypes = make([]protoimpl.MessageInfo, 64)
+var file_services_device_pb_device_proto_goTypes = []any{
+	(*PingReq)(nil),                        // 0: device.PingReq
+	(*PingResp)(nil),                       // 1: device.PingResp
+	(*ImportDeviceItem)(nil),               // 2: device.ImportDeviceItem
+	(*ImportSNReq)(nil),                    // 3: device.ImportSNReq
+	(*SecretRow)(nil),                      // 4: device.SecretRow
+	(*ImportSNResp)(nil),                   // 5: device.ImportSNResp
+	(*GetDeviceReq)(nil),                   // 6: device.GetDeviceReq
+	(*GetDeviceBySnReq)(nil),               // 7: device.GetDeviceBySnReq
+	(*DeviceView)(nil),                     // 8: device.DeviceView
+	(*GetDeviceResp)(nil),                  // 9: device.GetDeviceResp
+	(*ListDeviceReq)(nil),                  // 10: device.ListDeviceReq
+	(*ListDeviceResp)(nil),                 // 11: device.ListDeviceResp
+	(*ListByOrderNoReq)(nil),               // 12: device.ListByOrderNoReq
+	(*ListByOrderNoResp)(nil),              // 13: device.ListByOrderNoResp
+	(*TransitionReq)(nil),                  // 14: device.TransitionReq
+	(*TransitionResp)(nil),                 // 15: device.TransitionResp
+	(*ActivateReq)(nil),                    // 16: device.ActivateReq
+	(*ActivateResp)(nil),                   // 17: device.ActivateResp
+	(*ProvisionCredentialReq)(nil),         // 18: device.ProvisionCredentialReq
+	(*ProvisionCredentialResp)(nil),        // 19: device.ProvisionCredentialResp
+	(*GetDeviceShadowReq)(nil),             // 20: device.GetDeviceShadowReq
+	(*ShadowMetric)(nil),                   // 21: device.ShadowMetric
+	(*GetDeviceShadowResp)(nil),            // 22: device.GetDeviceShadowResp
+	(*SendCommandReq)(nil),                 // 23: device.SendCommandReq
+	(*SendCommandResp)(nil),                // 24: device.SendCommandResp
+	(*CmdView)(nil),                        // 25: device.CmdView
+	(*ListCmdReq)(nil),                     // 26: device.ListCmdReq
+	(*ListCmdResp)(nil),                    // 27: device.ListCmdResp
+	(*TopologyNode)(nil),                   // 28: device.TopologyNode
+	(*GetDeviceTopologyReq)(nil),           // 29: device.GetDeviceTopologyReq
+	(*GetDeviceTopologyResp)(nil),          // 30: device.GetDeviceTopologyResp
+	(*SaveTopologyNode)(nil),               // 31: device.SaveTopologyNode
+	(*SaveDeviceTopologyReq)(nil),          // 32: device.SaveDeviceTopologyReq
+	(*SaveDeviceTopologyResp)(nil),         // 33: device.SaveDeviceTopologyResp
+	(*SaveFirmwareReq)(nil),                // 34: device.SaveFirmwareReq
+	(*SaveFirmwareResp)(nil),               // 35: device.SaveFirmwareResp
+	(*FirmwareView)(nil),                   // 36: device.FirmwareView
+	(*ListFirmwareReq)(nil),                // 37: device.ListFirmwareReq
+	(*ListFirmwareResp)(nil),               // 38: device.ListFirmwareResp
+	(*CreateOtaTaskReq)(nil),               // 39: device.CreateOtaTaskReq
+	(*CreateOtaTaskResp)(nil),              // 40: device.CreateOtaTaskResp
+	(*OtaDeviceView)(nil),                  // 41: device.OtaDeviceView
+	(*OtaTaskView)(nil),                    // 42: device.OtaTaskView
+	(*GetOtaTaskReq)(nil),                  // 43: device.GetOtaTaskReq
+	(*GetOtaTaskResp)(nil),                 // 44: device.GetOtaTaskResp
+	(*ListOtaTaskReq)(nil),                 // 45: device.ListOtaTaskReq
+	(*ListOtaTaskResp)(nil),                // 46: device.ListOtaTaskResp
+	(*RollbackOtaTaskReq)(nil),             // 47: device.RollbackOtaTaskReq
+	(*RollbackOtaTaskResp)(nil),            // 48: device.RollbackOtaTaskResp
+	(*CreateRetirementAssessmentReq)(nil),  // 49: device.CreateRetirementAssessmentReq
+	(*CreateRetirementAssessmentResp)(nil), // 50: device.CreateRetirementAssessmentResp
+	(*SafetyItem)(nil),                     // 51: device.SafetyItem
+	(*SubmitRetirementResultReq)(nil),      // 52: device.SubmitRetirementResultReq
+	(*SubmitRetirementResultResp)(nil),     // 53: device.SubmitRetirementResultResp
+	(*DecideRetirementReq)(nil),            // 54: device.DecideRetirementReq
+	(*DecideRetirementResp)(nil),           // 55: device.DecideRetirementResp
+	(*RetirementAssessmentView)(nil),       // 56: device.RetirementAssessmentView
+	(*ListRetirementAssessmentReq)(nil),    // 57: device.ListRetirementAssessmentReq
+	(*ListRetirementAssessmentResp)(nil),   // 58: device.ListRetirementAssessmentResp
+	(*CreateRecycleOrderReq)(nil),          // 59: device.CreateRecycleOrderReq
+	(*CreateRecycleOrderResp)(nil),         // 60: device.CreateRecycleOrderResp
+	(*RecycleOrderView)(nil),               // 61: device.RecycleOrderView
+	(*ListRecycleOrderReq)(nil),            // 62: device.ListRecycleOrderReq
+	(*ListRecycleOrderResp)(nil),           // 63: device.ListRecycleOrderResp
 }
-var file_pb_device_proto_depIdxs = []int32{
+var file_services_device_pb_device_proto_depIdxs = []int32{
 	2,  // 0: device.ImportSNReq.items:type_name -> device.ImportDeviceItem
 	4,  // 1: device.ImportSNResp.secrets:type_name -> device.SecretRow
 	8,  // 2: device.GetDeviceResp.device:type_name -> device.DeviceView
@@ -3356,73 +4636,88 @@ var file_pb_device_proto_depIdxs = []int32{
 	42, // 10: device.GetOtaTaskResp.task:type_name -> device.OtaTaskView
 	41, // 11: device.GetOtaTaskResp.devices:type_name -> device.OtaDeviceView
 	42, // 12: device.ListOtaTaskResp.list:type_name -> device.OtaTaskView
-	0,  // 13: device.Device.Ping:input_type -> device.PingReq
-	3,  // 14: device.Device.ImportSN:input_type -> device.ImportSNReq
-	6,  // 15: device.Device.GetDevice:input_type -> device.GetDeviceReq
-	7,  // 16: device.Device.GetDeviceBySn:input_type -> device.GetDeviceBySnReq
-	10, // 17: device.Device.ListDevice:input_type -> device.ListDeviceReq
-	12, // 18: device.Device.ListByOrderNo:input_type -> device.ListByOrderNoReq
-	14, // 19: device.Device.Transition:input_type -> device.TransitionReq
-	16, // 20: device.Device.Activate:input_type -> device.ActivateReq
-	18, // 21: device.Device.ProvisionCredential:input_type -> device.ProvisionCredentialReq
-	20, // 22: device.Device.GetDeviceShadow:input_type -> device.GetDeviceShadowReq
-	23, // 23: device.Device.SendCommand:input_type -> device.SendCommandReq
-	26, // 24: device.Device.ListCmd:input_type -> device.ListCmdReq
-	29, // 25: device.Device.GetDeviceTopology:input_type -> device.GetDeviceTopologyReq
-	32, // 26: device.Device.SaveDeviceTopology:input_type -> device.SaveDeviceTopologyReq
-	34, // 27: device.Device.SaveFirmware:input_type -> device.SaveFirmwareReq
-	37, // 28: device.Device.ListFirmware:input_type -> device.ListFirmwareReq
-	39, // 29: device.Device.CreateOtaTask:input_type -> device.CreateOtaTaskReq
-	43, // 30: device.Device.GetOtaTask:input_type -> device.GetOtaTaskReq
-	45, // 31: device.Device.ListOtaTask:input_type -> device.ListOtaTaskReq
-	47, // 32: device.Device.RollbackOtaTask:input_type -> device.RollbackOtaTaskReq
-	1,  // 33: device.Device.Ping:output_type -> device.PingResp
-	5,  // 34: device.Device.ImportSN:output_type -> device.ImportSNResp
-	9,  // 35: device.Device.GetDevice:output_type -> device.GetDeviceResp
-	9,  // 36: device.Device.GetDeviceBySn:output_type -> device.GetDeviceResp
-	11, // 37: device.Device.ListDevice:output_type -> device.ListDeviceResp
-	13, // 38: device.Device.ListByOrderNo:output_type -> device.ListByOrderNoResp
-	15, // 39: device.Device.Transition:output_type -> device.TransitionResp
-	17, // 40: device.Device.Activate:output_type -> device.ActivateResp
-	19, // 41: device.Device.ProvisionCredential:output_type -> device.ProvisionCredentialResp
-	22, // 42: device.Device.GetDeviceShadow:output_type -> device.GetDeviceShadowResp
-	24, // 43: device.Device.SendCommand:output_type -> device.SendCommandResp
-	27, // 44: device.Device.ListCmd:output_type -> device.ListCmdResp
-	30, // 45: device.Device.GetDeviceTopology:output_type -> device.GetDeviceTopologyResp
-	33, // 46: device.Device.SaveDeviceTopology:output_type -> device.SaveDeviceTopologyResp
-	35, // 47: device.Device.SaveFirmware:output_type -> device.SaveFirmwareResp
-	38, // 48: device.Device.ListFirmware:output_type -> device.ListFirmwareResp
-	40, // 49: device.Device.CreateOtaTask:output_type -> device.CreateOtaTaskResp
-	44, // 50: device.Device.GetOtaTask:output_type -> device.GetOtaTaskResp
-	46, // 51: device.Device.ListOtaTask:output_type -> device.ListOtaTaskResp
-	48, // 52: device.Device.RollbackOtaTask:output_type -> device.RollbackOtaTaskResp
-	33, // [33:53] is the sub-list for method output_type
-	13, // [13:33] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	51, // 13: device.SubmitRetirementResultReq.safety_items:type_name -> device.SafetyItem
+	56, // 14: device.ListRetirementAssessmentResp.list:type_name -> device.RetirementAssessmentView
+	61, // 15: device.ListRecycleOrderResp.list:type_name -> device.RecycleOrderView
+	0,  // 16: device.Device.Ping:input_type -> device.PingReq
+	3,  // 17: device.Device.ImportSN:input_type -> device.ImportSNReq
+	6,  // 18: device.Device.GetDevice:input_type -> device.GetDeviceReq
+	7,  // 19: device.Device.GetDeviceBySn:input_type -> device.GetDeviceBySnReq
+	10, // 20: device.Device.ListDevice:input_type -> device.ListDeviceReq
+	12, // 21: device.Device.ListByOrderNo:input_type -> device.ListByOrderNoReq
+	14, // 22: device.Device.Transition:input_type -> device.TransitionReq
+	16, // 23: device.Device.Activate:input_type -> device.ActivateReq
+	18, // 24: device.Device.ProvisionCredential:input_type -> device.ProvisionCredentialReq
+	20, // 25: device.Device.GetDeviceShadow:input_type -> device.GetDeviceShadowReq
+	23, // 26: device.Device.SendCommand:input_type -> device.SendCommandReq
+	26, // 27: device.Device.ListCmd:input_type -> device.ListCmdReq
+	29, // 28: device.Device.GetDeviceTopology:input_type -> device.GetDeviceTopologyReq
+	32, // 29: device.Device.SaveDeviceTopology:input_type -> device.SaveDeviceTopologyReq
+	34, // 30: device.Device.SaveFirmware:input_type -> device.SaveFirmwareReq
+	37, // 31: device.Device.ListFirmware:input_type -> device.ListFirmwareReq
+	39, // 32: device.Device.CreateOtaTask:input_type -> device.CreateOtaTaskReq
+	43, // 33: device.Device.GetOtaTask:input_type -> device.GetOtaTaskReq
+	45, // 34: device.Device.ListOtaTask:input_type -> device.ListOtaTaskReq
+	47, // 35: device.Device.RollbackOtaTask:input_type -> device.RollbackOtaTaskReq
+	49, // 36: device.Device.CreateRetirementAssessment:input_type -> device.CreateRetirementAssessmentReq
+	52, // 37: device.Device.SubmitRetirementResult:input_type -> device.SubmitRetirementResultReq
+	54, // 38: device.Device.DecideRetirement:input_type -> device.DecideRetirementReq
+	57, // 39: device.Device.ListRetirementAssessment:input_type -> device.ListRetirementAssessmentReq
+	59, // 40: device.Device.CreateRecycleOrder:input_type -> device.CreateRecycleOrderReq
+	62, // 41: device.Device.ListRecycleOrder:input_type -> device.ListRecycleOrderReq
+	1,  // 42: device.Device.Ping:output_type -> device.PingResp
+	5,  // 43: device.Device.ImportSN:output_type -> device.ImportSNResp
+	9,  // 44: device.Device.GetDevice:output_type -> device.GetDeviceResp
+	9,  // 45: device.Device.GetDeviceBySn:output_type -> device.GetDeviceResp
+	11, // 46: device.Device.ListDevice:output_type -> device.ListDeviceResp
+	13, // 47: device.Device.ListByOrderNo:output_type -> device.ListByOrderNoResp
+	15, // 48: device.Device.Transition:output_type -> device.TransitionResp
+	17, // 49: device.Device.Activate:output_type -> device.ActivateResp
+	19, // 50: device.Device.ProvisionCredential:output_type -> device.ProvisionCredentialResp
+	22, // 51: device.Device.GetDeviceShadow:output_type -> device.GetDeviceShadowResp
+	24, // 52: device.Device.SendCommand:output_type -> device.SendCommandResp
+	27, // 53: device.Device.ListCmd:output_type -> device.ListCmdResp
+	30, // 54: device.Device.GetDeviceTopology:output_type -> device.GetDeviceTopologyResp
+	33, // 55: device.Device.SaveDeviceTopology:output_type -> device.SaveDeviceTopologyResp
+	35, // 56: device.Device.SaveFirmware:output_type -> device.SaveFirmwareResp
+	38, // 57: device.Device.ListFirmware:output_type -> device.ListFirmwareResp
+	40, // 58: device.Device.CreateOtaTask:output_type -> device.CreateOtaTaskResp
+	44, // 59: device.Device.GetOtaTask:output_type -> device.GetOtaTaskResp
+	46, // 60: device.Device.ListOtaTask:output_type -> device.ListOtaTaskResp
+	48, // 61: device.Device.RollbackOtaTask:output_type -> device.RollbackOtaTaskResp
+	50, // 62: device.Device.CreateRetirementAssessment:output_type -> device.CreateRetirementAssessmentResp
+	53, // 63: device.Device.SubmitRetirementResult:output_type -> device.SubmitRetirementResultResp
+	55, // 64: device.Device.DecideRetirement:output_type -> device.DecideRetirementResp
+	58, // 65: device.Device.ListRetirementAssessment:output_type -> device.ListRetirementAssessmentResp
+	60, // 66: device.Device.CreateRecycleOrder:output_type -> device.CreateRecycleOrderResp
+	63, // 67: device.Device.ListRecycleOrder:output_type -> device.ListRecycleOrderResp
+	42, // [42:68] is the sub-list for method output_type
+	16, // [16:42] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
-func init() { file_pb_device_proto_init() }
-func file_pb_device_proto_init() {
-	if File_pb_device_proto != nil {
+func init() { file_services_device_pb_device_proto_init() }
+func file_services_device_pb_device_proto_init() {
+	if File_services_device_pb_device_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pb_device_proto_rawDesc), len(file_pb_device_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_device_pb_device_proto_rawDesc), len(file_services_device_pb_device_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   49,
+			NumMessages:   64,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_pb_device_proto_goTypes,
-		DependencyIndexes: file_pb_device_proto_depIdxs,
-		MessageInfos:      file_pb_device_proto_msgTypes,
+		GoTypes:           file_services_device_pb_device_proto_goTypes,
+		DependencyIndexes: file_services_device_pb_device_proto_depIdxs,
+		MessageInfos:      file_services_device_pb_device_proto_msgTypes,
 	}.Build()
-	File_pb_device_proto = out.File
-	file_pb_device_proto_goTypes = nil
-	file_pb_device_proto_depIdxs = nil
+	File_services_device_pb_device_proto = out.File
+	file_services_device_pb_device_proto_goTypes = nil
+	file_services_device_pb_device_proto_depIdxs = nil
 }

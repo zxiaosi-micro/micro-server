@@ -19,25 +19,29 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Finance_Ping_FullMethodName                 = "/finance.Finance/Ping"
-	Finance_CreatePayment_FullMethodName        = "/finance.Finance/CreatePayment"
-	Finance_ConfirmPayment_FullMethodName       = "/finance.Finance/ConfirmPayment"
-	Finance_ApprovePayment_FullMethodName       = "/finance.Finance/ApprovePayment"
-	Finance_SettlePayment_FullMethodName        = "/finance.Finance/SettlePayment"
-	Finance_GetPayment_FullMethodName           = "/finance.Finance/GetPayment"
-	Finance_ListPayment_FullMethodName          = "/finance.Finance/ListPayment"
-	Finance_WechatPayURL_FullMethodName         = "/finance.Finance/WechatPayURL"
-	Finance_WechatCallback_FullMethodName       = "/finance.Finance/WechatCallback"
-	Finance_AlipayPayURL_FullMethodName         = "/finance.Finance/AlipayPayURL"
-	Finance_AlipayCallback_FullMethodName       = "/finance.Finance/AlipayCallback"
-	Finance_CreateRefund_FullMethodName         = "/finance.Finance/CreateRefund"
-	Finance_ListRefund_FullMethodName           = "/finance.Finance/ListRefund"
-	Finance_IssueInvoice_FullMethodName         = "/finance.Finance/IssueInvoice"
-	Finance_ReverseInvoice_FullMethodName       = "/finance.Finance/ReverseInvoice"
-	Finance_ListInvoice_FullMethodName          = "/finance.Finance/ListInvoice"
-	Finance_CreateReconcileTask_FullMethodName  = "/finance.Finance/CreateReconcileTask"
-	Finance_ResolveReconcileTask_FullMethodName = "/finance.Finance/ResolveReconcileTask"
-	Finance_ListReconcileTask_FullMethodName    = "/finance.Finance/ListReconcileTask"
+	Finance_Ping_FullMethodName                    = "/finance.Finance/Ping"
+	Finance_CreatePayment_FullMethodName           = "/finance.Finance/CreatePayment"
+	Finance_ConfirmPayment_FullMethodName          = "/finance.Finance/ConfirmPayment"
+	Finance_ApprovePayment_FullMethodName          = "/finance.Finance/ApprovePayment"
+	Finance_SettlePayment_FullMethodName           = "/finance.Finance/SettlePayment"
+	Finance_GetPayment_FullMethodName              = "/finance.Finance/GetPayment"
+	Finance_ListPayment_FullMethodName             = "/finance.Finance/ListPayment"
+	Finance_WechatPayURL_FullMethodName            = "/finance.Finance/WechatPayURL"
+	Finance_WechatCallback_FullMethodName          = "/finance.Finance/WechatCallback"
+	Finance_AlipayPayURL_FullMethodName            = "/finance.Finance/AlipayPayURL"
+	Finance_AlipayCallback_FullMethodName          = "/finance.Finance/AlipayCallback"
+	Finance_CreateRefund_FullMethodName            = "/finance.Finance/CreateRefund"
+	Finance_ListRefund_FullMethodName              = "/finance.Finance/ListRefund"
+	Finance_IssueInvoice_FullMethodName            = "/finance.Finance/IssueInvoice"
+	Finance_ReverseInvoice_FullMethodName          = "/finance.Finance/ReverseInvoice"
+	Finance_ListInvoice_FullMethodName             = "/finance.Finance/ListInvoice"
+	Finance_CreateReconcileTask_FullMethodName     = "/finance.Finance/CreateReconcileTask"
+	Finance_ResolveReconcileTask_FullMethodName    = "/finance.Finance/ResolveReconcileTask"
+	Finance_ListReconcileTask_FullMethodName       = "/finance.Finance/ListReconcileTask"
+	Finance_RunRebateSettlement_FullMethodName     = "/finance.Finance/RunRebateSettlement"
+	Finance_ListRebateSettlement_FullMethodName    = "/finance.Finance/ListRebateSettlement"
+	Finance_ConfirmRebateSettlement_FullMethodName = "/finance.Finance/ConfirmRebateSettlement"
+	Finance_ReconcileRebate_FullMethodName         = "/finance.Finance/ReconcileRebate"
 )
 
 // FinanceClient is the client API for Finance service.
@@ -80,6 +84,11 @@ type FinanceClient interface {
 	CreateReconcileTask(ctx context.Context, in *CreateReconcileTaskReq, opts ...grpc.CallOption) (*CreateReconcileTaskResp, error)
 	ResolveReconcileTask(ctx context.Context, in *ResolveReconcileTaskReq, opts ...grpc.CallOption) (*ResolveReconcileTaskResp, error)
 	ListReconcileTask(ctx context.Context, in *ListReconcileTaskReq, opts ...grpc.CallOption) (*ListReconcileTaskResp, error)
+	// ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+	RunRebateSettlement(ctx context.Context, in *RunRebateSettlementReq, opts ...grpc.CallOption) (*RunRebateSettlementResp, error)
+	ListRebateSettlement(ctx context.Context, in *ListRebateSettlementReq, opts ...grpc.CallOption) (*ListRebateSettlementResp, error)
+	ConfirmRebateSettlement(ctx context.Context, in *ConfirmRebateSettlementReq, opts ...grpc.CallOption) (*ConfirmRebateSettlementResp, error)
+	ReconcileRebate(ctx context.Context, in *ReconcileRebateReq, opts ...grpc.CallOption) (*ReconcileRebateResp, error)
 }
 
 type financeClient struct {
@@ -280,6 +289,46 @@ func (c *financeClient) ListReconcileTask(ctx context.Context, in *ListReconcile
 	return out, nil
 }
 
+func (c *financeClient) RunRebateSettlement(ctx context.Context, in *RunRebateSettlementReq, opts ...grpc.CallOption) (*RunRebateSettlementResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RunRebateSettlementResp)
+	err := c.cc.Invoke(ctx, Finance_RunRebateSettlement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeClient) ListRebateSettlement(ctx context.Context, in *ListRebateSettlementReq, opts ...grpc.CallOption) (*ListRebateSettlementResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRebateSettlementResp)
+	err := c.cc.Invoke(ctx, Finance_ListRebateSettlement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeClient) ConfirmRebateSettlement(ctx context.Context, in *ConfirmRebateSettlementReq, opts ...grpc.CallOption) (*ConfirmRebateSettlementResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ConfirmRebateSettlementResp)
+	err := c.cc.Invoke(ctx, Finance_ConfirmRebateSettlement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeClient) ReconcileRebate(ctx context.Context, in *ReconcileRebateReq, opts ...grpc.CallOption) (*ReconcileRebateResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReconcileRebateResp)
+	err := c.cc.Invoke(ctx, Finance_ReconcileRebate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FinanceServer is the server API for Finance service.
 // All implementations must embed UnimplementedFinanceServer
 // for forward compatibility.
@@ -320,6 +369,11 @@ type FinanceServer interface {
 	CreateReconcileTask(context.Context, *CreateReconcileTaskReq) (*CreateReconcileTaskResp, error)
 	ResolveReconcileTask(context.Context, *ResolveReconcileTaskReq) (*ResolveReconcileTaskResp, error)
 	ListReconcileTask(context.Context, *ListReconcileTaskReq) (*ListReconcileTaskResp, error)
+	// ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+	RunRebateSettlement(context.Context, *RunRebateSettlementReq) (*RunRebateSettlementResp, error)
+	ListRebateSettlement(context.Context, *ListRebateSettlementReq) (*ListRebateSettlementResp, error)
+	ConfirmRebateSettlement(context.Context, *ConfirmRebateSettlementReq) (*ConfirmRebateSettlementResp, error)
+	ReconcileRebate(context.Context, *ReconcileRebateReq) (*ReconcileRebateResp, error)
 	mustEmbedUnimplementedFinanceServer()
 }
 
@@ -386,6 +440,18 @@ func (UnimplementedFinanceServer) ResolveReconcileTask(context.Context, *Resolve
 }
 func (UnimplementedFinanceServer) ListReconcileTask(context.Context, *ListReconcileTaskReq) (*ListReconcileTaskResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListReconcileTask not implemented")
+}
+func (UnimplementedFinanceServer) RunRebateSettlement(context.Context, *RunRebateSettlementReq) (*RunRebateSettlementResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method RunRebateSettlement not implemented")
+}
+func (UnimplementedFinanceServer) ListRebateSettlement(context.Context, *ListRebateSettlementReq) (*ListRebateSettlementResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRebateSettlement not implemented")
+}
+func (UnimplementedFinanceServer) ConfirmRebateSettlement(context.Context, *ConfirmRebateSettlementReq) (*ConfirmRebateSettlementResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmRebateSettlement not implemented")
+}
+func (UnimplementedFinanceServer) ReconcileRebate(context.Context, *ReconcileRebateReq) (*ReconcileRebateResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReconcileRebate not implemented")
 }
 func (UnimplementedFinanceServer) mustEmbedUnimplementedFinanceServer() {}
 func (UnimplementedFinanceServer) testEmbeddedByValue()                 {}
@@ -750,6 +816,78 @@ func _Finance_ListReconcileTask_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Finance_RunRebateSettlement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunRebateSettlementReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).RunRebateSettlement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_RunRebateSettlement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).RunRebateSettlement(ctx, req.(*RunRebateSettlementReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Finance_ListRebateSettlement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRebateSettlementReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).ListRebateSettlement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_ListRebateSettlement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).ListRebateSettlement(ctx, req.(*ListRebateSettlementReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Finance_ConfirmRebateSettlement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmRebateSettlementReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).ConfirmRebateSettlement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_ConfirmRebateSettlement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).ConfirmRebateSettlement(ctx, req.(*ConfirmRebateSettlementReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Finance_ReconcileRebate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReconcileRebateReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).ReconcileRebate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_ReconcileRebate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).ReconcileRebate(ctx, req.(*ReconcileRebateReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Finance_ServiceDesc is the grpc.ServiceDesc for Finance service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -832,6 +970,22 @@ var Finance_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListReconcileTask",
 			Handler:    _Finance_ListReconcileTask_Handler,
+		},
+		{
+			MethodName: "RunRebateSettlement",
+			Handler:    _Finance_RunRebateSettlement_Handler,
+		},
+		{
+			MethodName: "ListRebateSettlement",
+			Handler:    _Finance_ListRebateSettlement_Handler,
+		},
+		{
+			MethodName: "ConfirmRebateSettlement",
+			Handler:    _Finance_ConfirmRebateSettlement_Handler,
+		},
+		{
+			MethodName: "ReconcileRebate",
+			Handler:    _Finance_ReconcileRebate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

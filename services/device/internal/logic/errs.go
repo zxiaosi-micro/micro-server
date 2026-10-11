@@ -40,6 +40,20 @@ var (
 	errTopologyTypeBad = errcode.New(SegDevice, 1026, "拓扑节点类型非法（CELL/MODULE/PACK/CHARGER）")
 	errTopologyTooDeep = errcode.New(SegDevice, 1027, "拓扑层级超过 4 级")
 	errProvisionFailed = errcode.New(SegDevice, 1028, "EMQX 凭证写入失败")
+
+	// S10-01 退役评估（梯次利用/回收）。
+	errRetireNotFound      = errcode.New(SegDevice, 1029, "退役评估不存在")
+	errRetireDeviceBad     = errcode.New(SegDevice, 1030, "设备状态不允许发起退役评估（须 ACTIVATED/RETIRED）")
+	errRetirePendingDup    = errcode.New(SegDevice, 1031, "该设备存在未完结的退役评估")
+	errRetireResultDup     = errcode.New(SegDevice, 1032, "检测结果已提交，勿重复提交")
+	errRetireNotAssessed   = errcode.New(SegDevice, 1033, "尚未提交检测结果，无法评级处置")
+	errRetireSohBad        = errcode.New(SegDevice, 1034, "SOH 数值不合法（0~100）")
+	errRetireBranchBad     = errcode.New(SegDevice, 1035, "处置分支与评级不符（A→RESALE/B→DERATE/C→RECYCLE）")
+	_                      = errcode.New(SegDevice, 1036, "回收单不存在") // 预留（回收单详情接口）
+	errRetireSourceBad     = errcode.New(SegDevice, 1037, "检测来源不合法（MANUAL/TELEMETRY/BENCH）")
+	errRetireDecimalBad    = errcode.New(SegDevice, 1038, "数值字段不是合法 DECIMAL 字符串")
+	errRetireTransitionBad = errcode.New(SegDevice, 1039, "设备状态已变化（CAS 失败），请重试")
+	errRecycleDup          = errcode.New(SegDevice, 1040, "该评估已生成回收单")
 )
 
 // mustTenant 业务面租户（BFF authz 注入）。

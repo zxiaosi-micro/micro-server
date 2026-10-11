@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
+	"micro-server/services/finance/pb"
 	"micro-server/services/finance/internal/logic"
 	"micro-server/services/finance/internal/svc"
-	"micro-server/services/finance/pb"
 )
 
 type FinanceServer struct {
@@ -121,4 +121,25 @@ func (s *FinanceServer) ResolveReconcileTask(ctx context.Context, in *pb.Resolve
 func (s *FinanceServer) ListReconcileTask(ctx context.Context, in *pb.ListReconcileTaskReq) (*pb.ListReconcileTaskResp, error) {
 	l := logic.NewListReconcileTaskLogic(ctx, s.svcCtx)
 	return l.ListReconcileTask(in)
+}
+
+// ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+func (s *FinanceServer) RunRebateSettlement(ctx context.Context, in *pb.RunRebateSettlementReq) (*pb.RunRebateSettlementResp, error) {
+	l := logic.NewRunRebateSettlementLogic(ctx, s.svcCtx)
+	return l.RunRebateSettlement(in)
+}
+
+func (s *FinanceServer) ListRebateSettlement(ctx context.Context, in *pb.ListRebateSettlementReq) (*pb.ListRebateSettlementResp, error) {
+	l := logic.NewListRebateSettlementLogic(ctx, s.svcCtx)
+	return l.ListRebateSettlement(in)
+}
+
+func (s *FinanceServer) ConfirmRebateSettlement(ctx context.Context, in *pb.ConfirmRebateSettlementReq) (*pb.ConfirmRebateSettlementResp, error) {
+	l := logic.NewConfirmRebateSettlementLogic(ctx, s.svcCtx)
+	return l.ConfirmRebateSettlement(in)
+}
+
+func (s *FinanceServer) ReconcileRebate(ctx context.Context, in *pb.ReconcileRebateReq) (*pb.ReconcileRebateResp, error) {
+	l := logic.NewReconcileRebateLogic(ctx, s.svcCtx)
+	return l.ReconcileRebate(in)
 }

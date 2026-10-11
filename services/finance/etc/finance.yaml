@@ -36,6 +36,14 @@ Alipay:
   AlipayPublicKey: ${ALIPAY_PUBLIC_KEY|}
   Gateway: ${ALIPAY_GATEWAY|https://openapi.alipay.com/gateway.do}
 
+# 返利规则源（party RPC；S10-03 经销商返利）
+PartyRpc:
+  Etcd:
+    Hosts:
+      - ${ETCD_HOSTS|127.0.0.1:22379}
+    Key: party.rpc
+  NonBlock: true
+  Timeout: 5000
 ConfigKey: ${CONFIG_KEY|/micro/config/finance/main}
 
 Prometheus:

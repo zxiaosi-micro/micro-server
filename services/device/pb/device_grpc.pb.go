@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v3.19.4
-// source: pb/device.proto
+// source: services/device/pb/device.proto
 
 package pb
 
@@ -19,26 +19,32 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Device_Ping_FullMethodName                = "/device.Device/Ping"
-	Device_ImportSN_FullMethodName            = "/device.Device/ImportSN"
-	Device_GetDevice_FullMethodName           = "/device.Device/GetDevice"
-	Device_GetDeviceBySn_FullMethodName       = "/device.Device/GetDeviceBySn"
-	Device_ListDevice_FullMethodName          = "/device.Device/ListDevice"
-	Device_ListByOrderNo_FullMethodName       = "/device.Device/ListByOrderNo"
-	Device_Transition_FullMethodName          = "/device.Device/Transition"
-	Device_Activate_FullMethodName            = "/device.Device/Activate"
-	Device_ProvisionCredential_FullMethodName = "/device.Device/ProvisionCredential"
-	Device_GetDeviceShadow_FullMethodName     = "/device.Device/GetDeviceShadow"
-	Device_SendCommand_FullMethodName         = "/device.Device/SendCommand"
-	Device_ListCmd_FullMethodName             = "/device.Device/ListCmd"
-	Device_GetDeviceTopology_FullMethodName   = "/device.Device/GetDeviceTopology"
-	Device_SaveDeviceTopology_FullMethodName  = "/device.Device/SaveDeviceTopology"
-	Device_SaveFirmware_FullMethodName        = "/device.Device/SaveFirmware"
-	Device_ListFirmware_FullMethodName        = "/device.Device/ListFirmware"
-	Device_CreateOtaTask_FullMethodName       = "/device.Device/CreateOtaTask"
-	Device_GetOtaTask_FullMethodName          = "/device.Device/GetOtaTask"
-	Device_ListOtaTask_FullMethodName         = "/device.Device/ListOtaTask"
-	Device_RollbackOtaTask_FullMethodName     = "/device.Device/RollbackOtaTask"
+	Device_Ping_FullMethodName                       = "/device.Device/Ping"
+	Device_ImportSN_FullMethodName                   = "/device.Device/ImportSN"
+	Device_GetDevice_FullMethodName                  = "/device.Device/GetDevice"
+	Device_GetDeviceBySn_FullMethodName              = "/device.Device/GetDeviceBySn"
+	Device_ListDevice_FullMethodName                 = "/device.Device/ListDevice"
+	Device_ListByOrderNo_FullMethodName              = "/device.Device/ListByOrderNo"
+	Device_Transition_FullMethodName                 = "/device.Device/Transition"
+	Device_Activate_FullMethodName                   = "/device.Device/Activate"
+	Device_ProvisionCredential_FullMethodName        = "/device.Device/ProvisionCredential"
+	Device_GetDeviceShadow_FullMethodName            = "/device.Device/GetDeviceShadow"
+	Device_SendCommand_FullMethodName                = "/device.Device/SendCommand"
+	Device_ListCmd_FullMethodName                    = "/device.Device/ListCmd"
+	Device_GetDeviceTopology_FullMethodName          = "/device.Device/GetDeviceTopology"
+	Device_SaveDeviceTopology_FullMethodName         = "/device.Device/SaveDeviceTopology"
+	Device_SaveFirmware_FullMethodName               = "/device.Device/SaveFirmware"
+	Device_ListFirmware_FullMethodName               = "/device.Device/ListFirmware"
+	Device_CreateOtaTask_FullMethodName              = "/device.Device/CreateOtaTask"
+	Device_GetOtaTask_FullMethodName                 = "/device.Device/GetOtaTask"
+	Device_ListOtaTask_FullMethodName                = "/device.Device/ListOtaTask"
+	Device_RollbackOtaTask_FullMethodName            = "/device.Device/RollbackOtaTask"
+	Device_CreateRetirementAssessment_FullMethodName = "/device.Device/CreateRetirementAssessment"
+	Device_SubmitRetirementResult_FullMethodName     = "/device.Device/SubmitRetirementResult"
+	Device_DecideRetirement_FullMethodName           = "/device.Device/DecideRetirement"
+	Device_ListRetirementAssessment_FullMethodName   = "/device.Device/ListRetirementAssessment"
+	Device_CreateRecycleOrder_FullMethodName         = "/device.Device/CreateRecycleOrder"
+	Device_ListRecycleOrder_FullMethodName           = "/device.Device/ListRecycleOrder"
 )
 
 // DeviceClient is the client API for Device service.
@@ -87,6 +93,13 @@ type DeviceClient interface {
 	GetOtaTask(ctx context.Context, in *GetOtaTaskReq, opts ...grpc.CallOption) (*GetOtaTaskResp, error)
 	ListOtaTask(ctx context.Context, in *ListOtaTaskReq, opts ...grpc.CallOption) (*ListOtaTaskResp, error)
 	RollbackOtaTask(ctx context.Context, in *RollbackOtaTaskReq, opts ...grpc.CallOption) (*RollbackOtaTaskResp, error)
+	// ---- 退役评估（S10-01 梯次利用 + 回收；评级定稿：A 二次销售/B 降容备电/C 报废回收）----
+	CreateRetirementAssessment(ctx context.Context, in *CreateRetirementAssessmentReq, opts ...grpc.CallOption) (*CreateRetirementAssessmentResp, error)
+	SubmitRetirementResult(ctx context.Context, in *SubmitRetirementResultReq, opts ...grpc.CallOption) (*SubmitRetirementResultResp, error)
+	DecideRetirement(ctx context.Context, in *DecideRetirementReq, opts ...grpc.CallOption) (*DecideRetirementResp, error)
+	ListRetirementAssessment(ctx context.Context, in *ListRetirementAssessmentReq, opts ...grpc.CallOption) (*ListRetirementAssessmentResp, error)
+	CreateRecycleOrder(ctx context.Context, in *CreateRecycleOrderReq, opts ...grpc.CallOption) (*CreateRecycleOrderResp, error)
+	ListRecycleOrder(ctx context.Context, in *ListRecycleOrderReq, opts ...grpc.CallOption) (*ListRecycleOrderResp, error)
 }
 
 type deviceClient struct {
@@ -297,6 +310,66 @@ func (c *deviceClient) RollbackOtaTask(ctx context.Context, in *RollbackOtaTaskR
 	return out, nil
 }
 
+func (c *deviceClient) CreateRetirementAssessment(ctx context.Context, in *CreateRetirementAssessmentReq, opts ...grpc.CallOption) (*CreateRetirementAssessmentResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRetirementAssessmentResp)
+	err := c.cc.Invoke(ctx, Device_CreateRetirementAssessment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceClient) SubmitRetirementResult(ctx context.Context, in *SubmitRetirementResultReq, opts ...grpc.CallOption) (*SubmitRetirementResultResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitRetirementResultResp)
+	err := c.cc.Invoke(ctx, Device_SubmitRetirementResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceClient) DecideRetirement(ctx context.Context, in *DecideRetirementReq, opts ...grpc.CallOption) (*DecideRetirementResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DecideRetirementResp)
+	err := c.cc.Invoke(ctx, Device_DecideRetirement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceClient) ListRetirementAssessment(ctx context.Context, in *ListRetirementAssessmentReq, opts ...grpc.CallOption) (*ListRetirementAssessmentResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRetirementAssessmentResp)
+	err := c.cc.Invoke(ctx, Device_ListRetirementAssessment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceClient) CreateRecycleOrder(ctx context.Context, in *CreateRecycleOrderReq, opts ...grpc.CallOption) (*CreateRecycleOrderResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRecycleOrderResp)
+	err := c.cc.Invoke(ctx, Device_CreateRecycleOrder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceClient) ListRecycleOrder(ctx context.Context, in *ListRecycleOrderReq, opts ...grpc.CallOption) (*ListRecycleOrderResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRecycleOrderResp)
+	err := c.cc.Invoke(ctx, Device_ListRecycleOrder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeviceServer is the server API for Device service.
 // All implementations must embed UnimplementedDeviceServer
 // for forward compatibility.
@@ -343,6 +416,13 @@ type DeviceServer interface {
 	GetOtaTask(context.Context, *GetOtaTaskReq) (*GetOtaTaskResp, error)
 	ListOtaTask(context.Context, *ListOtaTaskReq) (*ListOtaTaskResp, error)
 	RollbackOtaTask(context.Context, *RollbackOtaTaskReq) (*RollbackOtaTaskResp, error)
+	// ---- 退役评估（S10-01 梯次利用 + 回收；评级定稿：A 二次销售/B 降容备电/C 报废回收）----
+	CreateRetirementAssessment(context.Context, *CreateRetirementAssessmentReq) (*CreateRetirementAssessmentResp, error)
+	SubmitRetirementResult(context.Context, *SubmitRetirementResultReq) (*SubmitRetirementResultResp, error)
+	DecideRetirement(context.Context, *DecideRetirementReq) (*DecideRetirementResp, error)
+	ListRetirementAssessment(context.Context, *ListRetirementAssessmentReq) (*ListRetirementAssessmentResp, error)
+	CreateRecycleOrder(context.Context, *CreateRecycleOrderReq) (*CreateRecycleOrderResp, error)
+	ListRecycleOrder(context.Context, *ListRecycleOrderReq) (*ListRecycleOrderResp, error)
 	mustEmbedUnimplementedDeviceServer()
 }
 
@@ -412,6 +492,24 @@ func (UnimplementedDeviceServer) ListOtaTask(context.Context, *ListOtaTaskReq) (
 }
 func (UnimplementedDeviceServer) RollbackOtaTask(context.Context, *RollbackOtaTaskReq) (*RollbackOtaTaskResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method RollbackOtaTask not implemented")
+}
+func (UnimplementedDeviceServer) CreateRetirementAssessment(context.Context, *CreateRetirementAssessmentReq) (*CreateRetirementAssessmentResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateRetirementAssessment not implemented")
+}
+func (UnimplementedDeviceServer) SubmitRetirementResult(context.Context, *SubmitRetirementResultReq) (*SubmitRetirementResultResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method SubmitRetirementResult not implemented")
+}
+func (UnimplementedDeviceServer) DecideRetirement(context.Context, *DecideRetirementReq) (*DecideRetirementResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method DecideRetirement not implemented")
+}
+func (UnimplementedDeviceServer) ListRetirementAssessment(context.Context, *ListRetirementAssessmentReq) (*ListRetirementAssessmentResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRetirementAssessment not implemented")
+}
+func (UnimplementedDeviceServer) CreateRecycleOrder(context.Context, *CreateRecycleOrderReq) (*CreateRecycleOrderResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateRecycleOrder not implemented")
+}
+func (UnimplementedDeviceServer) ListRecycleOrder(context.Context, *ListRecycleOrderReq) (*ListRecycleOrderResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRecycleOrder not implemented")
 }
 func (UnimplementedDeviceServer) mustEmbedUnimplementedDeviceServer() {}
 func (UnimplementedDeviceServer) testEmbeddedByValue()                {}
@@ -794,6 +892,114 @@ func _Device_RollbackOtaTask_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Device_CreateRetirementAssessment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRetirementAssessmentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).CreateRetirementAssessment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_CreateRetirementAssessment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).CreateRetirementAssessment(ctx, req.(*CreateRetirementAssessmentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Device_SubmitRetirementResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitRetirementResultReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).SubmitRetirementResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_SubmitRetirementResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).SubmitRetirementResult(ctx, req.(*SubmitRetirementResultReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Device_DecideRetirement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecideRetirementReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).DecideRetirement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_DecideRetirement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).DecideRetirement(ctx, req.(*DecideRetirementReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Device_ListRetirementAssessment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRetirementAssessmentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).ListRetirementAssessment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_ListRetirementAssessment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).ListRetirementAssessment(ctx, req.(*ListRetirementAssessmentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Device_CreateRecycleOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRecycleOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).CreateRecycleOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_CreateRecycleOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).CreateRecycleOrder(ctx, req.(*CreateRecycleOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Device_ListRecycleOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRecycleOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServer).ListRecycleOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Device_ListRecycleOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServer).ListRecycleOrder(ctx, req.(*ListRecycleOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Device_ServiceDesc is the grpc.ServiceDesc for Device service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -881,7 +1087,31 @@ var Device_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "RollbackOtaTask",
 			Handler:    _Device_RollbackOtaTask_Handler,
 		},
+		{
+			MethodName: "CreateRetirementAssessment",
+			Handler:    _Device_CreateRetirementAssessment_Handler,
+		},
+		{
+			MethodName: "SubmitRetirementResult",
+			Handler:    _Device_SubmitRetirementResult_Handler,
+		},
+		{
+			MethodName: "DecideRetirement",
+			Handler:    _Device_DecideRetirement_Handler,
+		},
+		{
+			MethodName: "ListRetirementAssessment",
+			Handler:    _Device_ListRetirementAssessment_Handler,
+		},
+		{
+			MethodName: "CreateRecycleOrder",
+			Handler:    _Device_CreateRecycleOrder_Handler,
+		},
+		{
+			MethodName: "ListRecycleOrder",
+			Handler:    _Device_ListRecycleOrder_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pb/device.proto",
+	Metadata: "services/device/pb/device.proto",
 }

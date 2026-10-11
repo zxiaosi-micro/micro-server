@@ -64,6 +64,10 @@ type Models struct {
 	OtaTask      model.OtaTaskModel
 	OtaDevice    model.OtaDeviceModel
 	Cmd          model.CmdModel
+	// 退役评估（S10-01 梯次利用/回收）。
+	Retirement model.RetirementAssessmentModel
+	Soh        model.DeviceSohSnapshotModel
+	Recycle    model.RecycleOrderModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -87,6 +91,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			OtaTask:      model.NewOtaTaskModel(conn, c.Cache),
 			OtaDevice:    model.NewOtaDeviceModel(conn, c.Cache),
 			Cmd:          model.NewCmdModel(conn, c.Cache),
+			Retirement:   model.NewRetirementAssessmentModel(conn, c.Cache),
+			Soh:          model.NewDeviceSohSnapshotModel(conn, c.Cache),
+			Recycle:      model.NewRecycleOrderModel(conn, c.Cache),
 		},
 	}
 

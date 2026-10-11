@@ -32,6 +32,14 @@ var (
 	errTaskStatus       = errcode.New(SegFinance, 1015, "对账任务状态不允许该操作")
 	errResolutionBad    = errcode.New(SegFinance, 1016, "处理方式不合法(仅 REPLAY/IGNORE)")
 	errChannelVerifyBad = errcode.New(SegFinance, 1017, "回调验签失败")
+
+	// S10-03 经销商返利。
+	errRebatePeriodBad     = errcode.New(SegFinance, 1018, "结算周期不合法（yyyy-MM）")
+	errRebatePartyNotReady = errcode.New(SegFinance, 1019, "party RPC 未配置（返利规则源不可用）")
+	errRebateRuleBad       = errcode.New(SegFinance, 1020, "返利规则不合法（{\"rate\":0.03,\"settle\":\"MONTHLY\"}）")
+	errRebateNotFound      = errcode.New(SegFinance, 1021, "返利结算单不存在")
+	errRebateStatus        = errcode.New(SegFinance, 1022, "返利结算状态不允许该操作")
+	errRebateActionBad     = errcode.New(SegFinance, 1023, "动作不合法（仅 CONFIRM/PAID）")
 )
 
 // mustTenant 业务面租户（BFF authz 注入）。

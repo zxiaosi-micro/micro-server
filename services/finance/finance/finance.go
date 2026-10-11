@@ -14,48 +14,59 @@ import (
 )
 
 type (
-	AlipayCallbackReq        = pb.AlipayCallbackReq
-	AlipayCallbackResp       = pb.AlipayCallbackResp
-	AlipayPayURLReq          = pb.AlipayPayURLReq
-	AlipayPayURLResp         = pb.AlipayPayURLResp
-	ApprovePaymentReq        = pb.ApprovePaymentReq
-	ApprovePaymentResp       = pb.ApprovePaymentResp
-	ConfirmPaymentReq        = pb.ConfirmPaymentReq
-	ConfirmPaymentResp       = pb.ConfirmPaymentResp
-	CreatePaymentReq         = pb.CreatePaymentReq
-	CreatePaymentResp        = pb.CreatePaymentResp
-	CreateReconcileTaskReq   = pb.CreateReconcileTaskReq
-	CreateReconcileTaskResp  = pb.CreateReconcileTaskResp
-	CreateRefundReq          = pb.CreateRefundReq
-	CreateRefundResp         = pb.CreateRefundResp
-	GetPaymentReq            = pb.GetPaymentReq
-	GetPaymentResp           = pb.GetPaymentResp
-	InvoiceDetail            = pb.InvoiceDetail
-	IssueInvoiceReq          = pb.IssueInvoiceReq
-	IssueInvoiceResp         = pb.IssueInvoiceResp
-	ListInvoiceReq           = pb.ListInvoiceReq
-	ListInvoiceResp          = pb.ListInvoiceResp
-	ListPaymentReq           = pb.ListPaymentReq
-	ListPaymentResp          = pb.ListPaymentResp
-	ListReconcileTaskReq     = pb.ListReconcileTaskReq
-	ListReconcileTaskResp    = pb.ListReconcileTaskResp
-	ListRefundReq            = pb.ListRefundReq
-	ListRefundResp           = pb.ListRefundResp
-	PaymentDetail            = pb.PaymentDetail
-	PingReq                  = pb.PingReq
-	PingResp                 = pb.PingResp
-	ReconcileTaskDetail      = pb.ReconcileTaskDetail
-	RefundDetail             = pb.RefundDetail
-	ResolveReconcileTaskReq  = pb.ResolveReconcileTaskReq
-	ResolveReconcileTaskResp = pb.ResolveReconcileTaskResp
-	ReverseInvoiceReq        = pb.ReverseInvoiceReq
-	ReverseInvoiceResp       = pb.ReverseInvoiceResp
-	SettlePaymentReq         = pb.SettlePaymentReq
-	SettlePaymentResp        = pb.SettlePaymentResp
-	WechatCallbackReq        = pb.WechatCallbackReq
-	WechatCallbackResp       = pb.WechatCallbackResp
-	WechatPayURLReq          = pb.WechatPayURLReq
-	WechatPayURLResp         = pb.WechatPayURLResp
+	AlipayCallbackReq           = pb.AlipayCallbackReq
+	AlipayCallbackResp          = pb.AlipayCallbackResp
+	AlipayPayURLReq             = pb.AlipayPayURLReq
+	AlipayPayURLResp            = pb.AlipayPayURLResp
+	ApprovePaymentReq           = pb.ApprovePaymentReq
+	ApprovePaymentResp          = pb.ApprovePaymentResp
+	ConfirmPaymentReq           = pb.ConfirmPaymentReq
+	ConfirmPaymentResp          = pb.ConfirmPaymentResp
+	ConfirmRebateSettlementReq  = pb.ConfirmRebateSettlementReq
+	ConfirmRebateSettlementResp = pb.ConfirmRebateSettlementResp
+	CreatePaymentReq            = pb.CreatePaymentReq
+	CreatePaymentResp           = pb.CreatePaymentResp
+	CreateReconcileTaskReq      = pb.CreateReconcileTaskReq
+	CreateReconcileTaskResp     = pb.CreateReconcileTaskResp
+	CreateRefundReq             = pb.CreateRefundReq
+	CreateRefundResp            = pb.CreateRefundResp
+	GetPaymentReq               = pb.GetPaymentReq
+	GetPaymentResp              = pb.GetPaymentResp
+	InvoiceDetail               = pb.InvoiceDetail
+	IssueInvoiceReq             = pb.IssueInvoiceReq
+	IssueInvoiceResp            = pb.IssueInvoiceResp
+	ListInvoiceReq              = pb.ListInvoiceReq
+	ListInvoiceResp             = pb.ListInvoiceResp
+	ListPaymentReq              = pb.ListPaymentReq
+	ListPaymentResp             = pb.ListPaymentResp
+	ListRebateSettlementReq     = pb.ListRebateSettlementReq
+	ListRebateSettlementResp    = pb.ListRebateSettlementResp
+	ListReconcileTaskReq        = pb.ListReconcileTaskReq
+	ListReconcileTaskResp       = pb.ListReconcileTaskResp
+	ListRefundReq               = pb.ListRefundReq
+	ListRefundResp              = pb.ListRefundResp
+	PaymentDetail               = pb.PaymentDetail
+	PingReq                     = pb.PingReq
+	PingResp                    = pb.PingResp
+	RebateDiffItem              = pb.RebateDiffItem
+	RebateSettlementItem        = pb.RebateSettlementItem
+	RebateSettlementResult      = pb.RebateSettlementResult
+	ReconcileRebateReq          = pb.ReconcileRebateReq
+	ReconcileRebateResp         = pb.ReconcileRebateResp
+	ReconcileTaskDetail         = pb.ReconcileTaskDetail
+	RefundDetail                = pb.RefundDetail
+	ResolveReconcileTaskReq     = pb.ResolveReconcileTaskReq
+	ResolveReconcileTaskResp    = pb.ResolveReconcileTaskResp
+	ReverseInvoiceReq           = pb.ReverseInvoiceReq
+	ReverseInvoiceResp          = pb.ReverseInvoiceResp
+	RunRebateSettlementReq      = pb.RunRebateSettlementReq
+	RunRebateSettlementResp     = pb.RunRebateSettlementResp
+	SettlePaymentReq            = pb.SettlePaymentReq
+	SettlePaymentResp           = pb.SettlePaymentResp
+	WechatCallbackReq           = pb.WechatCallbackReq
+	WechatCallbackResp          = pb.WechatCallbackResp
+	WechatPayURLReq             = pb.WechatPayURLReq
+	WechatPayURLResp            = pb.WechatPayURLResp
 
 	Finance interface {
 		Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingResp, error)
@@ -82,6 +93,11 @@ type (
 		CreateReconcileTask(ctx context.Context, in *CreateReconcileTaskReq, opts ...grpc.CallOption) (*CreateReconcileTaskResp, error)
 		ResolveReconcileTask(ctx context.Context, in *ResolveReconcileTaskReq, opts ...grpc.CallOption) (*ResolveReconcileTaskResp, error)
 		ListReconcileTask(ctx context.Context, in *ListReconcileTaskReq, opts ...grpc.CallOption) (*ListReconcileTaskResp, error)
+		// ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+		RunRebateSettlement(ctx context.Context, in *RunRebateSettlementReq, opts ...grpc.CallOption) (*RunRebateSettlementResp, error)
+		ListRebateSettlement(ctx context.Context, in *ListRebateSettlementReq, opts ...grpc.CallOption) (*ListRebateSettlementResp, error)
+		ConfirmRebateSettlement(ctx context.Context, in *ConfirmRebateSettlementReq, opts ...grpc.CallOption) (*ConfirmRebateSettlementResp, error)
+		ReconcileRebate(ctx context.Context, in *ReconcileRebateReq, opts ...grpc.CallOption) (*ReconcileRebateResp, error)
 	}
 
 	defaultFinance struct {
@@ -193,4 +209,25 @@ func (m *defaultFinance) ResolveReconcileTask(ctx context.Context, in *ResolveRe
 func (m *defaultFinance) ListReconcileTask(ctx context.Context, in *ListReconcileTaskReq, opts ...grpc.CallOption) (*ListReconcileTaskResp, error) {
 	client := pb.NewFinanceClient(m.cli.Conn())
 	return client.ListReconcileTask(ctx, in, opts...)
+}
+
+// ---- 经销商返利（S10-03：规则快照可追溯；月度结算/确认/对账，规则源 party.dealer_ext.rebate_rule）----
+func (m *defaultFinance) RunRebateSettlement(ctx context.Context, in *RunRebateSettlementReq, opts ...grpc.CallOption) (*RunRebateSettlementResp, error) {
+	client := pb.NewFinanceClient(m.cli.Conn())
+	return client.RunRebateSettlement(ctx, in, opts...)
+}
+
+func (m *defaultFinance) ListRebateSettlement(ctx context.Context, in *ListRebateSettlementReq, opts ...grpc.CallOption) (*ListRebateSettlementResp, error) {
+	client := pb.NewFinanceClient(m.cli.Conn())
+	return client.ListRebateSettlement(ctx, in, opts...)
+}
+
+func (m *defaultFinance) ConfirmRebateSettlement(ctx context.Context, in *ConfirmRebateSettlementReq, opts ...grpc.CallOption) (*ConfirmRebateSettlementResp, error) {
+	client := pb.NewFinanceClient(m.cli.Conn())
+	return client.ConfirmRebateSettlement(ctx, in, opts...)
+}
+
+func (m *defaultFinance) ReconcileRebate(ctx context.Context, in *ReconcileRebateReq, opts ...grpc.CallOption) (*ReconcileRebateResp, error) {
+	client := pb.NewFinanceClient(m.cli.Conn())
+	return client.ReconcileRebate(ctx, in, opts...)
 }

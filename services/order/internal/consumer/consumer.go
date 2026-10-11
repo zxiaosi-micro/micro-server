@@ -5,6 +5,7 @@ package consumer
 
 import (
 	"context"
+	"time"
 
 	"micro-server/services/order/internal/config"
 	"micro-server/services/order/internal/logic"
@@ -42,7 +43,9 @@ func MustStart(c config.Config, sc *svc.ServiceContext) {
 			Conns:      1,
 			Consumers:  1,
 			Processors: 1,
-		}, kqHandler{sub})
+			MinBytes:   1, // 显式传：KqConf 字面量不走 conf 解码，default 标签不生效（kq 空转 known-pit）；1=有数据即返保低延迟
+			MaxBytes:   10485760,
+		}, kqHandler{sub}, kq.WithMaxWait(10*time.Second)) // 默认 1s 撞 kafka-go RTT 算术边界 → maxWait=0 空转（v4/04）
 		// kq 队列托管：Start 阻塞消费（内部自旋重连），挂后台 goroutine——
 		// 服务主面是 RPC，不得被 MQ 消费阻塞启动（09:40 事故：q.Start 同步调用吞掉 s.Start()）。
 		go q.Start()

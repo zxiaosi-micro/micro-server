@@ -62,6 +62,8 @@ func MustStart(c config.Config, sc *svc.ServiceContext) {
 			Conns:      1,
 			Consumers:  1,
 			Processors: 1,
+			MinBytes:   1, // 显式传：KqConf 字面量不走 conf 解码，default 标签不生效（kq 空转 known-pit）
+			MaxBytes:   10485760,
 		}, kqHandler{sub: readSub}, kq.WithMaxWait(200*time.Millisecond)) // 低水位 topic 及时取件（默认 1s MaxWait 抖动大）
 		// q.Start() 是阻塞调用：必须 go 化（09:40 事故）
 		go q.Start()
@@ -80,6 +82,8 @@ func MustStart(c config.Config, sc *svc.ServiceContext) {
 		Conns:      1,
 		Consumers:  1,
 		Processors: 1,
+		MinBytes:   1, // 显式传：KqConf 字面量不走 conf 解码（kq 空转 known-pit）
+		MaxBytes:   10485760,
 	}, kqHandler{sub: exportSub}, kq.WithMaxWait(200*time.Millisecond))
 	go q.Start()
 

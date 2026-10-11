@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"strings"
+	"time"
 
 	"micro-server/services/iotingest/internal/confcenter"
 	"micro-server/services/iotingest/internal/config"
@@ -78,7 +79,9 @@ func main() {
 		q := kq.MustNewQueue(kq.KqConf{
 			Brokers: c.Kafka.Brokers, Group: c.Kafka.Group, Topic: c.Kafka.Topic,
 			Offset: "first", Conns: 1, Consumers: 1, Processors: 1,
-		}, w)
+			MinBytes: 1, // 显式传：KqConf 字面量不走 conf 解码，default 标签不生效（kq 空转 known-pit）；1=有数据即返保低延迟
+			MaxBytes: 10485760,
+		}, w, kq.WithMaxWait(10*time.Second)) // 默认 1s 撞 kafka-go RTT 算术边界 → maxWait=0 空转（v4/04）
 		group.Add(startStopFunc{start: func() { q.Start() }, stop: func() { q.Stop() }})
 		logx.Infof("iotingest: writer 消费已启动 topic=%s group=%s", c.Kafka.Topic, c.Kafka.Group)
 	}

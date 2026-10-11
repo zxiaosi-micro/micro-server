@@ -5,6 +5,7 @@ package consumer
 
 import (
 	"context"
+	"time"
 
 	"micro-server/services/contract/internal/config"
 	"micro-server/services/contract/internal/logic"
@@ -42,7 +43,9 @@ func MustStart(ctx context.Context, c config.Config, sc *svc.ServiceContext) {
 			Conns:      1,
 			Consumers:  1,
 			Processors: 1,
-		}, kqHandler{sub})
+			MinBytes:   1, // 显式传：KqConf 字面量不走 conf 解码，default 标签不生效（kq 空转 known-pit）；1=有数据即返保低延迟
+			MaxBytes:   10485760,
+		}, kqHandler{sub}, kq.WithMaxWait(10*time.Second)) // 默认 1s 撞 kafka-go RTT 算术边界 → maxWait=0 空转（v4/04）
 		// kq.Start 阻塞（09:40 事故）：后台化
 		go q.Start()
 		logx.Infof("contract: %s 消费已启动 group=%s", t.topic, c.Kafka.Group)

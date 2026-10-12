@@ -77,6 +77,7 @@ func (m *reconModel) ResolveDiff(ctx context.Context, tid int64, metricCode stri
 func (m *reconModel) ListOpen(ctx context.Context, reconDate time.Time) ([]*ReconDiff, error) {
 	var rows []*ReconDiff
 	err := m.conn.QueryRowsCtx(ctx, &rows,
+		// tenantaudit:ignore 对账开放差异清单（daily_recon 平台级批次推进，跨租户）
 		"SELECT id, tenant_id, recon_date, biz_date, metric_code, source_count, model_count, diff_count, status, resolved_at, created_at, updated_at FROM recon_diff WHERE status = 'OPEN' AND recon_date = ?",
 		reconDate)
 	return rows, err
@@ -85,6 +86,7 @@ func (m *reconModel) ListOpen(ctx context.Context, reconDate time.Time) ([]*Reco
 func (m *reconModel) CountOpen(ctx context.Context, bizDate time.Time) (int64, error) {
 	var n int64
 	err := m.conn.QueryRowCtx(ctx, &n,
+		// tenantaudit:ignore 对账开放差异计数（daily_recon 平台级批次推进，跨租户）
 		"SELECT COUNT(*) FROM recon_diff WHERE status = 'OPEN' AND biz_date = ?", bizDate)
 	return n, err
 }

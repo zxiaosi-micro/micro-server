@@ -273,6 +273,7 @@ func (m *customStationTopologyModel) FindLatest(ctx context.Context, tenantId, s
 
 func (m *customStationTopologyModel) NextVersion(ctx context.Context, session sqlx.Session, stationId int64) (int64, error) {
 	var v int64
+	// tenantaudit:ignore 拓扑版本号按 station_id 全局主键取（场站归属校验在 logic 层）
 	query := "select coalesce(max(`version`),0) from `station_topology` where `station_id` = ? and `deleted_at` is null"
 	if err := session.QueryRowCtx(ctx, &v, query, stationId); err != nil {
 		return 0, err

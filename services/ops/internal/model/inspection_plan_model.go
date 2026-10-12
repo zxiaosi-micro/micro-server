@@ -111,6 +111,7 @@ func (m *customInspectionPlanModel) ScanDue(ctx context.Context, tenantId int64,
 
 func (m *customInspectionPlanModel) ScanDueAll(ctx context.Context, now time.Time, limit int) ([]*InspectionPlan, error) {
 	var list []*InspectionPlan
+	// tenantaudit:ignore 巡检计划生成 cron 跨租户扫描（inspection_task_generate，生成前按归属租户重建 ctx）
 	query := "select " + inspectionPlanRows + " from `inspection_plan` where `enabled` = 1 and `next_exec_at` <= ? and " + inspectionPlanSoftFilter + " order by `next_exec_at` asc limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, now, limit); err != nil {
 		return nil, err

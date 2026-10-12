@@ -45,6 +45,7 @@ type ServiceContext struct {
 	Verifier  *jwtauth.Verifier // 免鉴权组（logout）解析 Bearer 取 sid
 	Td        *TdClient         // 遥测趋势只读直查（REST/Basic，E7）
 	sessions  *sessionx.Store   // 会话中心只读方（预留）
+	QuotaMW   rest.Middleware   // 租户 RPM 配额限流（S11-01；全局 Use，先于路由级 authz）
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -76,10 +77,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
+	identity := ipb.NewIdentityClient(dial(c.IdentityRpc))
+	quotaMW := Quota(NewQuotaLimiter(c.Sessionx.Addr, c.Sessionx.Password, identity), verifier, store)
+
 	return &ServiceContext{
 		Config:    c,
 		Authz:     az.Handle,
-		Identity:  ipb.NewIdentityClient(dial(c.IdentityRpc)),
+		Identity:  identity,
 		Inventory: invpb.NewInventoryClient(dial(c.InventoryRpc)),
 		Party:     ppb.NewPartyClient(dial(c.PartyRpc)),
 		Catalog:   cpb.NewCatalogClient(dial(c.CatalogRpc)),
@@ -92,6 +96,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Verifier:  verifier,
 		Td:        NewTdClient(c.Tdengine.RestUrl, c.Tdengine.User, c.Tdengine.Pass, c.Tdengine.DB),
 		sessions:  store,
+		QuotaMW:   quotaMW,
 	}
 }
 

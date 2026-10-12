@@ -116,6 +116,7 @@ func (m *customSlaTimerModel) ScanDueBreaches(ctx context.Context, tenantId int6
 
 func (m *customSlaTimerModel) ScanDueBreachesAll(ctx context.Context, limit int) ([]*SlaTimer, error) {
 	var list []*SlaTimer
+	// tenantaudit:ignore SLA 违约 cron 跨租户扫描（sla_breach_scan，升级前按归属租户重建 ctx）
 	query := "select " + slaTimerRows + " from `sla_timer` where `paused_at` is null and ((`responded_at` is null and `response_breach_at` is null and `response_due_at` < now()) or (`resolved_at` is null and `resolve_breach_at` is null and `resolve_due_at` < now())) limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, limit); err != nil {
 		return nil, err

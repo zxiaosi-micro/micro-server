@@ -177,6 +177,7 @@ func (m *customPaymentModel) ListPage(ctx context.Context, tenantId int64, keywo
 
 func (m *customPaymentModel) SumByChannelDate(ctx context.Context, from, to time.Time) ([]*ChannelSumRow, error) {
 	var rows []*ChannelSumRow
+	// tenantaudit:ignore 资金渠道日结（tools/reconcile 平台对账，跨租户）
 	query := "select `channel`, count(*) as `cnt`, ifnull(sum(`paid_amount`),0) as `total` from `payment` where `status` in ('PAID','SETTLED') and `paid_at` >= ? and `paid_at` < ? and `deleted_at` is null group by `channel`"
 	if err := m.QueryRowsNoCacheCtx(ctx, &rows, query, from, to); err != nil {
 		return nil, err
@@ -271,6 +272,7 @@ func (m *customRefundModel) SumByDate(ctx context.Context, from, to time.Time) (
 		Total float64 `db:"total"`
 		Cnt   int64   `db:"cnt"`
 	}
+	// tenantaudit:ignore 退款日结汇总（tools/reconcile 平台对账，跨租户）
 	query := "select ifnull(sum(`amount`),0) as `total`, count(*) as `cnt` from `refund` where `status` = 'SUCCESS' and `created_at` >= ? and `created_at` < ? and `deleted_at` is null"
 	if err := m.QueryRowNoCacheCtx(ctx, &row, query, from, to); err != nil {
 		return 0, 0, err

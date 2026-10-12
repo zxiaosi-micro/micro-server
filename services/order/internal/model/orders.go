@@ -156,6 +156,7 @@ func (m *customOrderModel) ListPage(ctx context.Context, tenantId int64, keyword
 
 func (m *customOrderModel) FindPayExpired(ctx context.Context, now time.Time, limit int) ([]*Order, error) {
 	var list []*Order
+	// tenantaudit:ignore 支付超时 cron 跨租户扫描（order-pay-timeout-scan，取消前按归属租户重建 ctx）
 	query := "select " + orderRows + " from `order` where `pay_expire_at` is not null and `pay_expire_at` <= ? and `status` in ('CREATED','LOCKED','PAYING') and `deleted_at` is null limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, now, limit); err != nil {
 		// QueryRowCtx 对多行结果同样适用（scan 进 slice）；ErrNotFound 视为空集

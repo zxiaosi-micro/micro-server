@@ -88,6 +88,7 @@ func (m *exportTaskModel) List(ctx context.Context, tid int64, status string, pa
 
 func (m *exportTaskModel) CasStatus(ctx context.Context, id int64, from, to string) (bool, error) {
 	res, err := m.conn.ExecCtx(ctx,
+		// tenantaudit:ignore 导出任务 CAS（id 全局主键，TaskRunner 闭包已按任务归属租户重建 ctx）
 		"UPDATE export_task SET status = ? WHERE id = ? AND status = ?", to, id, from)
 	if err != nil {
 		return false, err
@@ -98,6 +99,7 @@ func (m *exportTaskModel) CasStatus(ctx context.Context, id int64, from, to stri
 
 func (m *exportTaskModel) UpdateDone(ctx context.Context, id int64, fileID int64, fileName string, rowCount, costMs int64) error {
 	_, err := m.conn.ExecCtx(ctx,
+		// tenantaudit:ignore 导出完成回写（id 全局主键，TaskRunner 闭包已按任务归属租户重建 ctx）
 		"UPDATE export_task SET status = 'DONE', file_id = ?, file_name = ?, row_count = ?, cost_ms = ?, error = '' WHERE id = ?",
 		fileID, fileName, rowCount, costMs, id)
 	return err
@@ -105,6 +107,7 @@ func (m *exportTaskModel) UpdateDone(ctx context.Context, id int64, fileID int64
 
 func (m *exportTaskModel) UpdateFailed(ctx context.Context, id int64, msg string) error {
 	_, err := m.conn.ExecCtx(ctx,
+		// tenantaudit:ignore 导出失败回写（id 全局主键，TaskRunner 闭包已按任务归属租户重建 ctx）
 		"UPDATE export_task SET status = 'FAILED', error = ? WHERE id = ?", msg, id)
 	return err
 }

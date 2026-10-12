@@ -152,6 +152,7 @@ func (m *customSagaModel) ResetForRetryTx(ctx context.Context, session sqlx.Sess
 
 func (m *customSagaModel) FindRetryDue(ctx context.Context, now time.Time, limit int) ([]*Saga, error) {
 	var list []*Saga
+	// tenantaudit:ignore Saga 重试 cron 跨租户扫描（order-saga-retry-scan，推进前按归属租户重建 ctx）
 	query := "select " + sagaRows + " from `saga` where `status` = 'RUNNING' and `next_retry_at` is not null and `next_retry_at` <= ? and `deleted_at` is null order by `next_retry_at` limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, now, limit); err != nil {
 		if err == ErrNotFound {
@@ -164,6 +165,7 @@ func (m *customSagaModel) FindRetryDue(ctx context.Context, now time.Time, limit
 
 func (m *customSagaModel) CountByStatus(ctx context.Context, status string) (int64, error) {
 	var cnt int64
+	// tenantaudit:ignore Saga 积压监控（order-saga-manual-queue-watch，平台面计数）
 	query := "select count(*) from `saga` where `status` = ? and `deleted_at` is null"
 	if err := m.QueryRowNoCacheCtx(ctx, &cnt, query, status); err != nil {
 		return 0, err

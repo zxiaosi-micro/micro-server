@@ -146,6 +146,7 @@ func (m *customDeviceModel) ListByOrderNoByTenant(ctx context.Context, tenantId 
 
 func (m *customDeviceModel) ListActiveByProduct(ctx context.Context, productKey string, limit int) ([]*Device, error) {
 	var list []*Device
+	// tenantaudit:ignore OTA 目标设备扫描（product_key 平台全局，跨租户由调用方保证）
 	query := "select " + deviceRows + " from `device` where `product_key` = ? and `status` = 'ACTIVATED' and " + deviceSoftFilter + " limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, productKey, limit); err != nil {
 		return nil, err
@@ -158,6 +159,7 @@ func (m *customDeviceModel) ListByIds(ctx context.Context, ids []int64) ([]*Devi
 		return nil, nil
 	}
 	var list []*Device
+	// tenantaudit:ignore OTA 灰度清单按主键批量（device_id 全局主键，跨租户由调用方保证）
 	query := "select " + deviceRows + " from `device` where `device_id` in (" + placeholders(len(ids)) + ") and " + deviceSoftFilter
 	args := make([]any, 0, len(ids))
 	for _, id := range ids {

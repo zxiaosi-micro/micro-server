@@ -40,6 +40,7 @@ func (m *customInspectionItemModel) InsertTx(ctx context.Context, session sqlx.S
 
 func (m *customInspectionItemModel) FillTicketTx(ctx context.Context, session sqlx.Session, itemId, ticketId int64) error {
 	_, err := session.ExecCtx(ctx,
+		// tenantaudit:ignore 巡检异常项回填工单号（item_id 全局主键，转单链路内步）
 		"update `inspection_item` set `ticket_id` = ? where `item_id` = ?", ticketId, itemId)
 	return err
 }

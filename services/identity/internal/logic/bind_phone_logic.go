@@ -60,7 +60,7 @@ func (l *BindPhoneLogic) BindPhone(in *pb.BindPhoneReq) (*pb.BindPhoneResp, erro
 	if err != nil {
 		return nil, errcode.Internal.WithCause(err)
 	}
-	if err := l.svcCtx.Models.User.BindMobile(l.ctx, user.TenantId, in.Uid, types, string(mobileCipher), hash, opUID(l.ctx)); err != nil {
+	if err := l.svcCtx.Models.User.BindMobile(l.ctx, user.TenantId, in.Uid, types, mobileCipher, hash, opUID(l.ctx)); err != nil {
 		return nil, errcode.Internal.WithCause(err)
 	}
 

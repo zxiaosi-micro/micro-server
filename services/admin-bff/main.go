@@ -37,6 +37,7 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	server.Use(svc.BearerProbe(ctx.Verifier)) // 免鉴权组（logout/step-up）注入 uid/sid
+	server.Use(ctx.QuotaMW)                   // 租户 RPM 配额限流（S11-01；超限 429 短路）
 	handler.RegisterHandlers(server, ctx)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)

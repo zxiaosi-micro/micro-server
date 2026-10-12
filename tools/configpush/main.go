@@ -12,6 +12,7 @@
 //	go run ./tools/configpush -validate                 # 只做结构校验（CI PR 门槛用，无需 etcd）
 //	go run ./tools/configpush                           # 校验 + 全量推送（值未变化的键自动跳过）
 //	go run ./tools/configpush -file ops/alert_baseline.yml -dry-run
+//	go run ./tools/configpush -diff                     # S11-05 一致性核对：正本 vs etcd 漂移报告（0 退出码=一致）
 //	go run ./tools/configpush -demo                     # listener 演示（demo.go，验证 3s 内 reload）
 package main
 
@@ -51,6 +52,7 @@ func main() {
 	dir := flag.String("dir", "../micro-deploy/config", "配置正本目录")
 	file := flag.String("file", "", "只处理相对 <dir> 的单个文件（如 ops/polling.yml）")
 	validate := flag.Bool("validate", false, "只校验不推送（CI 用，无需 etcd）")
+	diff := flag.Bool("diff", false, "一致性核对：正本 vs etcd 漂移报告（S11-05，不一致退出码 1）")
 	dryRun := flag.Bool("dry-run", false, "推送演练：不写 etcd")
 	prefixFlag := flag.String("prefix", "", "etcd 键前缀（默认 /micro/config，或 CONFIG_KEY_PREFIX）")
 	etcdFlag := flag.String("etcd", "", "etcd 地址（默认 127.0.0.1:22379，或 MICRO_DEV_ETCD_HOSTS）")
@@ -95,9 +97,14 @@ func main() {
 	if err != nil {
 		fatal(fmt.Errorf("连 etcd %s: %w（先跑 envcheck）", endpoint, err))
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 	ctx, cancel := ctxTimeout()
 	defer cancel()
+
+	if *diff {
+		driftMode(ctx, cli, prefix, items)
+		return
+	}
 
 	fmt.Printf("== 推送 → %s @ %s ==\n", prefix, endpoint)
 	fail := 0
@@ -129,6 +136,62 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println("== 推送完成 ==")
+}
+
+// driftMode S11-05 一致性核对：正本 vs etcd 双向漂移报告。
+//   - 正本有 etcd 无 → 缺推送（新配置未生效）
+//   - 正本无 etcd 有 → etcd 残留（服务已删配置仍被 watch）
+//   - 双方都有但值不同 → 漂移（手改 etcd 或推送遗漏）
+//
+// 退出码：0 一致；1 存在漂移（上线门槛核对用）。
+func driftMode(ctx context.Context, cli *clientv3.Client, prefix string, items []fileItem) {
+	fmt.Printf("== 一致性核对 · 正本 vs etcd @ %s ==\n", prefix)
+	drift := 0
+	for _, it := range items {
+		key := fmt.Sprintf("%s/%s/%s", prefix, it.svc, it.name)
+		resp, err := cli.Get(ctx, key)
+		if err != nil {
+			fmt.Printf("  %-52s ✗ Get: %v\n", key, err)
+			drift++
+			continue
+		}
+		switch {
+		case len(resp.Kvs) == 0:
+			fmt.Printf("  %-52s ✗ 缺推送（正本有 etcd 无）\n", key)
+			drift++
+		case string(resp.Kvs[0].Value) != string(it.raw):
+			fmt.Printf("  %-52s ✗ 漂移（etcd 值 ≠ 正本）\n", key)
+			drift++
+		default:
+			fmt.Printf("  %-52s - 一致\n", key)
+		}
+	}
+
+	// 反向：etcd 有正本无（残留键）
+	// 键位含文件名：前缀列举后比对 <svc>/<name> 集合
+	expected := map[string]bool{}
+	for _, it := range items {
+		expected[fmt.Sprintf("%s/%s/%s", prefix, it.svc, it.name)] = true
+	}
+	resp, err := cli.Get(ctx, prefix, clientv3.WithPrefix())
+	if err != nil {
+		fmt.Printf("  ✗ 前缀列举失败: %v\n", err)
+		drift++
+	} else {
+		for _, kv := range resp.Kvs {
+			k := string(kv.Key)
+			if !expected[k] {
+				fmt.Printf("  %-52s ✗ etcd 残留（正本无此键，确认后手动删除）\n", k)
+				drift++
+			}
+		}
+	}
+
+	if drift > 0 {
+		fmt.Printf("== 核对结果：%d 项不一致（可执行 go run ./tools/configpush 补齐推送；残留键人工确认删除）==\n", drift)
+		os.Exit(1)
+	}
+	fmt.Println("== 核对结果：正本与 etcd 完全一致 ==")
 }
 
 // collect 扫描 <dir>/<svc>/<file>.(json|yaml|yml) 并做结构校验：

@@ -50,6 +50,7 @@ func main() {
 	fmt.Printf("devicesim: %d 台 × %d 条/s → %s up/%d/%s/<sn>/telemetry\n", *n, *rate, *broker, *tenant, *pk)
 
 	stop := make(chan struct{})
+	var wg sync.WaitGroup
 	sims := make([]*deviceSim, 0, *n)
 	for i := 0; i < *n; i++ {
 		sn := *snPrefix + "-" + base64.RawURLEncoding.EncodeToString(randBytes(4)) + "-" + strconv.Itoa(i)
@@ -59,7 +60,11 @@ func main() {
 			os.Exit(1)
 		}
 		sims = append(sims, s)
-		go s.run()
+		wg.Add(1)
+		go func(s *deviceSim) {
+			defer wg.Done()
+			s.run()
+		}(s)
 		if i < 5 {
 			fmt.Printf("  sim sn=%s\n", sn)
 		}
@@ -78,8 +83,16 @@ func main() {
 		<-sig
 		close(stop)
 	}
+	// 优雅停机（AGENTS 丢报坑）：QoS1 在途报文必须等 PUBACK 后再 Disconnect——
+	// 先停 publish 循环（close stop → run 退出 → 最后一条已在 WaitTimeout 内等 token），
+	// 再留 ack 回调在途窗口，最后 Disconnect(2000) 静默排空；250ms 窗口会整批丢弃在途报文。
 	for _, s := range sims {
-		s.client.Disconnect(250)
+		close(s.stop)
+	}
+	wg.Wait()
+	time.Sleep(500 * time.Millisecond)
+	for _, s := range sims {
+		s.client.Disconnect(2000)
 	}
 	fmt.Println("devicesim: 已停止")
 }
@@ -111,7 +124,10 @@ func newSim(sn, broker, user, pass string, tenant int64, pk string, rate int) (*
 			"tenant_id": tenant, "sn": sn, "cmd_id": cmd.CmdID,
 			"ok": true, "ts": time.Now().UnixMilli(),
 		})
-		cli.Publish(ackTopic, 1, false, ack)
+		// ack 同样必须等 PUBACK（QoS1 fire-and-forget 在断连窗口静默丢弃）
+		if token := cli.Publish(ackTopic, 1, false, ack); !token.WaitTimeout(5*time.Second) || token.Error() != nil {
+			fmt.Fprintf(os.Stderr, "ack publish 失败 sn=%s: %v\n", sn, token.Error())
+		}
 	})
 	return &deviceSim{
 		sn:     sn,
@@ -127,7 +143,12 @@ func (s *deviceSim) run() {
 	t := time.NewTicker(interval)
 	defer t.Stop()
 	phase := mrand.Float64() * 2 * math.Pi
-	for range t.C {
+	for {
+		select {
+		case <-s.stop:
+			return
+		case <-t.C:
+		}
 		phase += 0.1
 		// 五指标模拟波形（SOC 缓降/充电回升循环 + 噪声）
 		soc := 60 + 30*math.Sin(phase/50) + mrand.NormFloat64()
@@ -166,5 +187,3 @@ func envOr(k, def string) string {
 	}
 	return def
 }
-
-var _ = sync.Once{}

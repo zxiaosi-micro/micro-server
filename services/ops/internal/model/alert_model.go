@@ -82,11 +82,13 @@ func (m *customAlertModel) FindActiveForAgg(ctx context.Context, tenantId, stati
 func (m *customAlertModel) AggHitTx(ctx context.Context, session sqlx.Session, alertId int64, lastValue *float64, devices string, hitAt time.Time) error {
 	if lastValue != nil {
 		_, err := session.ExecCtx(ctx,
+			// tenantaudit:ignore 告警聚合递增（alert_id 全局主键，事件消费链路内步）
 			"update `alert` set `aggregate_count` = `aggregate_count` + 1, `last_seen_at` = ?, `last_value` = ?, `devices` = ? where `alert_id` = ?",
 			hitAt, *lastValue, devices, alertId)
 		return err
 	}
 	_, err := session.ExecCtx(ctx,
+		// tenantaudit:ignore 告警聚合递增（alert_id 全局主键，事件消费链路内步）
 		"update `alert` set `aggregate_count` = `aggregate_count` + 1, `last_seen_at` = ?, `devices` = ? where `alert_id` = ?",
 		hitAt, devices, alertId)
 	return err

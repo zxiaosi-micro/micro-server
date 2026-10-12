@@ -55,6 +55,7 @@ type ServiceContext struct {
 	File      filepb.FileClient
 	Verifier  *jwtauth.Verifier // 免鉴权组（logout/step-up）解析 Bearer 取 sid
 	sessions  *sessionx.Store   // 会话中心只读方（预留：登出后本地校验）
+	QuotaMW   rest.Middleware   // 租户 RPM 配额限流（S11-01；全局 Use，先于路由级 authz）
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -91,10 +92,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
+	identity := ipb.NewIdentityClient(dial(c.IdentityRpc))
+	quotaMW := Quota(NewQuotaLimiter(c.Sessionx.Addr, c.Sessionx.Password, identity), verifier, store)
+
 	return &ServiceContext{
 		Config:       c,
 		Authz:        az.Handle,
-		Identity:     ipb.NewIdentityClient(dial(c.IdentityRpc)),
+		Identity:     identity,
 		Party:        ppb.NewPartyClient(dial(c.PartyRpc)),
 		Catalog:      cpb.NewCatalogClient(dial(c.CatalogRpc)),
 		Inventory:    invpb.NewInventoryClient(dial(c.InventoryRpc)),
@@ -110,6 +114,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		File:         filepb.NewFileClient(dial(c.FileRpc)),
 		Verifier:     verifier,
 		sessions:     store,
+		QuotaMW:      quotaMW,
 	}
 }
 

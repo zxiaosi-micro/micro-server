@@ -211,6 +211,7 @@ func (m *customTicketModel) ScanAcceptTimeout(ctx context.Context, tenantId int6
 
 func (m *customTicketModel) ScanAcceptTimeoutAll(ctx context.Context, before time.Time, limit int) ([]*Ticket, error) {
 	var list []*Ticket
+	// tenantaudit:ignore 工单受理超时 cron 跨租户扫描（ticket_accept_timeout，升级前按归属租户重建 ctx）
 	query := "select " + ticketRows + " from `ticket` where `status` = 'DISPATCHED' and `accept_deadline` is not null and `accept_deadline` < ? and " + ticketSoftFilter + " order by `accept_deadline` asc limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, before, limit); err != nil {
 		return nil, err

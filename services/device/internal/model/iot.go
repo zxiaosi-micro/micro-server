@@ -87,6 +87,7 @@ func (m *customCmdModel) FindRetryDue(ctx context.Context, now time.Time, limit 
 	var list []*Cmd
 	// QueryRowsCtx（切片扫描必须 QueryRowsCtx，QueryRowCtx 传 &[]*T 运行时报 unsupported unmarshal）；
 	// SENT/PENDING 且 next_exec_at 到期 = TimingWheel 失联后的兜底重试目标。
+	// tenantaudit:ignore 指令重试 cron 跨租户扫描（device-cmd-retry-scan，推进前按归属租户重建 ctx）
 	query := "select " + cmdRows + " from `cmd` where `status` in ('PENDING','SENT') and `next_exec_at` <= ? and " + cmdSoftFilter + " order by `next_exec_at` limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, now, limit); err != nil {
 		return nil, err
@@ -96,6 +97,7 @@ func (m *customCmdModel) FindRetryDue(ctx context.Context, now time.Time, limit 
 
 func (m *customCmdModel) IncRetryTx(ctx context.Context, session sqlx.Session, cmdId int64, nextExecAt time.Time) error {
 	_, err := session.ExecCtx(ctx,
+		// tenantaudit:ignore 重试计数推进（cmd_id 全局主键，重试扫描链路内步）
 		"update `cmd` set `retry_count`=`retry_count`+1, `next_exec_at`=?, `status`='PENDING' where `cmd_id`=? and `retry_count`<`max_retry` and "+cmdSoftFilter,
 		nextExecAt, cmdId)
 	return err
@@ -264,6 +266,7 @@ func (m *customOtaTaskModel) CasStatus(ctx context.Context, tenantId, taskId int
 
 func (m *customOtaTaskModel) IncProgressTx(ctx context.Context, session sqlx.Session, taskId int64, success, failed int) error {
 	_, err := session.ExecCtx(ctx,
+		// tenantaudit:ignore OTA 进度聚合（task_id 全局主键，派发扫描链路内步）
 		"update `ota_task` set `success_count`=`success_count`+?, `fail_count`=`fail_count`+? where `task_id`=?",
 		success, failed, taskId)
 	return err
@@ -271,6 +274,7 @@ func (m *customOtaTaskModel) IncProgressTx(ctx context.Context, session sqlx.Ses
 
 func (m *customOtaTaskModel) ListRunningOrPaused(ctx context.Context, limit int) ([]*OtaTask, error) {
 	var list []*OtaTask
+	// tenantaudit:ignore OTA 派发 cron 跨租户扫描（device-ota-dispatch-scan）
 	query := "select " + otaTaskRows + " from `ota_task` where `status` in ('RUNNING','PAUSED') and " + otaTaskSoftFilter + " order by `updated_at` limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, limit); err != nil {
 		return nil, err
@@ -355,6 +359,7 @@ func (m *customOtaDeviceModel) ListByTask(ctx context.Context, tenantId, taskId 
 
 func (m *customOtaDeviceModel) ListDispatchable(ctx context.Context, taskId int64, limit int) ([]*OtaDevice, error) {
 	var list []*OtaDevice
+	// tenantaudit:ignore OTA 派发目标扫描（task_id 全局主键）
 	query := "select " + otaDeviceRows + " from `ota_device` where `task_id` = ? and `status` in ('PENDING','FAILED') and `retry_count` < 3 order by `id` limit ?"
 	if err := m.conn.QueryRowsCtx(ctx, &list, query, taskId, limit); err != nil {
 		return nil, err
@@ -364,6 +369,7 @@ func (m *customOtaDeviceModel) ListDispatchable(ctx context.Context, taskId int6
 
 func (m *customOtaDeviceModel) MarkSentTx(ctx context.Context, session sqlx.Session, id, cmdId int64, dispatchedAt time.Time) error {
 	_, err := session.ExecCtx(ctx,
+		// tenantaudit:ignore OTA 派发标记（id 全局主键，派发链路内步）
 		"update `ota_device` set `status`='SENT', `cmd_id`=?, `dispatched_at`=? where `id`=?",
 		cmdId, dispatchedAt, id)
 	return err
@@ -371,6 +377,7 @@ func (m *customOtaDeviceModel) MarkSentTx(ctx context.Context, session sqlx.Sess
 
 func (m *customOtaDeviceModel) CasStatus(ctx context.Context, id int64, from, to, errMsg string) (int64, error) {
 	res, err := m.conn.ExecCtx(ctx,
+		// tenantaudit:ignore OTA 状态 CAS（id 全局主键，设备回调链路内步）
 		"update `ota_device` set `status`=?, `error`=?, `finished_at`=? where `id`=? and `status`=?",
 		to, errMsg, time.Now(), id, from)
 	if err != nil {
@@ -384,6 +391,7 @@ func (m *customOtaDeviceModel) CountByStatus(ctx context.Context, taskId int64) 
 		Status string `db:"status"`
 		Cnt    int    `db:"cnt"`
 	}
+	// tenantaudit:ignore OTA 进度统计（task_id 全局主键，派发链路内步）
 	query := "select `status`, count(*) as cnt from `ota_device` where `task_id` = ? group by `status`"
 	if err := m.conn.QueryRowsCtx(ctx, &rows, query, taskId); err != nil {
 		return nil, err
@@ -397,6 +405,7 @@ func (m *customOtaDeviceModel) CountByStatus(ctx context.Context, taskId int64) 
 
 func (m *customOtaDeviceModel) ResetForRollback(ctx context.Context, taskId int64) (int64, error) {
 	res, err := m.conn.ExecCtx(ctx,
+		// tenantaudit:ignore OTA 回滚重置（task_id 全局主键，平台面回滚操作）
 		"update `ota_device` set `status`='PENDING', `retry_count`=0 where `task_id`=? and `status` in ('SUCCESS','FAILED','SENT')",
 		taskId)
 	if err != nil {

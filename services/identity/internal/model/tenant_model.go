@@ -107,7 +107,8 @@ func (m *customTenantModel) Update(ctx context.Context, tenantId int64, name, pl
 }
 
 func (m *customTenantModel) UpdateQuota(ctx context.Context, tenantId int64, quota string, updatedBy int64) error {
-	query := fmt.Sprintf("update %s set `quota` = ?, `updated_by` = ?, `updated_at` = ? where `tenant_id` = ? and `deleted_at` is null", m.table)
+	// JSON 列空串必炸 3140（"The document is empty"）——nullif 置 NULL = 清配额（不限）语义
+	query := fmt.Sprintf("update %s set `quota` = nullif(?, ''), `updated_by` = ?, `updated_at` = ? where `tenant_id` = ? and `deleted_at` is null", m.table)
 	_, err := m.ExecNoCacheCtx(ctx, query, quota,
 		sql.NullInt64{Int64: updatedBy, Valid: updatedBy > 0}, time.Now(), tenantId)
 	return err

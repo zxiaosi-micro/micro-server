@@ -47,6 +47,10 @@ validate:
 	[ -n "$$apis" ] || { echo "尚无 .api 契约"; exit 0; }; \
 	for f in $$apis; do echo "== validate $$f"; goctl api validate -api "$$f"; done
 
+## tenantaudit: 多租户 SQL 静态对账（S11-01，CI tenantaudit job 同款；0 FAIL 门槛）
+tenantaudit:
+	@go run ./tools/tenantaudit
+
 ## swagger: 重生成 OpenAPI 文档到 docs/swagger（CI swagger-diff 同款命令）
 swagger:
 	@entries=$$(git ls-files 'services/*/api/entry.api'); \

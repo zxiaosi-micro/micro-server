@@ -380,6 +380,7 @@ func (m *customWarrantyModel) MarkExpiredTx(ctx context.Context, session sqlx.Se
 
 func (m *customWarrantyModel) FindExpired(ctx context.Context, now time.Time, limit int) ([]*Warranty, error) {
 	var list []*Warranty
+	// tenantaudit:ignore 质保到期 cron 跨租户扫描（contract-warranty-expiry-scan）
 	query := "select " + warrantyRows + " from `warranty` where `status` = 'ACTIVE' and `end_at` is not null and `end_at` <= ? and `deleted_at` is null limit ?"
 	if err := m.conn.QueryRowCtx(ctx, &list, query, now, limit); err != nil {
 		if err == ErrNotFound {

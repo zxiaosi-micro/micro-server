@@ -19,6 +19,10 @@ type Config struct {
 		// Enabled 启动期总开关（运行期由 configcenter redis_gate_enabled 热切换）。
 		Enabled bool `json:",default=true"`
 	} `json:",optional"`
+	// Kafka outbox relay 投递（stock_in/stock_out/stock_low；inventory 只发不收，无消费组）。
+	Kafka struct {
+		Brokers []string `json:",optional"`
+	} `json:",optional"`
 	// ConfigKey configcenter etcd key（ADR-10）。
 	ConfigKey string `json:",optional"`
 }

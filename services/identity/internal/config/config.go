@@ -51,9 +51,13 @@ type Config struct {
 		AppID     string `json:",optional"`
 		AppSecret string `json:",optional"`
 	} `json:",optional"`
-	// Audit 审计事件（outbox；Relay 属 S5 落地，本阶段仅事务内写表）。
+	// Audit 审计事件（auth.* 事务内写 outbox，Relay 投递 audit_event）。
 	Audit struct {
 		Enabled bool `json:",default=true"`
+	} `json:",optional"`
+	// Kafka outbox relay 投递（audit_event；identity 只发不收，无消费组）。
+	Kafka struct {
+		Brokers []string `json:",optional"`
 	} `json:",optional"`
 	// ConfigKey configcenter etcd key（S4 起消费，ADR-10）。
 	ConfigKey string `json:",optional"`

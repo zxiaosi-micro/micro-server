@@ -22,7 +22,10 @@ Lockout:
   FailWindow: 900s
   LockDur: 1800s              # 5 次失败锁 30 分钟（02 §9.5）
 Audit:
-  Enabled: true               # auth.login 审计走 outbox（Relay 投递属 S5）
+  Enabled: true               # auth.* 审计走 outbox（Relay 投递 audit_event）
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}
 Prometheus:
   Host: 0.0.0.0
   Port: 9101

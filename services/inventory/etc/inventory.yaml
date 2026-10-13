@@ -10,6 +10,9 @@ Cache:
   - Host: "${REDIS_HOSTS|127.0.0.1:26379}"
     Pass: "${REDIS_PASS|}"
     Type: node
+Kafka:
+  Brokers:
+    - ${KAFKA_BROKERS|127.0.0.1:29092}   # Outbox Relay 投递 stock_in/stock_out/stock_low
 Prometheus:
   Host: 0.0.0.0
   Port: 9104

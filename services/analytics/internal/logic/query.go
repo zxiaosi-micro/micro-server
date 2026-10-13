@@ -14,13 +14,15 @@ import (
 // GetReportRows 报表查询内核：返回行（维度 + 指标键值，指标编码 = 字典 metric_code）。
 // 通用化返回（map 结构）供 BFF 与导出统一消费；金额为字符串防精度丢失。
 type ReportRow struct {
-	StatDate    string
-	StationID   int64
-	WarehouseID int64
-	Channel     string
-	Metrics     map[string]string
+	StatDate    string            // 业务日（YYYY-MM-DD）
+	StationID   int64             // 场站维度（sla/station 报表，0=平台级）
+	WarehouseID int64             // 仓库维度（inventory 报表）
+	Channel     string            // 支付渠道维度（finance 报表）
+	Metrics     map[string]string // 指标键值（键 = 字典 metric_code；金额为字符串防精度丢失）
 }
 
+// GetReportRows 报表查询内核：按 reportType 分发到六大日聚合表扫描，
+// 统一折成 ReportRow（维度 + 指标键值）供 BFF 与导出消费。
 func GetReportRows(ctx context.Context, sc *svc.ServiceContext, tid int64, reportType, dateStart, dateEnd string, stationID, warehouseID int64, channel string) ([]*ReportRow, error) {
 	start, err := parseDay(dateStart)
 	if err != nil {

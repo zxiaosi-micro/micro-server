@@ -31,9 +31,9 @@ import (
 
 // ServiceContext device 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // device_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器（任务号/指令 ID/固件 ID）。
 	Snowflake  *snowflake.Node
 	snowCancel func()
@@ -57,19 +57,21 @@ type ServiceContext struct {
 
 // Models model 聚合。
 type Models struct {
-	Device       model.DeviceModel
-	LifecycleLog model.DeviceLifecycleLogModel
-	Topology     model.DeviceTopologyModel
-	Firmware     model.FirmwareModel
-	OtaTask      model.OtaTaskModel
-	OtaDevice    model.OtaDeviceModel
-	Cmd          model.CmdModel
+	Device       model.DeviceModel             // 设备档案（SN/secret/状态）
+	LifecycleLog model.DeviceLifecycleLogModel // 生命周期事件日志（幂等重放）
+	Topology     model.DeviceTopologyModel     // 网关-子设备拓扑
+	Firmware     model.FirmwareModel           // OTA 固件
+	OtaTask      model.OtaTaskModel            // OTA 升级任务（灰度批次）
+	OtaDevice    model.OtaDeviceModel          // OTA 设备维度进度
+	Cmd          model.CmdModel                // 指令下行记录
 	// 退役评估（S10-01 梯次利用/回收）。
-	Retirement model.RetirementAssessmentModel
-	Soh        model.DeviceSohSnapshotModel
-	Recycle    model.RecycleOrderModel
+	Retirement model.RetirementAssessmentModel // 退役评估单（三评级）
+	Soh        model.DeviceSohSnapshotModel    // SOH 快照（评级输入）
+	Recycle    model.RecycleOrderModel         // 回收单
 }
 
+// NewServiceContext 组装根：雪花 ID/ACK 时间轮硬依赖（失败 panic）；
+// 影子 Redis/EMQX/数据密钥/OTA 公钥/审计 RPC 为软依赖（缺省降级并记日志）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 
@@ -155,6 +157,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return sc
 }
 
+// zrpcMustClient 构造下游 RPC 客户端（出站挂 metadata 桥，uid/tenant 随链路透传）。
 func zrpcMustClient(c zrpc.RpcClientConf) zrpc.Client {
 	return zrpc.MustNewClient(c, zrpc.WithDialOption(grpc.WithUnaryInterceptor(authz.OutgoingInterceptor)))
 }
@@ -176,6 +179,7 @@ func loadPemPubKey(path string) ([]byte, error) {
 	return key, nil
 }
 
+// parsePKIXEd25519 解析 DER 编码的 PKIX Ed25519 公钥。
 func parsePKIXEd25519(der []byte) ([]byte, error) {
 	pub, err := x509.ParsePKIXPublicKey(der)
 	if err != nil {

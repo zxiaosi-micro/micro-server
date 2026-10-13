@@ -39,6 +39,7 @@ type (
 	}
 )
 
+// NewMessageModel 创建站内信模型（租户+用户维度的消息收件箱）。
 func NewMessageModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) MessageModel {
 	return &customMessageModel{defaultMessageModel: newMessageModel(conn, c, opts...)}
 }
@@ -123,6 +124,7 @@ type (
 	}
 )
 
+// NewNotifyTemplateModel 创建通知模板模型（template_code 定位的渲染模板正本）。
 func NewNotifyTemplateModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) NotifyTemplateModel {
 	return &customNotifyTemplateModel{defaultNotifyTemplateModel: newNotifyTemplateModel(conn, c, opts...)}
 }
@@ -200,6 +202,7 @@ type (
 	}
 )
 
+// NewOutboundLogModel 创建外发触达日志模型（短信/订阅消息等外发渠道的送达留痕）。
 func NewOutboundLogModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) OutboundLogModel {
 	return &customOutboundLogModel{defaultOutboundLogModel: newOutboundLogModel(conn, c, opts...)}
 }
@@ -222,6 +225,7 @@ type (
 	}
 )
 
+// NewUserNotifySettingModel 创建用户通知设置模型（按模板码的启用/免打扰，uk 幂等 upsert）。
 func NewUserNotifySettingModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) UserNotifySettingModel {
 	return &customUserNotifySettingModel{defaultUserNotifySettingModel: newUserNotifySettingModel(conn, c, opts...)}
 }
@@ -267,6 +271,7 @@ type (
 	}
 )
 
+// NewNotifyChannelModel 创建通知渠道模型（渠道编码定位的发送配置）。
 func NewNotifyChannelModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) NotifyChannelModel {
 	return &customNotifyChannelModel{defaultNotifyChannelModel: newNotifyChannelModel(conn, c, opts...)}
 }

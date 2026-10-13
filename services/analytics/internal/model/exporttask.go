@@ -9,37 +9,42 @@ import (
 
 // ExportTask 异步导出任务（S8-03）。
 type ExportTask struct {
-	ID          int64     `db:"id"`
-	TenantId    int64     `db:"tenant_id"`
-	ReportType  string    `db:"report_type"`
-	Format      string    `db:"format"`
-	DateStart   time.Time `db:"date_start"`
-	DateEnd     time.Time `db:"date_end"`
-	Status      string    `db:"status"`
-	FileId      int64     `db:"file_id"`
-	FileName    string    `db:"file_name"`
-	RowCount    int64     `db:"row_count"`
-	CostMs      int64     `db:"cost_ms"`
-	Error       string    `db:"error"`
-	RequestedBy int64     `db:"requested_by"`
-	CreatedAt   time.Time `db:"created_at"`
-	UpdatedAt   time.Time `db:"updated_at"`
+	ID          int64     `db:"id"`           // 任务 ID（雪花，创建时外层生成）
+	TenantId    int64     `db:"tenant_id"`    // 任务归属租户（worker 闭包按此重建 ctx）
+	ReportType  string    `db:"report_type"`  // 导出报表类型（event_ledger/sales_daily 等）
+	Format      string    `db:"format"`       // 导出格式（csv/xlsx/json）
+	DateStart   time.Time `db:"date_start"`   // 导出窗口起始业务日（含）
+	DateEnd     time.Time `db:"date_end"`     // 导出窗口结束业务日（含）
+	Status      string    `db:"status"`       // 状态机：PENDING→RUNNING→DONE/FAILED
+	FileId      int64     `db:"file_id"`      // 产物文件 ID（file 服务）
+	FileName    string    `db:"file_name"`    // 产物文件名
+	RowCount    int64     `db:"row_count"`    // 导出数据行数
+	CostMs      int64     `db:"cost_ms"`      // 导出耗时（毫秒）
+	Error       string    `db:"error"`        // 失败原因（DONE 时为空串）
+	RequestedBy int64     `db:"requested_by"` // 发起人 uid
+	CreatedAt   time.Time `db:"created_at"`   // 创建时间
+	UpdatedAt   time.Time `db:"updated_at"`   // 更新时间
 }
 
+// ExportTaskModel 异步导出任务（export_task）的登记/查询/状态机推进面。
 type ExportTaskModel interface {
 	// InsertInTx 任务落库（与 export_requested Outbox 事件同事务）。
 	InsertInTx(ctx context.Context, session sqlx.Session, t *ExportTask) error
 	// FindOneScoped 租户 scoped 查询（服务面统一入口；tenantaudit 口径）。
 	FindOneScoped(ctx context.Context, id, tid int64) (*ExportTask, error)
+	// List 分页查询任务列表（status 为空查全部；size 上限 100）。
 	List(ctx context.Context, tid int64, status string, page, size int) ([]*ExportTask, int64, error)
 	// CasStatus 状态机推进（affected==0 = 已被并发 worker 抢走/终态，返回 false）。
 	CasStatus(ctx context.Context, id int64, from, to string) (bool, error)
+	// UpdateDone 任务完成回写（产物信息 + 计量，DONE 终态）。
 	UpdateDone(ctx context.Context, id int64, fileID int64, fileName string, rowCount, costMs int64) error
+	// UpdateFailed 任务失败回写（FAILED 终态，error 记原因）。
 	UpdateFailed(ctx context.Context, id int64, msg string) error
 }
 
 type exportTaskModel struct{ conn sqlx.SqlConn }
 
+// NewExportTaskModel 创建导出任务模型（CAS 推进保证并发 worker 只有一个接管）。
 func NewExportTaskModel(conn sqlx.SqlConn) ExportTaskModel { return &exportTaskModel{conn: conn} }
 
 func (m *exportTaskModel) InsertInTx(ctx context.Context, session sqlx.Session, t *ExportTask) error {

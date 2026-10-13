@@ -21,12 +21,12 @@ import (
 
 // ServiceContext station 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // station_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器（场站/绑定/拓扑 ID）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 
 	// ShadowRd 设备影子只读（Redis DB0；键 micro:iot:shadow:{sn}，writer=iotingest）。
 	ShadowRd *redis.Redis
@@ -36,12 +36,13 @@ type ServiceContext struct {
 
 // Models model 聚合。
 type Models struct {
-	Station  model.StationModel
-	Device   model.StationDeviceModel
-	Staff    model.StationStaffModel
-	Topology model.StationTopologyModel
+	Station  model.StationModel         // 场站
+	Device   model.StationDeviceModel   // 场站-设备绑定
+	Staff    model.StationStaffModel    // 场站员工
+	Topology model.StationTopologyModel // 场站拓扑
 }
 
+// NewServiceContext 组装根：雪花 ID 硬依赖（失败即 panic）；影子 Redis/device RPC 软依赖（缺省降级）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

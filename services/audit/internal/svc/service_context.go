@@ -14,20 +14,21 @@ import (
 
 // ServiceContext audit 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // audit_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 }
 
 // Models model 聚合。
 type Models struct {
-	AuditLog model.AuditLogModel
-	CmdAudit model.CmdAuditModel
+	AuditLog model.AuditLogModel // 通用操作审计（append-only）
+	CmdAudit model.CmdAuditModel // 指令独立审计
 }
 
+// NewServiceContext 组装根：雪花 ID 硬依赖（失败即 panic）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

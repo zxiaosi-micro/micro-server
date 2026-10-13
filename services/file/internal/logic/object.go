@@ -96,8 +96,8 @@ func signToken(signKey []byte, tid, fileId int64, exp time.Time) string {
 
 // tokenClaims 令牌承载的声明。
 type tokenClaims struct {
-	TenantID int64
-	FileID   int64
+	TenantID int64 // 归属租户（下载 URL 无租户上下文时的隔离依据）
+	FileID   int64 // 文件 ID
 }
 
 // verifyToken 校验下载令牌（过期/签名不符 → errTokenInvalid）。

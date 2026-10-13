@@ -18,20 +18,21 @@ import (
 
 // ServiceContext file 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // file_db 主库连接
+	Models *Models       // 模型聚合
 	// MinIO S3 客户端（启动期幂等建双桶，02 §6.5）。
 	Minio      *minio.Client
-	Snowflake  *snowflake.Node
-	snowCancel func()
+	Snowflake  *snowflake.Node // 文件 ID 生成器
+	snowCancel func()          // worker_id 租约释放（停机时调用）
 }
 
 // Models model 聚合。
 type Models struct {
-	FileMeta model.FileMetaModel
+	FileMeta model.FileMetaModel // 文件元数据（ETag/桶/对象键）
 }
 
+// NewServiceContext 组装根：雪花 ID/MinIO 客户端硬依赖（失败即 panic），双桶启动期自愈建桶。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

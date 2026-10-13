@@ -15,13 +15,14 @@ import (
 
 // DwEtlStat 单日 ETL 计量（affected 行数；重跑同值全 0）。
 type DwEtlStat struct {
-	DimDateRows   int64
-	DimTenantRows int64
-	DimPartyRows  int64
-	FactOrderRows int64
-	FactPayRows   int64
+	DimDateRows   int64 // 日历维补行数
+	DimTenantRows int64 // 租户维新增行数
+	DimPartyRows  int64 // 参与方维快照刷新行数
+	FactOrderRows int64 // 订单事实写入行数
+	FactPayRows   int64 // 支付事实写入行数
 }
 
+// DwModel 数仓星型模型（2 事实 + 3 维度 + 批次台账）的 ETL 与调度对账面。
 type DwModel interface {
 	// EtlDay 单日 ETL（业务库 → dw 星型；ODKU/IGNORE 幂等）。
 	EtlDay(ctx context.Context, day time.Time) (*DwEtlStat, error)
@@ -33,6 +34,7 @@ type DwModel interface {
 
 type dwModel struct{ conn sqlx.SqlConn }
 
+// NewDwModel 创建数仓 ETL 模型（INSERT..SELECT 直读业务库，见文件头口径说明）。
 func NewDwModel(conn sqlx.SqlConn) DwModel { return &dwModel{conn: conn} }
 
 // EtlDay 单日 ETL：dim_date → dim_tenant → dim_party → fact_order → fact_payment。
@@ -131,6 +133,7 @@ func (m *dwModel) InsertEtlLog(ctx context.Context, day time.Time, stat *DwEtlSt
 	return err
 }
 
+// exec 执行写 SQL 并返回 affected 行数（ETL 计量用）。
 func (m *dwModel) exec(ctx context.Context, q string, args ...any) (int64, error) {
 	res, err := m.conn.ExecCtx(ctx, q, args...)
 	if err != nil {
@@ -139,6 +142,7 @@ func (m *dwModel) exec(ctx context.Context, q string, args ...any) (int64, error
 	return res.RowsAffected()
 }
 
+// b2i 布尔转 0/1（SQL 参数用）。
 func b2i(b bool) int {
 	if b {
 		return 1

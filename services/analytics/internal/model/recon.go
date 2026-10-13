@@ -9,35 +9,38 @@ import (
 
 // ReconDiff 日级对账差异（S8-04；修复只走补投递重放，E10 禁裸删）。
 type ReconDiff struct {
-	ID          int64      `db:"id"`
-	TenantId    int64      `db:"tenant_id"`
-	ReconDate   time.Time  `db:"recon_date"`
-	BizDate     time.Time  `db:"biz_date"`
-	MetricCode  string     `db:"metric_code"`
-	SourceCount int64      `db:"source_count"`
-	ModelCount  int64      `db:"model_count"`
-	DiffCount   int64      `db:"diff_count"`
-	Status      string     `db:"status"`
-	ResolvedAt  *time.Time `db:"resolved_at"`
-	CreatedAt   time.Time  `db:"created_at"`
-	UpdatedAt   time.Time  `db:"updated_at"`
+	ID          int64      `db:"id"`           // 自增主键
+	TenantId    int64      `db:"tenant_id"`    // 差异归属租户
+	ReconDate   time.Time  `db:"recon_date"`   // 对账执行日（调度批次口径）
+	BizDate     time.Time  `db:"biz_date"`     // 差异归属业务日
+	MetricCode  string     `db:"metric_code"`  // 对账指标码（与日报列对应）
+	SourceCount int64      `db:"source_count"` // 业务库源侧计数（INSERT..SELECT 直读）
+	ModelCount  int64      `db:"model_count"`  // 读模型侧计数
+	DiffCount   int64      `db:"diff_count"`   // 差异行数（source-model，非 0 即差异）
+	Status      string     `db:"status"`       // 状态：OPEN（待补）/RESOLVED（补投递后关闭）
+	ResolvedAt  *time.Time `db:"resolved_at"`  // 关闭时间（NULL=仍开放）
+	CreatedAt   time.Time  `db:"created_at"`   // 创建时间
+	UpdatedAt   time.Time  `db:"updated_at"`   // 更新时间
 }
 
 // ReconState 对账执行状态（cron 幂等防重）。
 type ReconState struct {
-	BizDate   time.Time  `db:"biz_date"`
-	Status    string     `db:"status"`
-	DiffTotal int64      `db:"diff_total"`
-	Notified  int64      `db:"notified"`
-	RunAt     *time.Time `db:"run_at"`
+	BizDate   time.Time  `db:"biz_date"`   // 对账业务日（主键）
+	Status    string     `db:"status"`     // 批次状态（RUNNING/DONE）
+	DiffTotal int64      `db:"diff_total"` // 本批差异总数
+	Notified  int64      `db:"notified"`   // 告警通知是否已发（1=已发，防重发）
+	RunAt     *time.Time `db:"run_at"`     // 最近执行时间
 }
 
+// ReconModel 日级对账（recon_diff/recon_state）的差异登记与批次状态面。
 type ReconModel interface {
 	// UpsertDiff 登记差异（uk tenant+metric+bizdate 幂等；OPEN 且与上次值一致则不重复告警）。
 	UpsertDiff(ctx context.Context, d *ReconDiff) error
 	// ResolveDiff 差异补齐后关闭（CAS：OPEN → RESOLVED）。
 	ResolveDiff(ctx context.Context, tid int64, metricCode string, bizDate time.Time) error
+	// ListOpen 某执行批次的开放差异清单（通知告警数据源）。
 	ListOpen(ctx context.Context, reconDate time.Time) ([]*ReconDiff, error)
+	// CountOpen 某业务日开放差异数（批次判定用）。
 	CountOpen(ctx context.Context, bizDate time.Time) (int64, error)
 
 	// UpsertState 对账状态登记（recon_state 幂等）。
@@ -48,6 +51,7 @@ type ReconModel interface {
 
 type reconModel struct{ conn sqlx.SqlConn }
 
+// NewReconModel 创建对账模型（对账差异修复唯一手段是 p4backfill 补投递）。
 func NewReconModel(conn sqlx.SqlConn) ReconModel { return &reconModel{conn: conn} }
 
 func (m *reconModel) UpsertDiff(ctx context.Context, d *ReconDiff) error {

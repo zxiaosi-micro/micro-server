@@ -22,12 +22,12 @@ import (
 
 // ServiceContext ops 服务根装配（S7-01）。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *model.Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // ops_db 主库连接
+	Models *model.Models // 模型聚合
 	// Snowflake ID 生成器（告警/工单/计时器/巡检全族 ID）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 
 	// Rd 轮询未读计数（Redis node；与 sessionx DB4 无关）。
 	Rd *redis.Redis
@@ -39,6 +39,8 @@ type ServiceContext struct {
 	Contract contractclient.Contract
 }
 
+// NewServiceContext 组装根：雪花 ID 硬依赖（失败即 panic）；
+// Redis/下游 RPC 软依赖（缺失降级：告警落平台级、派单仅手动、SLA 不计时）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

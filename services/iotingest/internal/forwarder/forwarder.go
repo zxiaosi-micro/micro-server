@@ -94,11 +94,11 @@ func (f *Forwarder) Run(ctx context.Context, broker, user, pass, clientID, topic
 
 // TelemetryMsg iot_telemetry_raw 消息体（forwarder→writer 契约）。
 type TelemetryMsg struct {
-	TenantId   int64  `json:"tenant_id"`
-	ProductKey string `json:"product_key"`
-	Sn         string `json:"sn"`
-	Payload    string `json:"payload"` // 设备原始报文（JSON 五指标或厂商格式）
-	Ts         int64  `json:"ts"`      // 平台接收时刻毫秒
+	TenantId   int64  `json:"tenant_id"`   // 租户 ID（topic 段解析）
+	ProductKey string `json:"product_key"` // 产品标识（超级表维度）
+	Sn         string `json:"sn"`          // 设备 SN（子表维度 + Kafka 分区键）
+	Payload    string `json:"payload"`     // 设备原始报文（JSON 五指标或厂商格式）
+	Ts         int64  `json:"ts"`          // 平台接收时刻毫秒
 }
 
 // parseTopic 解析 up/{tenant}/{pk}/{sn}/telemetry。

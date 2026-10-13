@@ -46,9 +46,9 @@ func MatchStaffCore(ctx context.Context, sc *svc.ServiceContext, tid, stationId 
 
 // InspectionItemIn 巡检明细提交项（RPC 面 → 内核入参）。
 type InspectionItemIn struct {
-	Name      string
-	Result    string
-	Anomalous bool
+	Name      string // 巡检项名称
+	Result    string // 巡检结果（ok/abnormal/na）
+	Anomalous bool   // 是否异常（true 则转 PENDING_DISPATCH 工单）
 }
 
 // SubmitInspectionCore 巡检批量提交内核（异常项直生成工单）。

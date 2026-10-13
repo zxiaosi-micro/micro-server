@@ -42,16 +42,16 @@ func NewEvaluator(defaults []config.RuleConf, ttlSec int64, pusher Pusher) *Eval
 
 // candidatePayload alert_candidate 载荷（ops 消费判定，FR-OPS-001）。
 type candidatePayload struct {
-	TenantId   int64   `json:"tenant_id"`
-	Sn         string  `json:"sn"`
-	ProductKey string  `json:"product_key"`
-	Metric     string  `json:"metric"`
-	Value      float64 `json:"value"`
-	Comparator string  `json:"comparator"`
-	Threshold  float64 `json:"threshold"`
-	Level      string  `json:"level"`
-	Source     string  `json:"source"` // telemetry/ocpp
-	OccurredAt int64   `json:"occurred_at"`
+	TenantId   int64   `json:"tenant_id"`   // 租户 ID（裸 JSON 无信封，ops 以此定位租户）
+	Sn         string  `json:"sn"`          // 设备 SN（ops 告警聚合键）
+	ProductKey string  `json:"product_key"` // 产品标识
+	Metric     string  `json:"metric"`      // 越限指标
+	Value      float64 `json:"value"`       // 越限瞬时值
+	Comparator string  `json:"comparator"`  // gt/lt/gte/lte
+	Threshold  float64 `json:"threshold"`   // 规则阈值
+	Level      string  `json:"level"`       // 建议告警级别（info/warning/critical）
+	Source     string  `json:"source"`      // telemetry/ocpp
+	OccurredAt int64   `json:"occurred_at"` // 越限时刻（UnixMilli）
 }
 
 // Evaluate 单点遥测越限初筛（命中即发 alert_candidate；幂等交给 ops 抑制窗口）。

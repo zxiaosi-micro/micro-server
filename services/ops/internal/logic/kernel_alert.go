@@ -22,17 +22,17 @@ import (
 // alertIngest 统一告警入口载荷（事件消费侧归一后传入）。
 type alertIngest struct {
 	TenantId   int64
-	Source     string // TELEMETRY/CMD_FAILED/OTA_PAUSED/DEVICE_ANOMALY
-	Metric     string // 指标名或系统事件名（cmd.failed/ota.paused/device.anomaly）
-	Comparator string
-	Threshold  *float64
-	LastValue  *float64
-	Level      string // P1/P2/P3
-	Sn         string
-	DeviceId   int64
-	Title      string
-	Content    string
-	OccurredAt time.Time
+	Source     string    // TELEMETRY/CMD_FAILED/OTA_PAUSED/DEVICE_ANOMALY
+	Metric     string    // 指标名或系统事件名（cmd.failed/ota.paused/device.anomaly）
+	Comparator string    // 越限比较符（遥测类才有，如 gt/lt）
+	Threshold  *float64  // 规则阈值（遥测类才有）
+	LastValue  *float64  // 越限瞬时值（遥测类才有）
+	Level      string    // P1/P2/P3
+	Sn         string    // 设备 SN（归属聚合键；系统告警可空）
+	DeviceId   int64     // 设备 ID（SN 反查失败时兜底携带）
+	Title      string    // 告警标题
+	Content    string    // 告警详情
+	OccurredAt time.Time // 发生时刻（零值取当前时间）
 }
 
 // ingestAlert 告警判定与入库（幂等口径：抑制窗口内同聚合键累计，不重复开告警）。

@@ -25,19 +25,21 @@ import (
 
 // ---------- 白名单注册表（表/列/维度/聚合/操作符） ----------
 
+// biColumn 白名单列定义（列名/维度类型/合法聚合/合法过滤符）。
 type biColumn struct {
-	Name    string
-	Kind    string // DIM/METRIC/BOTH
-	Aggs    []string
-	Ops     []string
-	Comment string
+	Name    string   // 列名（SQL 白名单键）
+	Kind    string   // DIM/METRIC/BOTH
+	Aggs    []string // 合法聚合（SUM/COUNT/AVG…；DIM 列为空）
+	Ops     []string // 合法过滤操作符（EQ/GT/IN…）
+	Comment string   // 列业务含义（导出表头注释）
 }
 
+// biTable 白名单表定义（一张可查的读模型表）。
 type biTable struct {
-	Name    string
-	Comment string
-	Columns map[string]*biColumn
-	Order   []string // 白名单展示序
+	Name    string               // 表名（SQL 白名单键）
+	Comment string               // 表业务含义
+	Columns map[string]*biColumn // 列白名单（键 = 列名）
+	Order   []string             // 白名单展示序
 }
 
 // biOps 全量操作符 → SQL 映射（值一律占位符）。

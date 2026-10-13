@@ -19,36 +19,38 @@ import (
 
 // ServiceContext identity 服务根装配。
 type ServiceContext struct {
-	Config    config.Config
-	Conn      sqlx.SqlConn
-	Models    *Models
-	Sessions  *sessionx.Store
-	Signer    *jwtauth.Signer
+	Config    config.Config     // 全量配置
+	Conn      sqlx.SqlConn      // identity_db 主库连接
+	Models    *Models           // 模型聚合
+	Sessions  *sessionx.Store   // 会话中心（Redis DB4，唯一读写方）
+	Signer    *jwtauth.Signer   // JWT 签发器（RS256，kid 轮换）
 	Verifier  *jwtauth.Verifier // 供 ValidateSession 重签/自验场景
-	Encryptor *crypto.Encryptor
-	HashKey   []byte
+	Encryptor *crypto.Encryptor // 手机号等敏感字段加解密器
+	HashKey   []byte            // HMAC 密钥（手机号摘要查重用）
 	// Snowflake ID 生成器（etcd 租约分配 worker_id，退化 MICRO_WORKER_ID 环境变量）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
-	AccessTTL  int64 // access token 有效期秒数（LoginResp 过期回显）
-	RefreshTTL int64 // refresh token 有效期秒数
-	SessionTTL time.Duration
+	snowCancel func()        // worker_id 租约释放（停机时调用）
+	AccessTTL  int64         // access token 有效期秒数（LoginResp 过期回显）
+	RefreshTTL int64         // refresh token 有效期秒数
+	SessionTTL time.Duration // 会话中心会话有效期
 }
 
 // Models model 聚合（goctl 生成 + custom 覆写 + 手写绑定表）。
 type Models struct {
-	Tenant model.TenantModel
-	User   model.UserModel
-	Org    model.OrgModel
-	Role   model.RoleModel
-	Menu   model.MenuModel
+	Tenant model.TenantModel // 租户表
+	User   model.UserModel   // 用户表
+	Org    model.OrgModel    // 组织表
+	Role   model.RoleModel   // 角色表
+	Menu   model.MenuModel   // 菜单/权限表
 	// 绑定表（联合主键，手写 model）
-	UserRole model.UserRoleModel
-	RoleMenu model.RoleMenuModel
+	UserRole model.UserRoleModel // 用户-角色绑定
+	RoleMenu model.RoleMenuModel // 角色-菜单授权
 	// SSO
-	SsoBinding model.UserSsoBindingModel
+	SsoBinding model.UserSsoBindingModel // SSO 外部身份绑定
 }
 
+// NewServiceContext 组装根：连接/会话中心/JWT 密钥/数据加密/雪花 ID 全是硬依赖，
+// 任一初始化失败直接 panic（启动期失败优于带病运行）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

@@ -15,6 +15,7 @@ import (
 	"github.com/zxiaosi-micro/micro-common/jwtauth"
 )
 
+// ctxkitWithUIDSID 把 JWT claims 注入 ctx（uid/sid/client 元数据，出站 RPC 桥透传用）。
 func ctxkitWithUIDSID(ctx context.Context, claims *jwtauth.Claims) context.Context {
 	ctx = ctxkit.WithUID(ctx, claims.UID)
 	ctx = ctxkit.WithSID(ctx, claims.SID)
@@ -25,13 +26,14 @@ func ctxkitWithUIDSID(ctx context.Context, claims *jwtauth.Claims) context.Conte
 // TdClient TDengine REST 只读客户端（遥测趋势；基本认证 E7、响应 JSON 对象、
 // 表名带库名前缀——与 iotingest 同一套坑位口径，AGENTS.md 已知坑）。
 type TdClient struct {
-	restUrl string
-	user    string
-	pass    string
-	db      string
-	http    *http.Client
+	restUrl string       // REST 地址（如 http://127.0.0.1:6041）
+	user    string       // Basic 认证用户名
+	pass    string       // Basic 认证口令
+	db      string       // 遥测库名（micro_iot，REST 无连接态须显式前缀）
+	http    *http.Client // HTTP 客户端（5s 超时，BFF 面不等待慢查询）
 }
 
+// NewTdClient 创建 TDengine 只读客户端。
 func NewTdClient(restUrl, user, pass, db string) *TdClient {
 	return &TdClient{
 		restUrl: strings.TrimRight(restUrl, "/"),
@@ -42,12 +44,13 @@ func NewTdClient(restUrl, user, pass, db string) *TdClient {
 	}
 }
 
+// taosResp TDengine REST 响应（JSON 对象而非数组；column_meta 为嵌套数组宽松解析）。
 type taosResp struct {
-	Code    int      `json:"code"`
-	Desc    string   `json:"desc"`
-	Data    [][]any  `json:"data"`
-	Rows    int      `json:"rows"`
-	Columns []any    `json:"column_meta"` // 实际返回 [[name,type,len],...]；宽松解析
+	Code    int     `json:"code"`        // 0=成功
+	Desc    string  `json:"desc"`        // 错误描述
+	Data    [][]any `json:"data"`        // 行集（每行为列值数组）
+	Rows    int     `json:"rows"`        // 行数
+	Columns []any   `json:"column_meta"` // 列元数据（[[name,type,len],...]）
 }
 
 // Query 执行只读 SQL，返回行集（空结果 nil）。
@@ -90,6 +93,7 @@ func (c *TdClient) qualified(productKey, sn string) string {
 	return c.db + ".iot_" + sanitizeIdent(productKey) + "_" + sanitizeIdent(sn)
 }
 
+// sanitizeIdent 标识符清洗（小写化，非法字符转下划线；子表名拼装用）。
 func sanitizeIdent(s string) string {
 	var b bytes.Buffer
 	for _, r := range strings.ToLower(s) {

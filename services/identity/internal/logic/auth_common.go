@@ -103,11 +103,13 @@ func loadRBAC(ctx context.Context, conn sqlx.SqlConn, m *svc.Models, tenantID, u
 	return roles, perms, dataScope, nil
 }
 
+// dataScopeJSON data_scope 列 JSON（角色数据域配置）。
 type dataScopeJSON struct {
-	Type   string  `json:"type"`
-	OrgIDs []int64 `json:"org_ids"`
+	Type   string  `json:"type"`    // ALL/ORG/SELF
+	OrgIDs []int64 `json:"org_ids"` // ORG 域的组织 ID 白名单
 }
 
+// dataScopeRank 数据域宽度排序（多角色取最宽）。
 var dataScopeRank = map[string]int{"ALL": 3, "ORG": 2, "SELF": 1}
 
 // mergeDataScope 多角色数据域取最宽（ALL > ORG > SELF）。

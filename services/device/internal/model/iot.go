@@ -14,6 +14,7 @@ import (
 var _ CmdModel = (*customCmdModel)(nil)
 
 type (
+	// CmdModel 指令表（down/# 下行指令记录；生成模型 + custom 事务/状态推进覆写）。
 	CmdModel interface {
 		cmdModel
 		// InsertTx 事务内插入。
@@ -40,6 +41,7 @@ type (
 	}
 )
 
+// NewCmdModel 创建指令模型（down/# 下行的指令记录与状态推进）。
 func NewCmdModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) CmdModel {
 	return &customCmdModel{defaultCmdModel: newCmdModel(conn, c, opts...), conn: conn}
 }
@@ -148,6 +150,7 @@ func (m *customCmdModel) FindOneByClientCmdId(ctx context.Context, tenantId int6
 var _ FirmwareModel = (*customFirmwareModel)(nil)
 
 type (
+	// FirmwareModel 固件表（OTA 固件登记 + Ed25519 签名校验元数据）。
 	FirmwareModel interface {
 		firmwareModel
 		InsertTx(ctx context.Context, session sqlx.Session, data *Firmware) error
@@ -161,6 +164,7 @@ type (
 	}
 )
 
+// NewFirmwareModel 创建固件模型（OTA 固件登记与签名校验元数据）。
 func NewFirmwareModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) FirmwareModel {
 	return &customFirmwareModel{defaultFirmwareModel: newFirmwareModel(conn, c, opts...), conn: conn}
 }
@@ -212,6 +216,7 @@ func (m *customFirmwareModel) ListPage(ctx context.Context, tenantId int64, prod
 var _ OtaTaskModel = (*customOtaTaskModel)(nil)
 
 type (
+	// OtaTaskModel OTA 升级任务表（灰度批次/暂停/回滚）。
 	OtaTaskModel interface {
 		otaTaskModel
 		InsertTx(ctx context.Context, session sqlx.Session, data *OtaTask) error
@@ -231,6 +236,7 @@ type (
 	}
 )
 
+// NewOtaTaskModel 创建 OTA 升级任务模型（灰度批次与回滚）。
 func NewOtaTaskModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) OtaTaskModel {
 	return &customOtaTaskModel{defaultOtaTaskModel: newOtaTaskModel(conn, c, opts...), conn: conn}
 }
@@ -314,6 +320,7 @@ func (m *customOtaTaskModel) ListPage(ctx context.Context, tenantId int64, statu
 var _ OtaDeviceModel = (*customOtaDeviceModel)(nil)
 
 type (
+	// OtaDeviceModel OTA 设备进度表（uk task+device，设备维度升级状态）。
 	OtaDeviceModel interface {
 		otaDeviceModel
 		InsertTx(ctx context.Context, session sqlx.Session, data *OtaDevice) error
@@ -337,6 +344,7 @@ type (
 	}
 )
 
+// NewOtaDeviceModel 创建 OTA 设备维度进度模型（每设备升级状态与重试）。
 func NewOtaDeviceModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) OtaDeviceModel {
 	return &customOtaDeviceModel{defaultOtaDeviceModel: newOtaDeviceModel(conn, c, opts...), conn: conn}
 }
@@ -419,6 +427,7 @@ func (m *customOtaDeviceModel) ResetForRollback(ctx context.Context, taskId int6
 var _ DeviceTopologyModel = (*customDeviceTopologyModel)(nil)
 
 type (
+	// DeviceTopologyModel 设备拓扑表（网关-子设备从属树，全量替换式维护）。
 	DeviceTopologyModel interface {
 		deviceTopologyModel
 		// SoftDeleteByDeviceTx 全量替换前软删旧树。
@@ -435,6 +444,7 @@ type (
 	}
 )
 
+// NewDeviceTopologyModel 创建设备拓扑模型（网关-子设备从属关系，随设备删除级联软删）。
 func NewDeviceTopologyModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) DeviceTopologyModel {
 	return &customDeviceTopologyModel{defaultDeviceTopologyModel: newDeviceTopologyModel(conn, c, opts...), conn: conn}
 }

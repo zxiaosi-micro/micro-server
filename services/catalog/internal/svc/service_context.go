@@ -14,24 +14,25 @@ import (
 
 // ServiceContext catalog 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // catalog_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器（etcd 租约分配 worker_id，退化 MICRO_WORKER_ID 环境变量）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 }
 
 // Models model 聚合。
 type Models struct {
-	Product           model.ProductModel
-	Sku               model.SkuModel
-	Price             model.PriceModel
-	WarrantyPolicy    model.WarrantyPolicyModel
-	StationProduct    model.StationProductModel
-	StationProductMdl model.StationProductItemModel
+	Product           model.ProductModel            // 商品 SPU
+	Sku               model.SkuModel                // SKU
+	Price             model.PriceModel              // 价目（latest 生效，下单快照源）
+	WarrantyPolicy    model.WarrantyPolicyModel     // 质保政策
+	StationProduct    model.StationProductModel     // 场站商品包
+	StationProductMdl model.StationProductItemModel // 场站商品包明细
 }
 
+// NewServiceContext 组装根：雪花 ID 硬依赖（失败即 panic）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

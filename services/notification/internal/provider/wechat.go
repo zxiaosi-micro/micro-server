@@ -19,14 +19,15 @@ import (
 
 // wechatCfg provider_cfg JSON（notification_channel.provider 列）。
 type wechatCfg struct {
-	AppID      string `json:"app_id"`
-	Secret     string `json:"secret"`
+	AppID      string `json:"app_id"`      // 小程序 AppID
+	Secret     string `json:"secret"`      // 小程序 AppSecret（access_token 换取用）
 	TemplateID string `json:"template_id"` // 订阅消息模板 ID（告警/工单/账单各一条，多模板经模板表映射）
-	Mock       bool   `json:"mock"`
+	Mock       bool   `json:"mock"`        // 强制 mock（不触外网，outbound_log 照记）
 }
 
+// WechatProvider 订阅消息渠道实现（dev 无模板时走 mock 桩，outbound_log 照记）。
 type WechatProvider struct {
-	cfg wechatCfg
+	cfg wechatCfg // 渠道配置（app_id/template_id/mock）
 }
 
 func (p *WechatProvider) Name() string { return "wechat" }

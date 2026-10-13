@@ -27,8 +27,8 @@ var errAnalyticsFileMissing = errcode.New(150000, 1004, "导出产物缺失")
 
 // reportTypes 六大报表（S8-02 字典口径；顺序即总览返回顺序）。
 var reportTypes = []struct {
-	Type string
-	Name string
+	Type string // 报表类型（analytics reportType 同名）
+	Name string // 显示名
 }{
 	{"sales", "销售日报"},
 	{"inventory", "库存日报"},

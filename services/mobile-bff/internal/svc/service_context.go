@@ -31,23 +31,24 @@ import (
 // ServiceContext mobile-bff 根装配（S9-01）。
 type ServiceContext struct {
 	Config    config.Config
-	Authz     rest.Middleware // goctl @server middleware: Authz 挂载点（az.Handle）
-	Identity  ipb.IdentityClient
-	Inventory invpb.InventoryClient
-	Party     ppb.PartyClient
-	Catalog   cpb.CatalogClient
-	Order     opb.OrderClient
-	Contract  ctpb.ContractClient
-	Device    dpb.DeviceClient
-	Station   spb.StationClient
-	Ops       opsb.OpsClient
-	Notify    npb.NotificationClient
-	Verifier  *jwtauth.Verifier // 免鉴权组（logout）解析 Bearer 取 sid
-	Td        *TdClient         // 遥测趋势只读直查（REST/Basic，E7）
-	sessions  *sessionx.Store   // 会话中心只读方（预留）
-	QuotaMW   rest.Middleware   // 租户 RPM 配额限流（S11-01；全局 Use，先于路由级 authz）
+	Authz     rest.Middleware        // goctl @server middleware: Authz 挂载点（az.Handle）
+	Identity  ipb.IdentityClient     // 认证/会话/绑定手机
+	Inventory invpb.InventoryClient  // 库存查询（client 端下单预览）
+	Party     ppb.PartyClient        // 参与方（requireParty 隔离的数据归属）
+	Catalog   cpb.CatalogClient      // 商品/价目浏览
+	Order     opb.OrderClient        // 下单/支付/订单查询
+	Contract  ctpb.ContractClient    // 合同/质保/延保
+	Device    dpb.DeviceClient       // 设备档案/生命周期
+	Station   spb.StationClient      // 场站
+	Ops       opsb.OpsClient         // 我的工单（assignee 维度）
+	Notify    npb.NotificationClient // 站内信/订阅消息
+	Verifier  *jwtauth.Verifier      // 免鉴权组（logout）解析 Bearer 取 sid
+	Td        *TdClient              // 遥测趋势只读直查（REST/Basic，E7）
+	sessions  *sessionx.Store        // 会话中心只读方（预留）
+	QuotaMW   rest.Middleware        // 租户 RPM 配额限流（S11-01；全局 Use，先于路由级 authz）
 }
 
+// NewServiceContext 组装根：会话中心/authz/11 个下游 RPC 全部硬依赖，失败即 panic。
 func NewServiceContext(c config.Config) *ServiceContext {
 	// RPC 客户端统一构造：出站挂 metadata 桥（ctxkit → x-micro-*，业务码无损往返，02 §9.5）。
 	dial := func(conf zrpc.RpcClientConf) grpc.ClientConnInterface {

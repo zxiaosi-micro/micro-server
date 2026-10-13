@@ -14,23 +14,24 @@ import (
 
 // ServiceContext notification 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // notification_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 }
 
 // Models model 聚合。
 type Models struct {
-	Message     model.MessageModel
-	Template    model.NotifyTemplateModel
-	Channel     model.NotifyChannelModel
-	Outbound    model.OutboundLogModel
-	UserSetting model.UserNotifySettingModel
+	Message     model.MessageModel           // 站内信
+	Template    model.NotifyTemplateModel    // 通知模板
+	Channel     model.NotifyChannelModel     // 外发渠道配置
+	Outbound    model.OutboundLogModel       // 外发触达日志
+	UserSetting model.UserNotifySettingModel // 用户通知设置（启用/免打扰）
 }
 
+// NewServiceContext 组装根：雪花 ID 硬依赖（失败即 panic）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

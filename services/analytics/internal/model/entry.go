@@ -9,17 +9,18 @@ import (
 
 // EventEntry 读模型事件台账（业务键幂等正本）。
 type EventEntry struct {
-	ID         int64     `db:"id"`
-	EventID    string    `db:"event_id"`
-	EventType  string    `db:"event_type"`
-	Topic      string    `db:"topic"`
-	TenantId   int64     `db:"tenant_id"`
-	BizKey     string    `db:"biz_key"`
-	StatDate   time.Time `db:"stat_date"`
-	Payload    string    `db:"payload"`
-	ConsumedAt time.Time `db:"consumed_at"`
+	ID         int64     `db:"id"`          // 自增主键（导出按 id 升序流式扫描游标）
+	EventID    string    `db:"event_id"`    // 事件全局唯一 ID（与 event_dedup 同源）
+	EventType  string    `db:"event_type"`  // 事件类型（点号命名）
+	Topic      string    `db:"topic"`       // 来源 Kafka topic
+	TenantId   int64     `db:"tenant_id"`   // 租户 ID
+	BizKey     string    `db:"biz_key"`     // 业务幂等键（uk tenant+event_type+biz_key，重复事件整单跳过）
+	StatDate   time.Time `db:"stat_date"`   // 归档业务日（导出与补投递的时间口径）
+	Payload    string    `db:"payload"`     // 事件负载 JSON 快照
+	ConsumedAt time.Time `db:"consumed_at"` // 台账落库时间
 }
 
+// EventEntryModel 读模型事件台账（report_event_entry）的写入与明细导出面。
 type EventEntryModel interface {
 	// InsertInTx 台账落库（uk_biz 幂等：重复返回 ErrDupBiz，调用方整单跳过）。
 	InsertInTx(ctx context.Context, session sqlx.Session, e *EventEntry) error
@@ -29,6 +30,7 @@ type EventEntryModel interface {
 
 type eventEntryModel struct{ conn sqlx.SqlConn }
 
+// NewEventEntryModel 创建事件台账模型（幂等第一层：uk_biz）。
 func NewEventEntryModel(conn sqlx.SqlConn) EventEntryModel { return &eventEntryModel{conn: conn} }
 
 func (m *eventEntryModel) InsertInTx(ctx context.Context, session sqlx.Session, e *EventEntry) error {

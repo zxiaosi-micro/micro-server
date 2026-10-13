@@ -42,9 +42,9 @@ func RenderTemplateInternal(l logx.Logger, tpl *model.ContractTemplate, varsJSON
 
 // varDef 模板变量定义。
 type varDef struct {
-	Key      string `json:"key"`
-	Label    string `json:"label"`
-	Required bool   `json:"required"`
+	Key      string `json:"key"`      // 变量键（模板 body 中 {{key}} 占位）
+	Label    string `json:"label"`    // 变量显示名（缺参报错文案用）
+	Required bool   `json:"required"` // 是否必填（缺失则渲染拒绝）
 }
 
 func parseVarDefs(raw string) []varDef {

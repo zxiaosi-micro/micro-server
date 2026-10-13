@@ -14,6 +14,7 @@ import (
 var _ StationModel = (*customStationModel)(nil)
 
 type (
+	// StationModel 场站表（station_db 归属根；生成模型 + custom 事务/Saga 幂等覆写）。
 	StationModel interface {
 		stationModel
 		// InsertTx 事务内插入。
@@ -32,6 +33,7 @@ type (
 	}
 )
 
+// NewStationModel 创建场站模型（场站档案与状态，requireParty 行级隔离的归属根）。
 func NewStationModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) StationModel {
 	return &customStationModel{defaultStationModel: newStationModel(conn, c, opts...), conn: conn}
 }
@@ -116,6 +118,7 @@ func (m *customStationModel) ListPage(ctx context.Context, tenantId int64, keywo
 var _ StationDeviceModel = (*customStationDeviceModel)(nil)
 
 type (
+	// StationDeviceModel 场站-设备绑定表（uk_station_device，幂等重放安全）。
 	StationDeviceModel interface {
 		stationDeviceModel
 		// InsertOnDupTx 绑定（uk_station_device 冲突 = 重放，1062 调用方吞掉）。
@@ -132,6 +135,7 @@ type (
 	}
 )
 
+// NewStationDeviceModel 创建场站-设备绑定模型（设备装机归属关系的载体）。
 func NewStationDeviceModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) StationDeviceModel {
 	return &customStationDeviceModel{defaultStationDeviceModel: newStationDeviceModel(conn, c, opts...), conn: conn}
 }
@@ -176,6 +180,7 @@ func (m *customStationDeviceModel) CountByStation(ctx context.Context, tenantId,
 var _ StationStaffModel = (*customStationStaffModel)(nil)
 
 type (
+	// StationStaffModel 场站员工表（uk station+user，派单与场站端登录授权依据）。
 	StationStaffModel interface {
 		stationStaffModel
 		InsertOnDupTx(ctx context.Context, session sqlx.Session, data *StationStaff) error
@@ -192,6 +197,7 @@ type (
 	}
 )
 
+// NewStationStaffModel 创建场站员工模型（场站维度的成员授权）。
 func NewStationStaffModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) StationStaffModel {
 	return &customStationStaffModel{defaultStationStaffModel: newStationStaffModel(conn, c, opts...), conn: conn}
 }
@@ -236,6 +242,7 @@ func (m *customStationStaffModel) ListByUser(ctx context.Context, tenantId, user
 var _ StationTopologyModel = (*customStationTopologyModel)(nil)
 
 type (
+	// StationTopologyModel 场站拓扑表（版本化拓扑，FindLatest 取最新快照）。
 	StationTopologyModel interface {
 		stationTopologyModel
 		InsertTx(ctx context.Context, session sqlx.Session, data *StationTopology) error
@@ -251,6 +258,7 @@ type (
 	}
 )
 
+// NewStationTopologyModel 创建场站拓扑模型（场站内设备分组从属关系）。
 func NewStationTopologyModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) StationTopologyModel {
 	return &customStationTopologyModel{defaultStationTopologyModel: newStationTopologyModel(conn, c, opts...), conn: conn}
 }

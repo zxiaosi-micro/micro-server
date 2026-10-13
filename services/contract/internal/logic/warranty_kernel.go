@@ -192,15 +192,16 @@ func startWarranties(ctx context.Context, sc *svc.ServiceContext, tid int64,
 
 // warrantyStartedPayload warranty_started 事件体。
 type warrantyStartedPayload struct {
-	TenantID   int64  `json:"tenant_id"`
-	WarrantyNo string `json:"warranty_no"`
-	Level      string `json:"level"`
-	TargetKey  string `json:"target_key"`
-	StartAt    int64  `json:"start_at"` // UnixMilli
-	EndAt      int64  `json:"end_at"`   // UnixMilli
-	Months     int64  `json:"months"`
+	TenantID   int64  `json:"tenant_id"`   // 租户 ID
+	WarrantyNo string `json:"warranty_no"` // 质保号（消费侧幂等键）
+	Level      string `json:"level"`       // STANDARD/EXTENDED（质保层级）
+	TargetKey  string `json:"target_key"`  // 标的键（设备 SN 或场站编码）
+	StartAt    int64  `json:"start_at"`    // 起算时刻（UnixMilli）
+	EndAt      int64  `json:"end_at"`      // 到期时刻（UnixMilli）
+	Months     int64  `json:"months"`      // 质保月数
 }
 
+// warrantyStartedEvent 组装 warranty_started 事件（签收驱动起算后广播）。
 func warrantyStartedEvent(tid int64, w *model.Warranty, startAt, endAt time.Time) eventbus.EmitInput {
 	return eventbus.EmitInput{
 		Topic: eventbus.TopicWarrantyStarted, Type: eventbus.TypeWarrantyStarted,

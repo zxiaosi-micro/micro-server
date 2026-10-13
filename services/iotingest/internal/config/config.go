@@ -76,9 +76,9 @@ func envOr(k, def string) string {
 
 // RuleConf 越限规则（metric/comparator/threshold；与 ops alert_rule 字段对齐）。
 type RuleConf struct {
-	Metric         string  `json:"metric"`     // soc/voltage/current/temperature/power
-	Comparator     string  `json:"comparator"` // gt/lt/gte/lte
-	Threshold      float64 `json:"threshold"`
+	Metric         string  `json:"metric"`           // soc/voltage/current/temperature/power
+	Comparator     string  `json:"comparator"`       // gt/lt/gte/lte
+	Threshold      float64 `json:"threshold"`        // 越限阈值（metric 对应单位）
 	Level          string  `json:",default=warning"` // info/warning/critical
 	MinDurationSec int64   `json:",default=0"`       // 持续时长（0=立即；候选初筛不做持续判定，归 ops）
 }

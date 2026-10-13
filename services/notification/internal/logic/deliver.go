@@ -19,18 +19,18 @@ import (
 
 // deliverInput Deliver 内核入参（事件 payload 与 RPC 同构）。
 type deliverInput struct {
-	UserID       int64
-	TemplateCode string
-	Params       map[string]string
-	BizType      string
-	BizID        string
+	UserID       int64             // 收件用户 uid
+	TemplateCode string            // 模板编码（模板/免打扰/频控的定位键）
+	Params       map[string]string // 模板渲染参数
+	BizType      string            // 业务类型（alert/ticket/order…，幂等与埋点维度）
+	BizID        string            // 业务单据 ID
 }
 
 // deliverOutput 内核结果。
 type deliverOutput struct {
-	Delivered bool
-	Reason    string
-	MessageID int64
+	Delivered bool   // 是否真正触达（被免打扰/频控过滤时 false）
+	Reason    string // 过滤原因（quiet_hours/rate_limit/…；触达为空）
+	MessageID int64  // 站内信 ID（落库成功才有）
 }
 
 // rateLimitPer24h 频控上限（confcenter 热调兜底）。

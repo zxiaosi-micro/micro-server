@@ -18,16 +18,16 @@ import (
 
 // Point 单条遥测（热点五指标 + raw，ADR-13）。
 type Point struct {
-	TenantId    int64
-	ProductKey  string
-	Sn          string
-	Ts          time.Time
-	Soc         float64
-	Voltage     float64
-	Current     float64
-	Temperature float64
-	Power       float64
-	Raw         string
+	TenantId    int64     // 租户 ID
+	ProductKey  string    // 产品标识（超级表维度）
+	Sn          string    // 设备 SN（子表维度）
+	Ts          time.Time // 上报时刻（同 ts 覆盖幂等）
+	Soc         float64   // 电池荷电状态（%）
+	Voltage     float64   // 电压（V）
+	Current     float64   // 电流（A）
+	Temperature float64   // 温度（℃）
+	Power       float64   // 功率（kW）
+	Raw         string    // 原始报文 JSON（排障留痕）
 }
 
 // Client TDengine REST 客户端。
@@ -51,9 +51,10 @@ func New(restUrl, user, pass, db string) *Client {
 	}
 }
 
+// taosResp TDengine REST 响应（JSON 对象；code 非 0 即错误）。
 type taosResp struct {
 	Code int    `json:"code"`
-	Desc string `json:"desc"`
+	Desc string `json:"desc"` // 错误描述（9750/9731 等坑位见 AGENTS.md）
 }
 
 // exec 执行 SQL（Basic 认证，E7）。

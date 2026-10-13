@@ -19,12 +19,12 @@ import (
 
 // ServiceContext finance 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // finance_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器（支付单号/退款号/发票号/任务号 = 前缀 + 雪花）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 
 	// 渠道网关（dev 模拟 / 微信 v3 / 支付宝 RSA2，按配置装配）。
 	Gateway *Gateway
@@ -34,13 +34,14 @@ type ServiceContext struct {
 
 // Models model 聚合。
 type Models struct {
-	Payment       model.PaymentModel
-	Refund        model.RefundModel
-	Invoice       model.InvoiceModel
-	ReconcileTask model.ReconcileTaskModel
-	Rebate        model.RebateSettlementModel
+	Payment       model.PaymentModel          // 支付单
+	Refund        model.RefundModel           // 退款单
+	Invoice       model.InvoiceModel          // 发票
+	ReconcileTask model.ReconcileTaskModel    // 渠道对账任务
+	Rebate        model.RebateSettlementModel // 经销商返利结算（规则快照）
 }
 
+// NewServiceContext 组装根：雪花 ID/渠道网关硬依赖（失败 panic），Party RPC 软依赖（返利降级）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

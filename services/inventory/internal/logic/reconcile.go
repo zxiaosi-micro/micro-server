@@ -14,6 +14,8 @@ import (
 	"github.com/zxiaosi-micro/micro-common/tenantx"
 )
 
+// ReconcileRedis 预扣计数器自愈：以 DB available 权威值周期重置（漂移窗口自愈）；
+// 预扣网关未启用（Rd nil）直接返回。
 func ReconcileRedis(ctx context.Context, sc *svc.ServiceContext) error {
 	if sc.Rd == nil {
 		return nil
@@ -35,9 +37,10 @@ func ReconcileRedis(ctx context.Context, sc *svc.ServiceContext) error {
 	return nil
 }
 
+// inventoryRow 对账扫描行（DB 权威值，用于重置 Redis 计数器）。
 type inventoryRow struct {
-	WarehouseId int64 `db:"warehouse_id"`
-	SkuId       int64 `db:"sku_id"`
-	Available   int64 `db:"available"`
-	TenantId    int64 `db:"tenant_id"`
+	WarehouseId int64 `db:"warehouse_id"` // 仓库 ID
+	SkuId       int64 `db:"sku_id"`       // SKU ID
+	Available   int64 `db:"available"`    // DB 可用量（权威值）
+	TenantId    int64 `db:"tenant_id"`    // 租户 ID（计数器键前缀）
 }

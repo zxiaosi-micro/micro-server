@@ -35,10 +35,10 @@ func NewLoginByWechatLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Log
 
 // wxSession 微信 code2session 响应（S9 客户端小程序主链路；S3 落通骨架与绑定语义）。
 type wxSession struct {
-	OpenID  string `json:"openid"`
-	UnionID string `json:"unionid"`
-	ErrCode int    `json:"errcode"`
-	ErrMsg  string `json:"errmsg"`
+	OpenID  string `json:"openid"`  // 用户在该小程序下的唯一标识
+	UnionID string `json:"unionid"` // 开放平台统一标识（可空）
+	ErrCode int    `json:"errcode"` // 微信错误码（0=成功）
+	ErrMsg  string `json:"errmsg"`  // 微信错误信息
 }
 
 // LoginByWechat 微信登录：code2session → SSO 绑定定位 →

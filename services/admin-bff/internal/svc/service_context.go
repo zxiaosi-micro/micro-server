@@ -32,7 +32,7 @@ import (
 
 // ServiceContext admin-bff 根装配。
 type ServiceContext struct {
-	Config   config.Config
+	Config   config.Config      // 全量配置
 	Authz    rest.Middleware    // goctl @server middleware: Authz 挂载点（az.Handle）
 	Identity ipb.IdentityClient // identity RPC 客户端
 	// S4 业务域 RPC 客户端（dev 直连 Endpoints；出站统一挂 metadata 桥）
@@ -58,6 +58,7 @@ type ServiceContext struct {
 	QuotaMW   rest.Middleware   // 租户 RPM 配额限流（S11-01；全局 Use，先于路由级 authz）
 }
 
+// NewServiceContext 组装根：会话中心/authz/14 个下游 RPC 全部硬依赖，失败即 panic。
 func NewServiceContext(c config.Config) *ServiceContext {
 	// RPC 客户端统一构造：出站挂 metadata 桥（ctxkit → x-micro-*，业务码无损往返，02 §9.5）。
 	// 用原生 gRPC dial option（go-zero 内置 client 中间件链不透传自定义拦截器）。

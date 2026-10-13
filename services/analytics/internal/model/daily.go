@@ -12,6 +12,9 @@ import (
 // 幂等前提：调用方已过台账 uk_biz 幂等（重复事件不会走到这里），增量累加即精确。
 // 金额以 string 传参（DECIMAL 精确累加，不落 float）。
 
+// DailyModel 六大日聚合读模型（sales/inventory/warranty/sla/finance/station daily）的
+// 写入应用与查询面：Apply*Tx 在消费侧按事件增量累加（与台账幂等同会话），Scan* 供报表查询，
+// Sum* 供对账 model 口径，TruncateAll 供读模型全量重建。
 type DailyModel interface {
 	// ---- 销售日报 ----
 	ApplyOrderCreatedTx(ctx context.Context, s sqlx.Session, tid int64, date time.Time) error
@@ -55,62 +58,69 @@ type DailyModel interface {
 
 type dailyModel struct{ conn sqlx.SqlConn }
 
+// NewDailyModel 创建日聚合读模型（只持裸 conn，事务内累加由消费侧会话传入）。
 func NewDailyModel(conn sqlx.SqlConn) DailyModel { return &dailyModel{conn: conn} }
 
 // ---------- 行结构 ----------
 
+// SalesRow 销售日报行（report_sales_daily）。
 type SalesRow struct {
-	StatDate         time.Time `db:"stat_date"`
-	OrdersCreated    int64     `db:"orders_created"`
-	OrdersPaid       int64     `db:"orders_paid"`
-	OrdersCancelled  int64     `db:"orders_cancelled"`
-	OrdersPayTimeout int64     `db:"orders_pay_timeout"`
-	ReturnsApproved  int64     `db:"returns_approved"`
-	ShipmentsSigned  int64     `db:"shipments_signed"`
-	DevicesShipped   int64     `db:"devices_shipped"`
-	GmvPaid          string    `db:"gmv_paid"`
+	StatDate         time.Time `db:"stat_date"`          // 统计业务日
+	OrdersCreated    int64     `db:"orders_created"`     // 当日创建订单数
+	OrdersPaid       int64     `db:"orders_paid"`        // 当日支付成功订单数
+	OrdersCancelled  int64     `db:"orders_cancelled"`   // 当日取消订单数
+	OrdersPayTimeout int64     `db:"orders_pay_timeout"` // 当日支付超时自动关闭订单数
+	ReturnsApproved  int64     `db:"returns_approved"`   // 当日审批通过退货单数
+	ShipmentsSigned  int64     `db:"shipments_signed"`   // 当日签收发货单数
+	DevicesShipped   int64     `db:"devices_shipped"`    // 当日签收设备台数（SN 计数）
+	GmvPaid          string    `db:"gmv_paid"`           // 当日已支付 GMV（DECIMAL 元字符串，运算走分）
 }
 
+// InventoryRow 库存日报行（report_inventory_daily，warehouse_id 维度）。
 type InventoryRow struct {
-	StatDate       time.Time `db:"stat_date"`
-	WarehouseId    int64     `db:"warehouse_id"`
-	StockInQty     int64     `db:"stock_in_qty"`
-	StockOutQty    int64     `db:"stock_out_qty"`
-	LowStockEvents int64     `db:"low_stock_events"`
+	StatDate       time.Time `db:"stat_date"`        // 统计业务日
+	WarehouseId    int64     `db:"warehouse_id"`     // 仓库 ID
+	StockInQty     int64     `db:"stock_in_qty"`     // 当日入库数量
+	StockOutQty    int64     `db:"stock_out_qty"`    // 当日出库数量
+	LowStockEvents int64     `db:"low_stock_events"` // 当日低库存预警次数
 }
 
+// WarrantyRow 质保日报行（report_warranty_daily）。
 type WarrantyRow struct {
-	StatDate          time.Time `db:"stat_date"`
-	WarrantiesStarted int64     `db:"warranties_started"`
-	WarrantiesDevice  int64     `db:"warranties_device"`
-	WarrantiesStation int64     `db:"warranties_station"`
-	DevicesActivated  int64     `db:"devices_activated"`
+	StatDate          time.Time `db:"stat_date"`          // 统计业务日
+	WarrantiesStarted int64     `db:"warranties_started"` // 当日起算质保总数
+	WarrantiesDevice  int64     `db:"warranties_device"`  // 当日设备质保起算数
+	WarrantiesStation int64     `db:"warranties_station"` // 当日场站质保起算数
+	DevicesActivated  int64     `db:"devices_activated"`  // 当日激活设备台数
 }
 
+// SlaRow SLA 日报行（report_sla_daily，station 维度；station_id=0 为平台级归集行）。
 type SlaRow struct {
-	StatDate    time.Time `db:"stat_date"`
-	StationId   int64     `db:"station_id"`
-	AlertsTotal int64     `db:"alerts_total"`
-	AlertsP1    int64     `db:"alerts_p1"`
-	AlertsP2    int64     `db:"alerts_p2"`
-	AlertsP3    int64     `db:"alerts_p3"`
+	StatDate    time.Time `db:"stat_date"`    // 统计业务日
+	StationId   int64     `db:"station_id"`   // 场站 ID（0=平台级）
+	AlertsTotal int64     `db:"alerts_total"` // 当日告警总数
+	AlertsP1    int64     `db:"alerts_p1"`    // 当日 P1（致命）告警数
+	AlertsP2    int64     `db:"alerts_p2"`    // 当日 P2（严重）告警数
+	AlertsP3    int64     `db:"alerts_p3"`    // 当日 P3（一般）告警数
 }
 
+// FinanceRow 财务日报行（report_finance_daily，channel 支付渠道维度）。
 type FinanceRow struct {
-	StatDate      time.Time `db:"stat_date"`
-	Channel       string    `db:"channel"`
-	PaymentsCount int64     `db:"payments_count"`
-	PaidAmount    string    `db:"paid_amount"`
-	RefundsCount  int64     `db:"refunds_count"`
-	RefundAmount  string    `db:"refund_amount"`
+	StatDate      time.Time `db:"stat_date"`      // 统计业务日
+	Channel       string    `db:"channel"`        // 支付渠道
+	PaymentsCount int64     `db:"payments_count"` // 当日支付成功笔数
+	PaidAmount    string    `db:"paid_amount"`    // 当日支付总金额（DECIMAL 元字符串）
+	RefundsCount  int64     `db:"refunds_count"`  // 当日退款笔数
+	RefundAmount  string    `db:"refund_amount"`  // 当日退款总金额（DECIMAL 元字符串）
 }
 
+// StationRow 场站日报行（report_station_daily，station 维度）。
 type StationRow struct {
-	StatDate        time.Time `db:"stat_date"`
-	StationId       int64     `db:"station_id"`
-	StationsCreated int64     `db:"stations_created"`
-	AlertsTotal     int64     `db:"alerts_total"`
-	AlertsP1        int64     `db:"alerts_p1"`
+	StatDate        time.Time `db:"stat_date"`        // 统计业务日
+	StationId       int64     `db:"station_id"`       // 场站 ID（0=平台级）
+	StationsCreated int64     `db:"stations_created"` // 当日新建场站数
+	AlertsTotal     int64     `db:"alerts_total"`     // 当日告警总数
+	AlertsP1        int64     `db:"alerts_p1"`        // 当日 P1（致命）告警数
 }
 
 // ---------- upsert 应用 ----------

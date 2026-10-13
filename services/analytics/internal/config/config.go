@@ -7,14 +7,15 @@ import (
 // Config analytics 服务配置（S8）。
 type Config struct {
 	zrpc.RpcServerConf
+	// Mysql analytics_db 连接（对账跨库直读业务 DSN 走 logic，不入此配置）。
 	Mysql struct {
-		DataSource string
+		DataSource string // analytics_db DSN
 	}
 	// Kafka 读模型消费组（版本号后缀运行时追加：analytics-read-v{N}）。
 	Kafka struct {
-		Brokers     []string
-		Group       string `json:",default=analytics-read"`
-		ExportGroup string `json:",default=analytics-export"`
+		Brokers     []string // Kafka broker 列表
+		Group       string   `json:",default=analytics-read"`   // 读模型消费组基名
+		ExportGroup string   `json:",default=analytics-export"` // 导出消费组
 	}
 	// FileRpc 导出产物归档（PutFile；未配置 = 导出落地失败记 error）。
 	FileRpc zrpc.RpcClientConf `json:",optional"`
@@ -27,6 +28,7 @@ type Config struct {
 	// 对账差异站内信收件人（0=平台管理员 seed uid）。
 	ReconTargetUID int64 `json:",default=0"`
 	// 读模型重放起始时间提示（重建后 Kafka 已过保留期的历史需 p4backfill 补，仅日志）。
-	ReplayHintDays int    `json:",default=7"`
-	ConfigKey      string `json:",default=/micro/config/analytics/main"`
+	ReplayHintDays int `json:",default=7"`
+	// ConfigKey 配置中心监听键（键位含文件名去扩展名，与推送侧对齐，见 confcenter）。
+	ConfigKey string `json:",default=/micro/config/analytics/main"`
 }

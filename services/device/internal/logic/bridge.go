@@ -21,12 +21,12 @@ import (
 
 // snsPayload 库存事件载荷（inventory stockInEvent/stockOutEvent 对齐）。
 type snsPayload struct {
-	TenantId    int64    `json:"tenant_id"`
-	WarehouseId int64    `json:"warehouse_id"`
-	SkuId       int64    `json:"sku_id"`
-	Qty         int64    `json:"qty"`
-	BizNo       string   `json:"biz_no"`
-	Sns         []string `json:"sns"`
+	TenantId    int64    `json:"tenant_id"`    // 租户 ID
+	WarehouseId int64    `json:"warehouse_id"` // 仓库 ID
+	SkuId       int64    `json:"sku_id"`       // SKU ID
+	Qty         int64    `json:"qty"`          // 数量
+	BizNo       string   `json:"biz_no"`       // 业务单号（入库/出库单据）
+	Sns         []string `json:"sns"`          // 设备 SN 清单（空 = 非设备类 SKU）
 }
 
 // HandleStockIn stock.in → PRODUCED/OUT→IN_STOCK（入库上架）。

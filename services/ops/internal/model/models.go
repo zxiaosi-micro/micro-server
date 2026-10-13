@@ -7,15 +7,15 @@ import (
 
 // Models ops_db 全表模型聚合。
 type Models struct {
-	AlertRule AlertRuleModel
-	Alert     AlertModel
-	Ticket    TicketModel
-	TicketLog TicketLogModel
-	SlaTimer  SlaTimerModel
-	InsTmpl   InspectionTemplateModel
-	InsPlan   InspectionPlanModel
-	InsTask   InspectionTaskModel
-	InsItem   InspectionItemModel
+	AlertRule AlertRuleModel          // 告警规则（抑制窗口/升级阈值）
+	Alert     AlertModel              // 告警（状态机 OPEN→ACK→RESOLVED）
+	Ticket    TicketModel             // 工单（PENDING_DISPATCH→…→DONE）
+	TicketLog TicketLogModel          // 工单操作留痕
+	SlaTimer  SlaTimerModel           // SLA 计时器（超时升级驱动）
+	InsTmpl   InspectionTemplateModel // 巡检模板
+	InsPlan   InspectionPlanModel     // 巡检计划（cron 生成任务）
+	InsTask   InspectionTaskModel     // 巡检任务
+	InsItem   InspectionItemModel     // 巡检明细（异常项转工单）
 }
 
 // NewModels 装配（conn 共用；ops 表多为扫描/聚合查询，无行缓存）。

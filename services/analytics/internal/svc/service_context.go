@@ -20,12 +20,12 @@ import (
 
 // ServiceContext analytics 服务根装配（S8）。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *model.Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // analytics_db 主库连接
+	Models *model.Models // 模型聚合
 	// Snowflake 导出任务 ID（读模型各表无业务写 ID 需求）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 	// File 导出产物归档（未配置 = 导出渲染成功但归档失败记 error）。
 	File fileclient.File
 	// ExportRunner 导出渲染 worker 池（threading.TaskRunner：并发限流，
@@ -33,6 +33,7 @@ type ServiceContext struct {
 	ExportRunner *threading.TaskRunner
 }
 
+// NewServiceContext 组装根：雪花 ID/导出 worker 池硬依赖（失败即 panic），File RPC 软依赖（产物归档降级）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 
@@ -63,6 +64,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return sc
 }
 
+// mustFileClient 构造 file RPC 客户端（64MB 消息上限承载导出产物；未配置返回 nil 降级）。
 func mustFileClient(conf zrpc.RpcClientConf) fileclient.File {
 	if len(conf.Etcd.Hosts) == 0 && conf.Target == "" {
 		logx.Error("analytics: file RPC 未配置（导出产物无法归档，任务将置 FAILED）")

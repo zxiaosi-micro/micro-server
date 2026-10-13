@@ -63,9 +63,9 @@ var stepIdemKey = map[int64]string{
 
 // SagaContext saga.context_json：补偿所需全部原始业务标识（补偿可能晚很久执行，02 §9.1）。
 type SagaContext struct {
-	LockKeys   []string `json:"lock_keys,omitempty"`  // 已 Reserve 成功的 ORDER_LOCK 幂等键（补偿释放依据）
-	PaymentNo  string   `json:"payment_no,omitempty"` // 发起支付后的支付单号
-	PayChannel string   `json:"pay_channel,omitempty"`
+	LockKeys   []string `json:"lock_keys,omitempty"`   // 已 Reserve 成功的 ORDER_LOCK 幂等键（补偿释放依据）
+	PaymentNo  string   `json:"payment_no,omitempty"`  // 发起支付后的支付单号
+	PayChannel string   `json:"pay_channel,omitempty"` // 支付渠道（重试同渠道发起）
 	ContractID int64    `json:"contract_id,omitempty"` // 合同号（重试幂等比对）
 }
 
@@ -76,6 +76,7 @@ const (
 	bizTypeOut    = "ORDER_OUT"
 )
 
+// lockBizNo 库存幂等键（每库存行一键：order_no:sku_id，防多 SKU 单共用幂等键）。
 func lockBizNo(orderNo string, skuId int64) string { return fmt.Sprintf("%s:%d", orderNo, skuId) }
 
 // rpcTimeout 单次下游 RPC 超时预算（02 §10：内部 RPC 3~5s，禁重试——Saga/事件兜底）。

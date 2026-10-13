@@ -70,16 +70,16 @@ func ConsumeCandidateRaw(ctx context.Context, sc *svc.ServiceContext, raw []byte
 
 // candidatePayload iotingest rules.go 同构载荷（契约对齐，FR-IOT-009）。
 type candidatePayload struct {
-	TenantId   int64   `json:"tenant_id"`
-	Sn         string  `json:"sn"`
-	ProductKey string  `json:"product_key"`
-	Metric     string  `json:"metric"`
-	Value      float64 `json:"value"`
-	Comparator string  `json:"comparator"`
-	Threshold  float64 `json:"threshold"`
-	Level      string  `json:"level"`
-	Source     string  `json:"source"`
-	OccurredAt int64   `json:"occurred_at"`
+	TenantId   int64   `json:"tenant_id"`   // 租户 ID（iotingest 直推裸 JSON 无信封，以此定位租户）
+	Sn         string  `json:"sn"`          // 设备 SN（告警聚合键）
+	ProductKey string  `json:"product_key"` // 产品标识
+	Metric     string  `json:"metric"`      // 越限指标（soc/voltage/current/temperature/power）
+	Value      float64 `json:"value"`       // 越限瞬时值
+	Comparator string  `json:"comparator"`  // gt/lt/gte/lte
+	Threshold  float64 `json:"threshold"`   // 规则阈值
+	Level      string  `json:"level"`       // 建议告警级别（info/warning/critical）
+	Source     string  `json:"source"`      // 产生源（mqtt/ocpp）
+	OccurredAt int64   `json:"occurred_at"` // 越限时刻（UnixMilli）
 }
 
 // consumeCmdFailed 指令失败（FR-OPS-009 系统告警同链路）。

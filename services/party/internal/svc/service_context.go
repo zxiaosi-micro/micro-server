@@ -16,12 +16,12 @@ import (
 
 // ServiceContext party 服务根装配。
 type ServiceContext struct {
-	Config config.Config
-	Conn   sqlx.SqlConn
-	Models *Models
+	Config config.Config // 全量配置
+	Conn   sqlx.SqlConn  // party_db 主库连接
+	Models *Models       // 模型聚合
 	// Snowflake ID 生成器（etcd 租约分配 worker_id，退化 MICRO_WORKER_ID 环境变量）。
 	Snowflake  *snowflake.Node
-	snowCancel func()
+	snowCancel func() // worker_id 租约释放（停机时调用）
 	// Encryptor contact.mobile AES-256-GCM 加密（MICRO_DATA_KEYS 注入）。
 	Encryptor *crypto.Encryptor
 	// HashKey contact.mobile_hash HMAC-SHA256 索引键。
@@ -30,14 +30,15 @@ type ServiceContext struct {
 
 // Models model 聚合。
 type Models struct {
-	Party       model.PartyModel
-	Contact     model.ContactModel
-	Staff       model.StaffModel
-	DealerExt   model.DealerExtModel
-	CrmRecord   model.CrmRecordModel
-	Opportunity model.OpportunityModel
+	Party       model.PartyModel       // 参与方（buyer/supplier/dealer/platform）
+	Contact     model.ContactModel     // 联系方式（手机号加密存储）
+	Staff       model.StaffModel       // 员工（uid ↔ party 绑定）
+	DealerExt   model.DealerExtModel   // 经销商扩展档案
+	CrmRecord   model.CrmRecordModel   // CRM 跟进记录
+	Opportunity model.OpportunityModel // 销售机会
 }
 
+// NewServiceContext 组装根：雪花 ID/数据加密器硬依赖（失败即 panic）。
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 

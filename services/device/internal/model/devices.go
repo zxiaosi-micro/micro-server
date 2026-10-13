@@ -187,6 +187,7 @@ func placeholders(n int) string {
 var _ DeviceLifecycleLogModel = (*customDeviceLifecycleLogModel)(nil)
 
 type (
+	// DeviceLifecycleLogModel 生命周期日志表（事件重放幂等 + CAS 状态守卫的载体）。
 	DeviceLifecycleLogModel interface {
 		deviceLifecycleLogModel
 		// InsertTx 事务内追加（幂等键 device_id+event_type+event_id，1062 由调用方吞掉跳过）。
@@ -201,6 +202,7 @@ type (
 	}
 )
 
+// NewDeviceLifecycleLogModel 创建设备生命周期日志模型（事件重放幂等 + CAS 状态守卫）。
 func NewDeviceLifecycleLogModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) DeviceLifecycleLogModel {
 	return &customDeviceLifecycleLogModel{
 		defaultDeviceLifecycleLogModel: newDeviceLifecycleLogModel(conn, c, opts...),

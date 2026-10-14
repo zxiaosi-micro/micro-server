@@ -13,6 +13,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"micro-server/services/inventory/internal/confcenter"
@@ -114,6 +115,11 @@ func applyStockTx(ctx context.Context, sc *svc.ServiceContext, tid, op int64,
 	eventFn func(before, after *model.Inventory) []eventbus.EmitInput) (int64, error) {
 
 	var recordId int64
+	// bizErr 业务拒绝：以空转提交退出事务后在事务外返回。TransactCtx 整体包在 sqlx 熔断器
+	// 内（acceptable 不放行业务错误），事务内返回业务拒绝会被计入失败率——并发拒绝风暴
+	// （100 抢 50 的 50 个拒绝）会误开熔断造成误拒。与 AGENTS.md 已知坑"Redis 网关拒绝
+	// 显式短路（gateReject）"同源，此处对纯 DB 路径及全部 applyStockTx 调用方统一短路。
+	var bizErr error
 	err := sc.Conn.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
 		// 行锁 + before 快照（未建档明确报错）
 		inv, err := sc.Models.Inventory.LockByWhSku(ctx, session, tid, wid, skuId)
@@ -128,6 +134,11 @@ func applyStockTx(ctx context.Context, sc *svc.ServiceContext, tid, op int64,
 		// 守卫式变更（affected==0 → 余量不足）；qty 为本次操作量（操作语义口径）
 		qty, err := mutate(ctx, session, inv)
 		if err != nil {
+			var codeErr *errcode.CodeError
+			if errors.As(err, &codeErr) {
+				bizErr = err
+				return nil
+			}
 			return err
 		}
 
@@ -169,6 +180,9 @@ func applyStockTx(ctx context.Context, sc *svc.ServiceContext, tid, op int64,
 	})
 	if err != nil {
 		return 0, err
+	}
+	if bizErr != nil {
+		return 0, bizErr
 	}
 	return recordId, nil
 }

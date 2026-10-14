@@ -4,7 +4,6 @@ package logic
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"micro-server/services/ops/internal/confcenter"
 	"micro-server/services/ops/internal/svc"
@@ -26,17 +25,9 @@ func acceptTimeoutMin(sc *svc.ServiceContext) int {
 	return 30
 }
 
-// millis proto 时间字段统一 UnixMilli。
-func millis(t time.Time) int64 { return t.UnixMilli() }
-
 // redisKeyAlertUnread 告警未读计数键（租户+场站维度；DB0）。
 func redisKeyAlertUnread(tenantId, stationId int64) string {
 	return "micro:ops:alert:unread:" + strconv.FormatInt(tenantId, 10) + ":" + strconv.FormatInt(stationId, 10)
-}
-
-// redisKeyTicketActive 工单活跃计数键。
-func redisKeyTicketActive(tenantId, stationId int64) string {
-	return "micro:ops:ticket:active:" + strconv.FormatInt(tenantId, 10) + ":" + strconv.FormatInt(stationId, 10)
 }
 
 // bumpAlertUnread 新告警入库后自增（聚合命中不涨：已计入的未读不变）。

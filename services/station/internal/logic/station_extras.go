@@ -73,9 +73,9 @@ func (l *GetTopologyLogic) GetTopology(in *pb.GetTopologyReq) (*pb.GetTopologyRe
 		return nil, err
 	}
 	return &pb.GetTopologyResp{Topology: &pb.TopologyView{
-		Version:   int64(t.Version),
-		NodesJson: string(t.Nodes),
-		EdgesJson: string(t.Edges),
+		Version:   t.Version,
+		NodesJson: t.Nodes,
+		EdgesJson: t.Edges,
 		UpdatedAt: t.UpdatedAt.UnixMilli(),
 	}}, nil
 }

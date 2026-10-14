@@ -21,8 +21,6 @@ var (
 	errDateFormatBad   = errcode.New(SegAnalytics, 1002, "日期格式不合法（yyyy-MM-dd）")
 	errExportFormatBad = errcode.New(SegAnalytics, 1003, "导出格式不合法（CSV/XLSX/PDF）")
 	errExportNotFound  = errcode.New(SegAnalytics, 1004, "导出任务不存在")
-	errExportRunning   = errcode.New(SegAnalytics, 1005, "导出任务已在处理中")
-	errExportNotDone   = errcode.New(SegAnalytics, 1006, "导出任务尚未完成")
 	errPdfFontMissing  = errcode.New(SegAnalytics, 1007, "PDF 字体未配置（pdf_font），PDF 导出不可用")
 	errReconDateBad    = errcode.New(SegAnalytics, 1008, "对账日期不合法")
 	errReconRunning    = errcode.New(SegAnalytics, 1009, "该业务日对账正在执行")

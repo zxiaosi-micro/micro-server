@@ -34,7 +34,6 @@ var (
 	errInspectSubmitted = errcode.New(SegOps, 1016, "巡检任务已提交")
 	errInspectCronBad   = errcode.New(SegOps, 1017, "巡检计划表达式非法（@daily/@weekly/@monthly/@h:N）")
 	errItemsRequired    = errcode.New(SegOps, 1018, "巡检明细不能为空")
-	errAssigneeRequired = errcode.New(SegOps, 1019, "派单目标 uid 必填（无候选时手动指定）")
 )
 
 // mustTenant 业务面租户（BFF authz 注入；事件消费侧由信封恢复）。

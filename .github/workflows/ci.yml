@@ -39,6 +39,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: micro_test
+          MYSQL_DATABASE: micro_test
         ports:
           - 23306:3306
         options: >-

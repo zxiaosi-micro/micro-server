@@ -104,8 +104,11 @@ func setupTestDB(t *testing.T) string {
 		t.Fatalf("open mysql: %v", err)
 	}
 	defer admin.Close()
-	if _, err := admin.Exec("DROP DATABASE IF EXISTS micro_inventory_test;" +
-		"CREATE DATABASE micro_inventory_test DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci"); err != nil {
+	// 两条独立 Exec：admin DSN 未必带 multiStatements=true（CI env DSN 无此参数），多语句会被 MySQL 拒绝（1064）
+	if _, err := admin.Exec("DROP DATABASE IF EXISTS micro_inventory_test"); err != nil {
+		t.Fatalf("drop db: %v", err)
+	}
+	if _, err := admin.Exec("CREATE DATABASE micro_inventory_test DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci"); err != nil {
 		t.Fatalf("create db: %v", err)
 	}
 

@@ -1,0 +1,11 @@
+# golangci-lint v2 根配置：CI 与本地 `golangci-lint run ./...`（逐模块）向上查找本文件后生效。
+# 逐模块口径见 .github/workflows/ci.yml（workspace 根无 go.mod，一服务一 module）。
+version: "2"
+linters:
+  exclusions:
+    rules:
+      # SA5008 误报豁免：go-zero conf 的 json tag 专有 option（default/optional）非标准
+      # json 选项，是本仓配置结构体的既定惯用法（confx/go-zero conf 解析依赖），staticcheck
+      # 对该 idiom 无感知。按文本精确豁免，staticcheck 其余检查保持默认。
+      - linters: [staticcheck]
+        text: "SA5008"

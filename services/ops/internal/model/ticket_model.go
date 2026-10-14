@@ -53,9 +53,6 @@ func NewTicketModel(conn sqlx.SqlConn) TicketModel {
 
 const ticketSoftFilter = "`deleted_at` is null"
 
-// nullInt64 int64 → sql.NullInt64（0=NULL：party_id 等可空外键的统一口径）。
-func nullInt64(v int64) sql.NullInt64 { return sql.NullInt64{Int64: v, Valid: v > 0} }
-
 // 终态集合（轮询 unread 排除）。
 const ticketActiveFilter = "`status` not in ('CLOSED','CANCELLED')"
 

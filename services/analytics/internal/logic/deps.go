@@ -21,8 +21,7 @@ type readDeps struct {
 }
 
 var (
-	errDupBiz       = errors.New("analytics: 业务键重复")
-	errUnregistered = errors.New("analytics: 未登记事件类型")
+	errDupBiz = errors.New("analytics: 业务键重复")
 )
 
 // isDupKey MySQL 1062 判定（台账 uk_biz 幂等出口）。

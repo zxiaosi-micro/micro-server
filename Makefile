@@ -51,7 +51,7 @@ validate:
 tenantaudit:
 	@go run ./tools/tenantaudit
 
-## swagger: 重生成 OpenAPI 文档到 docs/swagger（CI swagger-diff 同款命令）
+## swagger: 重生成 OpenAPI 文档到 docs/swagger（CI swagger-diff 同款命令，含 x-date 剥离）
 swagger:
 	@entries=$$(git ls-files 'services/*/api/entry.api'); \
 	[ -n "$$entries" ] || { echo "尚无 entry.api（入口契约）"; exit 0; }; \
@@ -59,6 +59,7 @@ swagger:
 	for f in $$entries; do \
 		svc=$$(echo "$$f" | cut -d/ -f2); \
 		echo "== swagger $$svc"; goctl api swagger --api "$$f" --dir docs/swagger --filename "$$svc"; \
+		sed -i '/"x-date":/d' docs/swagger/$$svc.json; \
 	done
 
 ## apitypes: .api → TS 类型到 micro-web/packages/shared/types（CI diff 阻断，02 §12.5）

@@ -30,4 +30,6 @@ coverage.html
 .idea/
 .vscode/
 .DS_Store
-go.mod
+# 仅挡工作区根的误初始化 go.mod（一服务一 module，各服务的 go.mod 必须入库）
+/go.mod
+/go.mod.sum
